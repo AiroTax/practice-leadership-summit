@@ -2,28 +2,28 @@
 // Set AIRTABLE_TOKEN in your hosting environment (see README). Set AIRTABLE_MOCK=1
 // to run against an in-memory store for local testing.
 
-export const BASE_ID = process.env.AIRTABLE_BASE_ID || "appTdzCvEVEYvPsPb";
-export const TABLES = { practices: "tbllPGQaRyq7PD5X5", prework: "tbl9WisMkokupXaC6" };
+export const BASE_ID = process.env.AIRTABLE_BASE_ID || "appnkdigwysCU2SCH";
+export const TABLES = { practices: "tblzLoaqlyzo5vlzn", prework: "tbl7jJbYfm6Px1h8L" };
 
 // Field IDs in the "Practice Leadership Summit 2027" base.
 export const P = {
-  name: "fld4HZWVKfD1MZbRb", number: "fldOh24Nz7Q3Z0eDT", reference: "fldTHPp1GkccnjqLI", price: "fldA5ESfMtQpZ2Prm",
-  town: "fldtpEh3yqP9hgpEE", type: "fldwpEI9tUSHxdS3k", ticket: "fldTNB81pv6Slx2tW", extra: "fldEJgue7QQE7PuXu",
-  kasper: "fld4cuQS7X89FatuP", ownerName: "fldJC6eWp8bPEjUEi", ownerEmail: "fldq3627V5RW2TigU", ownerPhone: "fld9VB5jxBQw3iCdJ",
+  name: "fld0rz9lr0hIYjlgs", number: "fldDJzC6IpP1pr99K", reference: "fldB1NYGYMBIZJdqL", price: "fldblcgU8dA3rOjNc",
+  town: "fldip02cFXrfufn3I", type: "fldCCmOhhTOMehAeD", ticket: "fldrjRwgfcEy4JpfN", extra: "fldEDUYnkTvjuCx8v",
+  kasper: "fldF7BPOahfiGUSN3", ownerName: "fldRcY9rNwuVGit22", ownerEmail: "fldRo1Htu3wLzuNXb", ownerPhone: "fldnLVZ9wWCT5zlBI",
   members: [
-    { name: "fldr0yazFmUY8UJy1", role: "fldhVrfGiLDnZ5Xho", email: "fldpuPvzUn80DMFOE" },
-    { name: "fld3OuY1479pRDE4n", role: "fldYd1brD066iOcgt", email: "fldMbU70s8cHxUmYi" },
-    { name: "fldfzXOF7FAi3d0YL", role: "fldeR5A3dXbZ2wHZs", email: "fld5YZuABobIZsgKY" },
+    { name: "fld2euui3Y0WJtQW6", role: "fldLrJx73DgnIOL7J", email: "fldoDlfcNVhwA2dY5" },
+    { name: "fldQ77D2XRbjgpKxH", role: "fldfBPcRUXzWBSCK8", email: "fldi6g5ssTfZDf5Qy" },
+    { name: "fldzA6vxYmKOj3rTY", role: "fldo0xnZywb7wLmd2", email: "fld1TAqQmp5K7PaIM" },
   ],
-  heard: "fldqSKY2bBtrpXC2v", referredBy: "fldfn7WmrVMNAx2WP", diet: "fldYVKPfCsJS3DbJv", access: "fld3ADft9NIQ7uCbb",
-  photo: "fld9xAKEBBiRzB1kP", kasperUpdates: "fldQHDzrQYpHmOPLL", gadUpdates: "flduNnbet366T7F6u", partnerIntros: "fld32sq9jJqsot3EO",
-  terms: "fld4qo3Mv1bozif5p",
+  heard: "fldN31vIvQxzANY0n", referredBy: "fld3iw5ix49qcn2BM", diet: "fldr4DH7Al9mLhW4G", access: "fldPZ8gBSBzToRCcD",
+  photo: "fld1Qhf5BJyX3nc5U", kasperUpdates: "fldG0EVPu4TEQ95mv", gadUpdates: "fldELUyW2Pq53zTGu", partnerIntros: "fld2uhU7JcaJe01QC",
+  terms: "fldnxRo2WJYgtRhfl",
 };
 export const W = {
-  practice: "fld72NYHdR9BqR0LW", number: "fldEuNVxqfcMhTlBz", email: "fld2KMJD2VVGrPrJP", years: "fldwq0OP0g14ZZlOJ",
-  locations: "fldYsrQ5SoFzCTIKX", teamSize: "fldPNiZWLoN26CyjF", newPatients: "fldrdeqL5af3RvaF5", payerMix: "fldohwK5t4fRP4q6u",
-  production: "fldtareXdD4Xe3mWS", technology: "fld6d6ZGAB9Hvwb71", compared: "fldksYyEeERsoS9aB", challenges: "fldCKLj8ijuKXJAx5",
-  goodWeekend: "fldkjq8XIJRq1Exjq", callTime: "fldbLfUbNlq7L2IMW",
+  practice: "fldWCLfx5PTn1x2cd", number: "fldr2cS8IAIZ4NYlr", email: "fldxWelk1VyNXyVro", years: "fldsfbXQBYzRVwYLd",
+  locations: "fldWW0doQGHSbDvR5", teamSize: "fld7wvr9MSjXKMhLc", newPatients: "fld0NwAsiIDOJB9Sa", payerMix: "fldIw5lXGFldLEvSC",
+  production: "fld3bXBR2ylfjEucp", technology: "fldpvyoTQ8sUIswbJ", compared: "fldqr8qkhVfZSu7JU", challenges: "fldGIkAiLyAM4ERG1",
+  goodWeekend: "fld5UUTMRINsH8VDy", callTime: "fldse9cXqH9ryeydh",
 };
 
 const API = "https://api.airtable.com/v0";
