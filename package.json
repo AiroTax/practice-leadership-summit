@@ -1,0 +1,12 @@
+{
+  "name": "practice-leadership-summit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Practice Leadership Summit 2027 website: event site with pop-up registration and pre-work forms that save to Airtable.",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "dev:mock": "AIRTABLE_MOCK=1 node dev-server.js"
+  },
+  "engines": { "node": ">=18" }
+}
