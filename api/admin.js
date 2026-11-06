@@ -3,7 +3,7 @@ import { readBody, str, send } from "./_lib/airtable.js";
 import { sessionEmail } from "./_lib/auth.js";
 import { backend, listPractices, listPrework, getPractice, getPrework, updatePractice, saveJourneyState, emailLog } from "./_lib/store.js";
 import { JOURNEY, AUDIENCES, GLOBAL_VARS, renderJourney, inAudience, nextDate } from "./_lib/journey.js";
-import { journeyState, sendReport, broadcast, runJourney } from "./_lib/notify.js";
+import { journeyState, sendReport, broadcast, runJourney, buildTeamNotice, buildPreworkThanks, buildSignIn } from "./_lib/notify.js";
 import { sendEmail, emailReady, getOutbox, sender } from "./_lib/email.js";
 import { reviewsFor, reviewsReady, draftFromPasted } from "./_lib/reviews.js";
 
@@ -45,17 +45,21 @@ export default async function handler(req, res) {
         await saveJourneyState(id, patch); return send(res, 200, { ok: true });
       }
       case "preview": {
+        const sys = systemEmail(b.id); if (sys) return send(res, 200, { ok: true, ...sys, missing: [] });
         const d = JOURNEY.find((x) => x.id === b.id); if (!d) throw fail("Unknown email.", 404);
         const st = (await journeyState())[d.id] || {};
         const draft = { ...st, subject: typeof b.subject === "string" ? b.subject : st.subject, body: typeof b.body === "string" ? b.body : st.body };
         const p = b.practiceId ? await getPractice(str(b.practiceId, 80)) : sample();
         const pw = p && p.number && b.practiceId ? await getPrework(p.number) : null;
-        return send(res, 200, { ok: true, ...renderJourney(d, p, pw, draft) });
+        return send(res, 200, { ok: true, ...renderJourney(d, p, pw, draft, { sample: true }) });
       }
       case "test": {
-        const d = JOURNEY.find((x) => x.id === b.id); if (!d) throw fail("Unknown email.", 404);
-        const st = (await journeyState())[d.id] || {};
-        const m = renderJourney(d, sample(), null, st);
+        let m = systemEmail(b.id);
+        if (!m) {
+          const d = JOURNEY.find((x) => x.id === b.id); if (!d) throw fail("Unknown email.", 404);
+          const st = (await journeyState())[d.id] || {};
+          m = renderJourney(d, sample(), null, st, { sample: true });
+        }
         const r = await sendEmail({ to: me, subject: "[Test] " + m.subject, html: m.html, text: m.text, tag: "test" });
         if (!r.ok) throw fail("The test didn’t go: " + r.error, 502);
         return send(res, 200, { ok: true, local: !!r.local });
@@ -81,10 +85,25 @@ export default async function handler(req, res) {
   }
 }
 
+// The automatic emails outside the journey, shown with sample data.
+export const SYSTEM_EMAILS = [
+  { id: "team-notice", name: "New registration notice", when: "To the team inbox, the moment a practice registers", audienceLabel: "Your team" },
+  { id: "prework-thanks", name: "Pre-work received", when: "Instantly when a practice sends its pre-work", audienceLabel: "Whoever sent it, and the owner" },
+  { id: "signin", name: "Console sign-in link", when: "When someone signs in to this console", audienceLabel: "Your team" },
+];
+function systemEmail(id) {
+  const p = { ...sample(), town: "Clifton", type: "Established, one location", invoiceEmail: "billing@example.com", kasper: true, heard: "Kasper",
+    consents: {}, hotel: "Friday night", diet: "One vegetarian", members: [{ name: "Jordan Lee", role: "Office manager", email: "jordan@example.com" }, { name: "Sam Ortiz", role: "Hygienist", email: "" }] };
+  if (id === "team-notice") return buildTeamNotice(p);
+  if (id === "prework-thanks") return buildPreworkThanks(p, { email: "jordan@example.com", answeredBy: "Practice or office manager", callTime: "Dec 14–18, mornings" });
+  if (id === "signin") return buildSignIn((process.env.SITE_URL || "https://practice-leadership-summit.vercel.app") + "/api/auth?t=sample");
+  return null;
+}
+
 function sample() {
   return { id: "sample", number: 7, reference: "PLS-007", name: "Riverside Family Dental", town: "Clifton", ticket: "Team of 3", people: 3, price: 3400,
     owner: { name: "Dr. Maya Patel", email: "owner@example.com" }, members: [{ name: "Jordan Lee", role: "Office manager" }, { name: "Sam Ortiz", role: "Hygienist" }],
-    reportKey: "SAMPLE-LINK-ONLY", checkedIn: [true, true, false, false], createdAt: new Date().toISOString() };
+    reportKey: "sample-report-link", checkedIn: [true, true, false, false], createdAt: new Date().toISOString() };
 }
 
 async function data(me) {
@@ -100,7 +119,7 @@ async function data(me) {
   return {
     ok: true, me, backend: backend(), emailReady: emailReady(), from: sender(), reviewsReady: reviewsReady(),
     practices: practices.map((p) => ({ ...p, pw: pre[p.number] || null })),
-    journey, vars: (st.vars && st.vars.vars) || (st.e01 && st.e01.vars) || {}, varLabels: GLOBAL_VARS,
+    journey, system: SYSTEM_EMAILS, vars: (st.vars && st.vars.vars) || (st.e01 && st.e01.vars) || {}, varLabels: GLOBAL_VARS,
     log: log.slice(0, 120).map((l) => ({ at: l.created_at, emailId: l.email_id, to: l.to_addr, subject: l.subject, status: l.status, error: l.error, practiceId: l.practice_id })),
   };
 }

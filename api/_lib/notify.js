@@ -38,6 +38,10 @@ export async function sendConfirmation(p) {
 
 // A short notice to the team inbox for every registration.
 export async function sendTeamNotice(p) {
+  const m = buildTeamNotice(p);
+  return deliver("team-notice", p, m, TEAM(), []);
+}
+export function buildTeamNotice(p) {
   const rows = [
     ["Practice", `${p.name}, ${p.town}`], ["Reference", `${p.reference} (table ${p.number})`], ["Ticket", `${p.ticket} · ${p.people} people · ${money(p.price)}`],
     ["Owner", `${p.owner.name} · ${p.owner.email}${p.owner.phone ? " · " + p.owner.phone : ""}`],
@@ -49,11 +53,15 @@ export async function sendTeamNotice(p) {
   if (p.access) rows.push(["Accessibility", p.access]);
   const body = `<p style="margin:0 0 16px;font:16px/1.6 'Atkinson Hyperlegible',Arial,sans-serif;color:#3A4560">A new practice just claimed a table. The invoice is due within two business days.</p>${facts(rows)}${button("Open the console", SITE + "/admin#practices")}`;
   const html = layout({ title: `New table: ${p.name}`, eyebrow: "New registration", preheader: `${p.ticket}, ${money(p.price)}`, body });
-  return deliver("team-notice", p, { subject: `New registration: ${p.name} (${p.reference})`, html, text: rows.map((r) => r.join(": ")).join("\n") }, TEAM(), []);
+  return { subject: `New registration: ${p.name} (${p.reference})`, html, text: rows.map((r) => r.join(": ")).join("\n") };
 }
 
 // Thanks for the pre-work, to whoever sent it and the owner.
 export async function sendPreworkThanks(p, answers) {
+  const to = [answers.email, p.owner.email].filter((e, i, a) => e && a.indexOf(e) === i);
+  return deliver("prework-thanks", p, buildPreworkThanks(p, answers), to, []);
+}
+export function buildPreworkThanks(p, answers) {
   const body = markup(`Hi ${answers.answeredBy === "Owner" || !answers.email ? firstName(p.owner.name) : "there"},
 
 Thank you. We have the pre-work for **${p.name}**, and it’s the starting point for your Practice Snapshot.
@@ -66,8 +74,7 @@ Need to change an answer? Reply to this email and tell us what to update.
 
 The Kasper summit team, in partnership with Global Academy of Dentistry`);
   const html = layout({ title: "Your pre-work is in", eyebrow: "Pre-work received", preheader: "Your Practice Snapshot is next.", body });
-  const to = [answers.email, p.owner.email].filter((e, i, a) => e && a.indexOf(e) === i);
-  return deliver("prework-thanks", p, { subject: `Pre-work received for ${p.name}`, html, text: "Thank you, we have your pre-work." }, to, []);
+  return { subject: `Pre-work received for ${p.name}`, html, text: "Thank you, we have your pre-work." };
 }
 
 // e04, the report link. Sent from the console.
@@ -80,13 +87,17 @@ export async function sendReport(p, pw) {
 }
 
 export async function sendSignIn(email, link) {
+  const m = buildSignIn(link);
+  return sendEmail({ to: email, subject: m.subject, html: m.html, text: m.text, tag: "signin" });
+}
+export function buildSignIn(link) {
   const body = markup(`Use this button to sign in to the Summit Console. It expires in 15 minutes.
 
 [[Sign in to the console|${link}]]
 
 If you didn’t ask to sign in, you can ignore this email.`);
   const html = layout({ title: "Sign in to the Summit Console", eyebrow: "Team sign-in", preheader: "Your sign-in link, valid for 15 minutes.", body });
-  return sendEmail({ to: email, subject: "Your Summit Console sign-in link", html, text: "Sign in: " + link, tag: "signin" });
+  return { subject: "Your Summit Console sign-in link", html, text: "Sign in: " + link };
 }
 
 // Runs every morning (Vercel Cron). Sends approved, dated emails that are due and not yet sent.

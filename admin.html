@@ -438,6 +438,8 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     <div class="card"><div class="viewhead"><div><h2>Event details used in the emails</h2><p class="muted" style="font-size:13.5px">Fill these once. An email that needs a blank one waits until it’s filled in.</p></div><button class="btn sm dark" type="button" id="em-savevars">Save details</button></div><div class="vars" id="em-vars"></div></div>
     <h2>The journey</h2>
     <div class="emails" id="emails"></div>
+    <h2>Other automatic emails</h2>
+    <div class="emails" id="em-system"></div>
     <div class="card"><div class="viewhead"><h2>Recently sent</h2><button class="btn sm" type="button" id="em-dry">What goes out tomorrow?</button></div><div class="loglist" id="em-log"></div></div>
   </section>
 
@@ -464,7 +466,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   <div class="dbody" id="d-body"></div>
 </aside>
 
-<dialog class="pv" id="pv" aria-labelledby="pv-subj"><div class="pvhead"><div><b id="pv-subj"></b><span id="pv-sub"></span></div><button class="iconbtn" type="button" id="pv-close" aria-label="Close preview"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><p class="notice miss" id="pv-miss" hidden></p><iframe id="pv-frame" title="Email preview" sandbox=""></iframe></dialog>
+<dialog class="pv" id="pv" aria-labelledby="pv-subj"><div class="pvhead"><div><b id="pv-subj"></b><span id="pv-sub"></span></div><button class="iconbtn" type="button" id="pv-close" aria-label="Close preview"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><p class="notice miss" id="pv-miss" hidden></p><iframe id="pv-frame" title="Email preview" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastmsg"></span><button id="toastundo" type="button" hidden>Undo</button></div>
 
 </div>
@@ -566,7 +568,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     try {
       var j = await api();
       state.practices = j.practices.map(toPractice).sort(function(x,y){return y.createdAt-x.createdAt});
-      state.emails = j.journey; state.vars = j.vars || {}; state.varLabels = j.varLabels || {}; state.log = j.log || [];
+      state.emails = j.journey; state.system = j.system || []; state.vars = j.vars || {}; state.varLabels = j.varLabels || {}; state.log = j.log || [];
       state.meta = {backend:j.backend, emailReady:j.emailReady, from:j.from}; state.canEdit = true;
       $("#me").textContent = j.me;
       state.loadedAt = Date.now(); $("#connerr").hidden = true; $("#live").className = "live on";
@@ -938,23 +940,45 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       return '<div class="email"><div><h3>'+esc(e.name)+(e.edited?' <span class="pill" style="font-size:11px">edited</span>':'')+'</h3><div class="meta">'+pill+'<span>'+esc(e.when)+'</span><span>'+esc(e.audienceLabel)+': '+e.reach+'</span>'+(e.sent?'<span>'+e.sent+' sent</span>':'')+'</div>'+
         '<p class="muted" style="margin-top:6px;font-size:13.5px">'+esc(e.subject)+'</p>'+ed+'</div><div class="acts">'+acts+'</div></div>';
     }).join("");
+    $("#em-system").innerHTML = (state.system||[]).map(function(e){
+      return '<div class="email"><div><h3>'+esc(e.name)+'</h3><div class="meta"><span class="pill ok">Automatic</span><span>'+esc(e.when)+'</span><span>'+esc(e.audienceLabel)+'</span></div></div><div class="acts"><button class="btn sm" type="button" data-pv="'+e.id+'">Preview</button><button class="btn sm" type="button" data-test="'+e.id+'">Send me a test</button></div></div>' }).join("");
     var nm = {}; state.emails.forEach(function(e){ nm[e.id] = e.name }); nm["team-notice"] = "Team notice"; nm["prework-thanks"] = "Pre-work thanks"; nm.test = "Test";
     $("#em-log").innerHTML = state.log.length ? state.log.slice(0,25).map(function(l){
       return '<div><span class="muted">'+(l.at ? new Date(l.at).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "")+'</span><span><b>'+esc(nm[l.emailId]||l.emailId)+'</b> to '+esc(l.to)+'</span>'+(l.status==="sent"?'<span class="pill ok">Sent</span>':l.status==="preview"?'<span class="pill" title="Email sending isn’t switched on yet">Not sent (preview)</span>':'<span class="pill bad" title="'+esc(l.error||"")+'">'+esc(l.status)+'</span>')+'</div>' }).join("")
       : '<p class="muted">Every email the system sends is listed here.</p>';
   }
-  function emById(id){ return state.emails.filter(function(e){return e.id===id})[0] }
+  function emById(id){ return state.emails.concat(state.system||[]).filter(function(e){return e.id===id})[0] }
   async function preview(id, draft){
+    var d = $("#pv"), fr = $("#pv-frame"), em = emById(id) || {};
+    $("#pv-subj").textContent = em.subject || "Preview"; $("#pv-sub").textContent = "Loading the preview…";
+    $("#pv-miss").hidden = true; showHtml(fr, '<p style="font:15px sans-serif;color:#5F6A84;padding:24px">Loading…</p>');
+    if (!d.open) { try { d.showModal(); } catch(e){ d.setAttribute("open", ""); } }
     try {
       var body = {a:"preview", id:id}; if (draft) { body.subject = $('[data-es="'+id+'"]').value; body.body = $('[data-eb="'+id+'"]').value; }
-      var j = await api(body), d = $("#pv");
+      var j = await api(body);
       $("#pv-subj").textContent = j.subject; $("#pv-sub").textContent = "Shown for a sample practice";
-      $("#pv-miss").hidden = !j.missing.length; $("#pv-miss").textContent = j.missing.length ? "Waiting on: " + j.missing.join(", ").replace(/_/g," ") + ". Fill these in above before this email can go out." : "";
-      $("#pv-frame").srcdoc = j.html; d.showModal();
-    } catch(e){ if (e.code !== "signin") toast(e.message, null, true); }
+      var miss = (j.missing || []).filter(function(k){ return state.varLabels[k] });
+      $("#pv-miss").hidden = !miss.length;
+      $("#pv-miss").textContent = miss.length ? "Shown with sample " + miss.join(", ").replace(/_/g," ") + ". Fill " + (miss.length > 1 ? "these" : "this") + " in under “Event details” before this email can go out." : "";
+      showHtml(fr, j.html);
+    } catch(e){
+      if (e.code === "signin") { d.close(); return; }
+      $("#pv-sub").textContent = "Couldn’t build the preview";
+      showHtml(fr, '<p style="font:15px sans-serif;color:#B3283A;padding:24px">' + esc(e.message || "Something went wrong.") + ' Try again in a moment.</p>');
+    }
+  }
+  // Writes the email into the frame directly; falls back to srcdoc where a browser blocks that.
+  function showHtml(fr, html){
+    fr.removeAttribute("srcdoc");
+    try { var doc = fr.contentDocument; if (doc) { doc.open(); doc.write(html); doc.close(); return; } } catch(e){}
+    fr.srcdoc = html;
   }
   $("#pv-close").addEventListener("click", function(){ $("#pv").close() });
   $("#pv").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close() });
+  $("#em-system").addEventListener("click", function(e){
+    var t = e.target.closest("[data-pv]"); if (t) return preview(t.dataset.pv);
+    t = e.target.closest("[data-test]"); if (t) { t.disabled = true; api({a:"test", id:t.dataset.test}).then(function(r){ toast(r.local ? "Test built. Sending isn’t switched on yet, so use Preview to see it." : "Test sent to " + $("#me").textContent + "."); }, function(x){ if (x.code !== "signin") toast(x.message, null, true); }).then(function(){ t.disabled = false; }); }
+  });
   $("#emails").addEventListener("click", async function(e){
     var t;
     if ((t = e.target.closest("[data-pv]"))) return preview(t.dataset.pv);

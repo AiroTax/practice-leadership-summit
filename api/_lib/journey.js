@@ -222,12 +222,21 @@ export function practiceVars(p, pw) {
 }
 
 // Builds one email for one practice. `state` holds the team's approval, edited text and vars.
-export function renderJourney(def, p, pw, state = {}) {
+// Stand-in values so previews and tests always show a complete email.
+export const SAMPLE_VARS = {
+  venue_name: "The Grand Hotel", venue_address: "123 Main Street, Clifton, NJ", weather_decision: "going ahead as planned",
+  survey_link: SITE + "/#feedback", review_link: SITE + "/#day90", report_link: SITE + "/report?k=sample-report-link",
+  call_time: "Dec 14–18, mornings", first_name: "Dr. Patel", practice: "Riverside Family Dental", table_no: "7", ref: "PLS-007",
+  ticket: "Team of 3", price: "$3,400", team_names: "Dr. Maya Patel, Jordan Lee, Sam Ortiz", site_link: SITE, inbox: INBOX, prework_link: SITE + "/?n=7#prework",
+};
+
+// `opts.sample`: fill anything still blank with SAMPLE_VARS (previews and tests only, never real sends).
+export function renderJourney(def, p, pw, state = {}, opts = {}) {
   const vars = { ...(state.vars || {}), ...(p ? practiceVars(p, pw) : {}) };
   const missing = new Set();
   const fill = (s) => String(s || "").replace(/\{\{\s*([a-z_]+)\s*\}\}/g, (m, k) => {
     const v = vars[k];
-    if (v == null || v === "") { missing.add(k); return m; }
+    if (v == null || v === "") { missing.add(k); return opts.sample && SAMPLE_VARS[k] ? SAMPLE_VARS[k] : m; }
     return String(v);
   });
   const subject = fill(state.subject || def.subject), body = fill(state.body || def.body);
