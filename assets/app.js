@@ -32,16 +32,31 @@
     var html = "", n = 0;
     for (var r = 0; r < 5; r++) for (var c = 0; c < 7; c++) {
       n++;
-      var cx = 55 + c * 98, cy = 48 + r * 84, taken = n <= claimed, coach = (c === 2 || c === 5) && r % 2 === 0;
-      for (var s = 0; s < 4; s++) {
-        var a = (s * 90 - 45) * Math.PI / 180;
-        html += '<circle class="seat" style="animation-delay:' + (n * 18 + s * 30) + 'ms" cx="' + (cx + Math.cos(a) * 30).toFixed(1) + '" cy="' + (cy + Math.sin(a) * 30).toFixed(1) + '" r="7" fill="' + (taken ? "#FFC2D5" : "#54689A") + '"/>';
+      var cx = 55 + c * 98, cy = 48 + r * 84, taken = n <= claimed, coach = (c === 2 || c === 5) && r % 2 === 0, num = (n < 10 ? "0" : "") + n;
+      html += '<g class="tbl' + (taken ? " taken" : "") + '" data-n="' + num + '" tabindex="' + (taken ? -1 : 0) + '" role="button" aria-label="Table ' + num + (taken ? ", claimed" : ", open. Claim it") + '">';
+      for (var s2 = 0; s2 < 4; s2++) {
+        var a = (s2 * 90 - 45) * Math.PI / 180;
+        html += '<circle class="seat" style="animation-delay:' + (n * 18 + s2 * 30) + 'ms" cx="' + (cx + Math.cos(a) * 30).toFixed(1) + '" cy="' + (cy + Math.sin(a) * 30).toFixed(1) + '" r="7"/>';
       }
-      html += '<circle cx="' + cx + '" cy="' + cy + '" r="21" fill="' + (taken ? "#FF5C8F" : "#2E4372") + '" stroke="' + (coach ? "#A99BFF" : "none") + '" stroke-width="3"/>';
-      html += '<text x="' + cx + '" y="' + (cy + 4.5) + '" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2F4FA">' + (n < 10 ? "0" : "") + n + "</text>";
+      html += '<circle class="top" cx="' + cx + '" cy="' + cy + '" r="21"' + (coach ? ' stroke="#A99BFF" stroke-width="3"' : "") + '/>';
+      html += '<text x="' + cx + '" y="' + (cy + 4.5) + '" text-anchor="middle">' + num + "</text></g>";
     }
     $("#floorplan").innerHTML = html;
   }
+  var tip = $("#floortip");
+  function showTip(g) {
+    if (!g) { tip.hidden = true; return; }
+    var box = $(".floor").getBoundingClientRect(), gb = g.getBoundingClientRect();
+    tip.innerHTML = "<b>Table " + g.dataset.n + "</b>" + (g.classList.contains("taken") ? "Claimed" : "Open · click to claim it");
+    tip.style.left = (gb.left - box.left + gb.width / 2) + "px"; tip.style.top = (gb.top - box.top - 6) + "px"; tip.hidden = false;
+  }
+  $("#floorplan").addEventListener("mouseover", function (e) { showTip(e.target.closest(".tbl")); });
+  $("#floorplan").addEventListener("mouseleave", function () { showTip(null); });
+  $("#floorplan").addEventListener("focusin", function (e) { showTip(e.target.closest(".tbl")); });
+  $("#floorplan").addEventListener("focusout", function () { showTip(null); });
+  function claim(g) { if (g && !g.classList.contains("taken")) openModal("register", g); }
+  $("#floorplan").addEventListener("click", function (e) { claim(e.target.closest(".tbl")); });
+  $("#floorplan").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); claim(e.target.closest(".tbl")); } });
   drawFloor(0);
   function loadStats() {
     fetch("/api/stats").then(function (r) { return r.ok ? r.json() : null; })
@@ -50,11 +65,27 @@
   }
   loadStats();
 
-  /* ---------- agenda tabs ---------- */
-  var t1 = $("#tab-d1"), t2 = $("#tab-d2");
-  function showDay(two) { t1.setAttribute("aria-selected", !two); t2.setAttribute("aria-selected", two); $("#day1").hidden = two; $("#day2").hidden = !two; }
-  t1.addEventListener("click", function () { showDay(false); });
-  t2.addEventListener("click", function () { showDay(true); });
+  function navH() { var n = $(".nav"); if (n) document.documentElement.style.setProperty("--navh", n.offsetHeight + "px"); }
+  navH(); window.addEventListener("resize", navH);
+
+  /* ---------- the weekend: Plan Book turns its page as each session scrolls into view ---------- */
+  var book = $(".book"), sessions = $$(".sess");
+  function showPage(n) {
+    if (!book || book.dataset.page === String(n)) return;
+    book.dataset.page = n;
+    $$(".pg", book).forEach(function (pg) { var k = +pg.dataset.n; pg.classList.toggle("on", k === n); pg.classList.toggle("past", k < n); });
+    $$(".tabs i", book).forEach(function (t, k) { t.classList.toggle("on", k <= n); });
+    sessions.forEach(function (el) { el.classList.toggle("now", +el.dataset.page === n); });
+  }
+  if (book) {
+    book.dataset.page = "-1"; showPage(0);
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) showPage(+e.target.dataset.page); });
+      }, { rootMargin: "-42% 0px -52% 0px" });
+      sessions.forEach(function (el) { io.observe(el); });
+    }
+  }
 
   /* ---------- pricing (same ladder as the Airtable Price formula) ---------- */
   var TICKETS = { 1: "Single seat", 2: "Team of 2", 3: "Team of 3", 4: "Team of 4 or more" };
@@ -73,6 +104,14 @@
   // price-builder state (team: 1, 2, 3 or 4 = "4 or more")
   var sel = { team: 3, extra: 1, kasper: false };
   window.PLS_PRICE = price;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function tween(el, to) {
+    var from = +el.dataset.v || to; el.dataset.v = to;
+    if (reduce || from === to) { el.textContent = money(to); return; }
+    var t0 = performance.now();
+    (function step(t) { var k = Math.min(1, (t - t0) / 420), e = 1 - Math.pow(1 - k, 3); el.textContent = money(from + (to - from) * e); if (k < 1) requestAnimationFrame(step); })(t0);
+    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+  }
   function people(s) { return s.team === 4 ? 3 + Math.max(1, Math.min(6, s.extra || 1)) : s.team; }
 
   function renderBuilder() {
@@ -80,7 +119,7 @@
     $$("#teamseg button").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.n === sel.team); });
     $("#extrawrap").hidden = sel.team !== 4;
     $("#pricetag").textContent = p.early ? "Early bird · ends Dec 4" : "Standard price";
-    $("#ptotal").textContent = money(p.total);
+    tween($("#ptotal"), p.total);
     $("#pper").textContent = money(p.total / n) + " per person · " + n + (n === 1 ? " person" : " people");
     $("#plines").innerHTML = p.lines.map(function (l) { return "<div><span>" + l[0] + "</span><span>" + money(l[1]) + "</span></div>"; }).join("");
     var b = $("#pbonus"); b.className = p.bonus ? "bonus" : "bonus none";

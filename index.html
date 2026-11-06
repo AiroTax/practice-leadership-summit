@@ -19,7 +19,7 @@
   <div class="wrap">
     <div class="brandline">Kasper <span class="amp" aria-label="in partnership with">×</span> Global Academy of Dentistry</div>
     <div class="navlinks">
-      <a href="#days">The two days</a><a href="#kit">Take-home</a><a href="#price">Pricing</a><a href="#faq">FAQ</a><button type="button" data-open="prework">Pre-work</button>
+      <a href="#days">The weekend</a><a href="#kit">Take-home</a><a href="#price">Pricing</a><a href="#faq">FAQ</a><button type="button" data-open="prework">Pre-work</button>
       <button type="button" class="cta" data-open="register">Claim your table</button>
     </div>
   </div>
@@ -28,7 +28,7 @@
 <header class="hero">
   <div class="wrap hero-grid">
     <div>
-      <p class="eyebrow">Practice Leadership Summit · New Jersey</p>
+      <p class="eyebrow">Practice Leadership Summit, New Jersey</p>
       <h1 style="margin-top:16px">35 tables.<br>One plan <em>per practice.</em></h1>
       <p class="sub">A two-day working weekend for dental practice teams. Day 1 sets your positioning and areas of focus. Day 2 turns them into a transformation plan your team signs and runs.</p>
       <div class="facts">
@@ -38,7 +38,7 @@
       </div>
       <div class="ctas">
         <button type="button" class="btn primary" data-open="register">Claim your practice’s table</button>
-        <a class="btn ghost" href="#days">See the two days</a>
+        <a class="btn ghost" href="#days">See the weekend</a>
       </div>
       <div class="countdown" aria-label="Time until doors open" id="countdown">
         <div><b id="cd-d">—</b><span>days</span></div>
@@ -48,57 +48,134 @@
       </div>
     </div>
     <div class="floor" aria-label="Floor plan of the 35 practice tables">
-      <div class="floor-top"><b id="tables-left">35 of 35 tables open</b><span>one table per practice · up to 4 seats</span></div>
+      <div class="floor-top"><b id="tables-left">35 of 35 tables open</b><span>Pick a table to claim it</span></div>
       <div class="stage">STAGE · KEYNOTES · FACILITATION</div>
-      <svg id="floorplan" viewBox="0 0 700 430" role="img" aria-label="35 round tables arranged in five rows"></svg>
+      <svg id="floorplan" viewBox="0 0 700 430" aria-label="Floor plan: 35 round tables in five rows"></svg>
+      <div class="floortip" id="floortip" hidden></div>
       <div class="legend"><span><i style="background:#FF5C8F"></i>Claimed</span><span><i style="background:#2E4372"></i>Open</span><span><i style="background:#A99BFF"></i>Coach zone (1 per 6 tables)</span></div>
     </div>
   </div>
 </header>
 
-<section class="band" id="questions">
+<section class="band weekend" id="days">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">How the weekend works</p>
-      <h2>Four questions, answered by your own team, at your own table.</h2>
-      <p class="lede">We start from your practice’s real numbers and close the gap between where you want to go and the change it takes. Every 90-minute block ends with one page in your Plan Book.</p>
+      <h2>Eight sessions. Eight pages of your plan.</h2>
+      <p class="lede">Every 90-minute session ends with one page in your team’s Plan Book. Scroll through the weekend to watch a sample book fill in. Doors open at 8:00 with breakfast, and we close at 5:00 both days.</p>
     </div>
-    <div class="qgrid">
-      <div class="q"><span class="when">Day 1 · morning</span><h3>Where are we today?</h3><p>An honest look at patients, team, technology, finances and your local market, scored against your pre-work.</p><p class="out"><b>You leave with:</b> your baseline scorecard</p></div>
-      <div class="q"><span class="when">Day 1</span><h3>Where do we want to be?</h3><p>A positioning only your practice can claim, and the three or four strategic bets that carry it.</p><p class="out"><b>You leave with:</b> your positioning and areas of focus</p></div>
-      <div class="q"><span class="when">Day 2</span><h3>How do we get there?</h3><p>The gaps, the real problems behind them, and which to fix first, sequenced with your whole team.</p><p class="out"><b>You leave with:</b> a priority map</p></div>
-      <div class="q"><span class="when">Day 2 · afternoon</span><h3>What will it take?</h3><p>People, skills, technology and capital for six months, and a 90-day plan with owners and dates.</p><p class="out"><b>You leave with:</b> a signed 90-day plan</p></div>
-    </div>
-  </div>
-</section>
+    <div class="wk">
+      <ol class="sessions">
+        <li class="brk" data-day="1"><span class="d">Saturday, Jan 9</span><p>Breakfast from 8:00. Your table is set with your Practice Snapshot.</p></li>
+        <li class="sess" data-page="0"><div class="t">9:00</div><div><h3>Where you are today</h3><p>Opening keynote, then an honest baseline. Your team scores itself on patients, team, technology, finances and market, against its own pre-work.</p><p class="who">Keynote speaker and facilitators · 1.5 CE hours</p></div></li>
+        <li class="sess" data-page="1"><div class="t">11:00</div><div><h3>Your unique positioning</h3><p>Who you serve, what you’re known for and why patients choose you. You write the position your practice will own, then test it on the next table.</p><p class="who">Facilitators · 1.5 CE hours</p></div></li>
+        <li class="brk"><p>Lunch at 12:30. Practices mix by type: startup, established, multi-site.</p></li>
+        <li class="sess" data-page="2"><div class="t">1:30</div><div><h3>Areas of focus</h3><p>The three or four strategic bets that carry your positioning: scaling with Medicaid, investing in technology, adding a specialty, opening a second location.</p><p class="who">Facilitators · 1.5 CE hours</p></div></li>
+        <li class="sess" data-page="3"><div class="t">3:30</div><div><h3>Negotiating change with your team</h3><p>Adaptive leadership for practice leaders: tell technical problems from adaptive ones, read how your team reacts to change, and practise the conversations that move people.</p><p class="who">Omar Awad, Harvard Kennedy School negotiation faculty · 1.5 CE hours</p></div></li>
+        <li class="brk"><p>Reception at 5:30, with every practice’s positioning poster on the wall.</p></li>
+        <li class="brk" data-day="2"><span class="d">Sunday, Jan 10</span><p>Breakfast from 8:00.</p></li>
+        <li class="sess" data-page="4"><div class="t">9:00</div><div><h3>Mind the gap</h3><p>Second keynote, then each practice measures the distance between today and its positioning, area by area, and names the real problems in the way.</p><p class="who">Keynote speaker and facilitators · 1.5 CE hours</p></div></li>
+        <li class="sess" data-page="5"><div class="t">11:00</div><div><h3>What to fix first</h3><p>Priorities set with the whole team: impact against effort, dependencies and sequence. Expert clinics on technology, patient engagement, payments and insurance.</p><p class="who">Facilitators and expert tables · 1.5 CE hours</p></div></li>
+        <li class="brk"><p>Lunch at 12:30, mixed by practice type.</p></li>
+        <li class="sess" data-page="6"><div class="t">1:30</div><div><h3>Resources, learning and investment</h3><p>What the plan takes over six months: people to hire or develop, skills to learn, technology and capital, and what to build, buy or partner for.</p><p class="who">Facilitators and expert tables · 1.5 CE hours</p></div></li>
+        <li class="sess" data-page="7"><div class="t">3:30</div><div><h3>Your 90-day plan</h3><p>Your team turns the weekend into one signed plan with owners, milestones and measures. Accountability partners are assigned and your Day-30 call is booked before you leave.</p><p class="who">Facilitators · 1.5 CE hours</p></div></li>
+      </ol>
 
-<section class="band" id="days" style="background:var(--panel)">
-  <div class="wrap">
-    <div class="sechead">
-      <p class="eyebrow">The two days</p>
-      <h2>Strategy on Saturday. Operations on Sunday.</h2>
-      <p class="lede">Doors at 8:00 with breakfast, four 90-minute sessions from 9:00, close at 5:00. At least half of every session is your team working at its own table.</p>
-    </div>
-    <div class="daytabs" role="tablist" aria-label="Choose a day">
-      <button role="tab" id="tab-d1" aria-selected="true" aria-controls="day1">Sat Jan 9 · Strategy</button>
-      <button role="tab" id="tab-d2" aria-selected="false" aria-controls="day2">Sun Jan 10 · Operations</button>
-    </div>
-    <div class="day" id="day1" role="tabpanel" aria-labelledby="tab-d1">
-      <div class="slot lite"><div class="t">8:00–9:00</div><h3>Check-in and breakfast · your table is set with your Practice Snapshot</h3></div>
-      <div class="slot"><div class="t"><b>1.1</b>9:00–10:30</div><div><h3>Where you are today</h3><p>Opening keynote, then an honest baseline of your practice. Each team scores itself against its pre-work and names what a good weekend looks like.</p></div><div class="who">Keynote speaker · facilitators<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot"><div class="t"><b>1.2</b>11:00–12:30</div><div><h3>Your unique positioning</h3><p>Who you serve, what you are known for and why patients choose you. Each practice writes the position it will own in its market, then tests it on the next table.</p></div><div class="who">Facilitators<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot lite"><div class="t">12:30–1:30</div><h3>Lunch · practices mix by type: startup, established, multi-site</h3></div>
-      <div class="slot"><div class="t"><b>1.3</b>1:30–3:00</div><div><h3>Areas of focus</h3><p>The three or four strategic bets that carry your positioning: scaling with Medicaid, investing in technology, adding a specialty, opening a second location.</p></div><div class="who">Facilitators<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot"><div class="t"><b>1.4</b>3:30–5:00</div><div><h3>Negotiating change with your team</h3><p>Adaptive leadership for practice leaders. Tell technical problems from adaptive ones, read how your team reacts to change, and practise the conversations that move people.</p></div><div class="who">Omar Awad, Harvard Kennedy School negotiation faculty<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot lite"><div class="t">5:30–7:00</div><h3>Reception · the positioning gallery, every practice’s poster on the wall</h3></div>
-    </div>
-    <div class="day" id="day2" role="tabpanel" aria-labelledby="tab-d2" hidden>
-      <div class="slot lite"><div class="t">8:00–9:00</div><h3>Check-in and breakfast</h3></div>
-      <div class="slot"><div class="t"><b>2.1</b>9:00–10:30</div><div><h3>Mind the gap</h3><p>Second keynote, then each practice measures the distance between today and its positioning, area by area, and names the real problems in the way.</p></div><div class="who">Keynote speaker · facilitators<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot"><div class="t"><b>2.2</b>11:00–12:30</div><div><h3>What to fix first</h3><p>Priorities set with the whole team: impact against effort, dependencies and sequence. Expert clinics on technology, patient engagement, payments and insurance.</p></div><div class="who">Facilitators and expert tables<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot lite"><div class="t">12:30–1:30</div><h3>Lunch · practices mix by type</h3></div>
-      <div class="slot"><div class="t"><b>2.3</b>1:30–3:00</div><div><h3>Resources, learning and investment</h3><p>What the plan takes over six months: people to hire or develop, skills to learn, technology and capital, and what to build, buy or partner for.</p></div><div class="who">Facilitators and expert tables<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
-      <div class="slot"><div class="t"><b>2.4</b>3:30–5:00</div><div><h3>Your 90-day transformation plan</h3><p>Your team turns the weekend into one signed plan: the first 90 days with owners, milestones and measures. Accountability partners assigned, Day-30 call booked before you leave.</p></div><div class="who">Facilitators<br><span class="ce">AGD 550 · 1.5 h</span></div></div>
+      <div class="bookwrap" aria-hidden="true">
+        <div class="book" data-page="0">
+          <div class="spine"></div>
+          <div class="tabs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="pages">
+
+            <article class="pg" data-n="0">
+              <header><span>Page 1</span><b>Baseline scorecard</b></header>
+              <div class="score">
+                <div><span>Patients</span><em style="--v:.72;--s:.8"></em></div>
+                <div><span>Team</span><em style="--v:.48;--s:.6"></em></div>
+                <div><span>Technology</span><em style="--v:.34;--s:.4"></em></div>
+                <div><span>Finances</span><em style="--v:.58;--s:.8"></em></div>
+                <div><span>Market</span><em style="--v:.64;--s:.6"></em></div>
+              </div>
+              <p class="key"><i class="k1"></i>From your numbers <i class="k2"></i>How your team scored itself</p>
+              <p class="note">Biggest gap: you rate your finances higher than your numbers do.</p>
+            </article>
+
+            <article class="pg" data-n="1">
+              <header><span>Page 2</span><b>Our positioning</b></header>
+              <blockquote class="pos">For working families in Clifton who can’t take a morning off, we are the practice that sees the whole family in one evening visit, because every chair stays open until 8.</blockquote>
+              <div class="tested"><span>Tested on table 12</span><b>“Clear. We’d switch for that.”</b></div>
+            </article>
+
+            <article class="pg" data-n="2">
+              <header><span>Page 3</span><b>Areas of focus</b></header>
+              <ol class="bets">
+                <li><b>Evening and Saturday hours</b><span>carries the positioning</span></li>
+                <li><b>Family booking in one visit</b><span>new scheduling rules</span></li>
+                <li><b>Online booking and text-to-pay</b><span>technology bet</span></li>
+                <li><b>A second hygienist</b><span>capacity to deliver</span></li>
+              </ol>
+            </article>
+
+            <article class="pg" data-n="3">
+              <header><span>Page 4</span><b>How our team meets change</b></header>
+              <div class="change">
+                <div class="lane"><span>Ready now</span><p><i>OM</i><i>H1</i></p></div>
+                <div class="lane"><span>Once convinced</span><p><i>DA</i><i>FD</i><i>H2</i></p></div>
+                <div class="lane"><span>Will push back</span><p><i>AD</i></p></div>
+              </div>
+              <p class="note">First conversation: the associate dentist, about evening shifts.</p>
+            </article>
+
+            <article class="pg" data-n="4">
+              <header><span>Page 5</span><b>Mind the gap</b></header>
+              <div class="gap">
+                <div><span>Evening capacity</span><em style="--a:.25;--b:.9"></em></div>
+                <div><span>Family bookings</span><em style="--a:.15;--b:.6"></em></div>
+                <div><span>Online booking</span><em style="--a:0;--b:.7"></em></div>
+                <div><span>Hygiene hours</span><em style="--a:.55;--b:.85"></em></div>
+              </div>
+              <p class="key"><i class="k1"></i>Today <i class="k3"></i>Where the positioning needs you</p>
+            </article>
+
+            <article class="pg" data-n="5">
+              <header><span>Page 6</span><b>What we fix first</b></header>
+              <div class="matrix">
+                <span class="ax y">Impact</span><span class="ax x">Effort</span>
+                <b class="q1">Do first</b>
+                <i style="--x:.22;--y:.2">Online booking</i>
+                <i style="--x:.35;--y:.38">Text-to-pay</i>
+                <i style="--x:.7;--y:.18">Evening hours</i>
+                <i style="--x:.78;--y:.62">2nd location</i>
+                <i style="--x:.28;--y:.7">New logo</i>
+              </div>
+            </article>
+
+            <article class="pg" data-n="6">
+              <header><span>Page 7</span><b>What it takes, six months</b></header>
+              <table class="res">
+                <tr><td>People</td><td>Part-time hygienist, from March</td></tr>
+                <tr><td>Skills</td><td>Front desk: family scheduling</td></tr>
+                <tr><td>Technology</td><td>Online booking, text-to-pay</td></tr>
+                <tr><td>Capital</td><td>About $38,000</td></tr>
+                <tr><td>Partner</td><td>Payments provider, not build</td></tr>
+              </table>
+            </article>
+
+            <article class="pg" data-n="7">
+              <header><span>Page 8</span><b>Our 90-day plan</b></header>
+              <div class="gantt">
+                <div class="months"><span>Jan</span><span>Feb</span><span>Mar</span></div>
+                <div class="row"><span>Online booking live</span><em style="--s:0;--e:.35"></em><b>OM</b></div>
+                <div class="row"><span>Tuesday evenings</span><em style="--s:.25;--e:.6"></em><b>DR</b></div>
+                <div class="row"><span>Hire hygienist</span><em style="--s:.3;--e:.95"></em><b>OM</b></div>
+                <div class="row"><span>Family-visit rules</span><em style="--s:.55;--e:.85"></em><b>FD</b></div>
+              </div>
+              <div class="signed"><span>Signed by the team, Jan 10</span><svg viewBox="0 0 160 30"><path d="M4 22c12-14 20-16 24-6s8 8 16-4 14-10 16 2 10 6 18-4 18-6 22 4 14 4 24-6 18-4 28 2"/></svg></div>
+            </article>
+
+          </div>
+          <p class="bookfoot">Sample Plan Book for a fictional practice</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -106,7 +183,6 @@
 <section class="band" id="kit">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">What your team takes home</p>
       <h2>Tools you’ll use on Monday, not swag for a drawer.</h2>
     </div>
     <div class="kit">
@@ -123,7 +199,6 @@
 <section class="band" style="background:var(--panel)">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">Faculty</p>
       <h2>Who’s in the room with you</h2>
     </div>
     <div class="people">
@@ -137,7 +212,6 @@
 <section class="band priceband" id="price">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">Pricing</p>
       <h2>Priced per team, because the plan needs more than the doctor.</h2>
       <p class="lede">Build your team below. We invoice after you register; no card needed today.</p>
     </div>
@@ -175,7 +249,6 @@
 <section class="band" id="register">
   <div class="wrap">
     <div class="sechead">
-      <p class="eyebrow">Register</p>
       <h2>Claim your practice’s table.</h2>
       <p class="lede">Four short steps, about three minutes. Your table is held the moment you finish, and we invoice afterwards. No card today.</p>
     </div>
@@ -197,7 +270,7 @@
 
 <section class="band" id="faq">
   <div class="wrap">
-    <div class="sechead"><p class="eyebrow">Good to know</p><h2>Questions owners ask</h2></div>
+    <div class="sechead"><h2>Questions owners ask</h2></div>
     <div class="faq">
       <details><summary>Where exactly is it?</summary><p>A hotel within an hour of Clifton, NJ, confirmed by Nov 12. Free parking is part of our venue terms. A small room block is available for Friday and Saturday nights for teams driving 45 minutes or more.</p></details>
       <details><summary>How do the CE hours work?</summary><p>Up to 12 AGD PACE hours under subject code 550, through a PACE-approved co-sponsor. NJ dentists need 40 hours per two-year cycle and can apply practice-management hours to renewal. Every attendee receives a certificate. Hygienists and assistants: we are confirming how NJ counts these hours for your licence and will tell you before the event.</p></details>
