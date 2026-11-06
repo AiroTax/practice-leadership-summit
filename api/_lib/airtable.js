@@ -78,6 +78,14 @@ export async function findPracticeByNumber(num) {
   return out.records[0] || null;
 }
 
+// Records matching an Airtable formula, fields by ID.
+export async function findRecords(table, formula, max = 1) {
+  if (isMock()) return [];
+  const q = new URLSearchParams({ filterByFormula: formula, maxRecords: String(max), returnFieldsByFieldId: "true" });
+  const out = await airtable(`${table}?${q}`);
+  return out.records || [];
+}
+
 export async function countPractices() {
   if (isMock()) return mock.practices.length;
   let count = 0, offset;
