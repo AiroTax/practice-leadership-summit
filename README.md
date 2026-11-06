@@ -39,7 +39,7 @@ No packages to install. Needs Node 18 or newer.
 2. **Put the code on Vercel.** Either push this folder to a GitHub repository and choose *Add New → Project* in Vercel, or run `npx vercel` inside the folder. No build settings are needed; leave the framework as *Other*.
 3. **Add the token.** Vercel → Project → *Settings → Environment Variables*: add `AIRTABLE_TOKEN` with the token from step 1. Redeploy.
 4. **Add your domain.** Vercel → *Settings → Domains*, e.g. `summit.kasper.com`. Vercel shows the DNS record to add.
-5. **Set the summit inbox.** In `assets/app.js`, change `INBOX` at the top. In Airtable, open both automations, replace `summit-inbox@example.com` with the same address, and turn them **on**:
+5. **Set the summit inbox.** Done: the inbox is Programs@amalandcompany.com (`INBOX` in `assets/app.js` and both Airtable automations). Turn both automations **on** in Airtable:
    - *New registration: confirm to practice, notify summit inbox, set status*
    - *Pre-work received: thank the practice, notify summit inbox*
 6. **Test once.** Register a test practice on the live site, check it appears in Airtable and the console and that both emails arrive, then delete the test record in Airtable.

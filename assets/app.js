@@ -4,7 +4,7 @@
   "use strict";
 
   /* ---------- settings ---------- */
-  var INBOX = "[summit inbox — to confirm]";          // shown in the footer
+  var INBOX = "Programs@amalandcompany.com";          // shown in the footer
   var DOORS = Date.parse("2027-01-09T08:00:00-05:00");
   var EARLY_END = Date.parse("2026-12-05T00:00:00-05:00");
   var TOTAL_TABLES = 35;
