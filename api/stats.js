@@ -1,5 +1,6 @@
 // GET /api/stats — how many practice tables are claimed (drives the live floor plan).
-import { countPractices, send } from "./_lib/airtable.js";
+import { send } from "./_lib/airtable.js";
+import { countPractices } from "./_lib/store.js";
 
 export default async function handler(req, res) {
   try {

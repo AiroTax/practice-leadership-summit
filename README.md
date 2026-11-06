@@ -51,6 +51,51 @@ npm run dev:mock    # fake in-memory data, nothing is saved — open http://loca
 npm run dev         # real Airtable — copy .env.example to .env and add AIRTABLE_TOKEN first
 ```
 
+## Switching to Supabase, designed emails and the /admin console
+
+The site now runs on any of three data stores and picks one from the settings in Vercel:
+Supabase if `SUPABASE_URL` is set, otherwise Airtable (as before). Nothing changes until you add the settings below.
+
+**1. Database (Supabase, free plan is enough)**
+1. Create a project at supabase.com (region: US East).
+2. SQL Editor → New query → paste `supabase/schema.sql` → Run.
+3. Project Settings → API: copy the Project URL and the `service_role` key.
+
+**2. Email (Resend, free plan: 3,000 emails a month)**
+1. Create an account at resend.com → Domains → add the sending domain (for example `send.yoursummitdomain.com`).
+2. Add the DNS records Resend shows (SPF, DKIM, and a DMARC record) at that domain's DNS host; wait for "Verified".
+3. API Keys → create a key with "Sending access".
+
+**3. Vercel → Project → Settings → Environment Variables**
+
+| Name | Value |
+|---|---|
+| `SUPABASE_URL` | the Project URL |
+| `SUPABASE_SERVICE_KEY` | the `service_role` key (server only, never in the page) |
+| `RESEND_API_KEY` | the Resend key (`re_…`) |
+| `EMAIL_FROM` | `Practice Leadership Summit <hello@send.yoursummitdomain.com>` |
+| `EMAIL_REPLY_TO` | the inbox replies should reach (default Programs@amalandcompany.com) |
+| `TEAM_EMAILS` | who gets the "new registration" notice, comma-separated |
+| `ADMIN_EMAILS` | who can sign in to /admin, comma-separated |
+| `ADMIN_SECRET` | any long random text, 32+ characters |
+| `CRON_SECRET` | any long random text; Vercel uses it for the daily email run |
+| `SITE_URL` | `https://practice-leadership-summit.vercel.app` (or your own domain) |
+
+Redeploy. Then: open `/admin`, sign in with your email, fill in the event details on the Emails tab,
+and approve the emails you want sent. In Airtable, turn off the two old email automations.
+
+**What sends what**
+- On registration: the confirmation to the owner (team members copied) and a notice to `TEAM_EMAILS`.
+- On pre-work: a thank-you to whoever sent it and the owner.
+- From the console's Report tab: "Email it to the office" sends the private Practice Snapshot link.
+- Every morning at 9 am Eastern: approved journey emails that are due (dates are in `api/_lib/journey.js`).
+- Every email is logged and never sent twice to the same practice.
+
+Existing Airtable registrations are not copied automatically; tell Claude when you switch and it will move them.
+
+Local test without any accounts: `STORE_MOCK=1 ADMIN_EMAILS=you@example.com npm run dev`. Emails are written to `.outbox/`
+and the sign-in link appears on the sign-in screen.
+
 ## Common edits
 
 - **Text, sessions, speakers, FAQ:** edit `index.html` (each section is labelled by `id`, e.g. `id="days"`, `id="faq"`).

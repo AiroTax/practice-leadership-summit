@@ -24,12 +24,14 @@ http.createServer(async (req, res) => {
     if (!fs.existsSync(file)) { res.statusCode = 404; return res.end("Not found"); }
     let raw = ""; for await (const chunk of req) raw += chunk;
     try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = {}; }
+    req.query = Object.fromEntries(url.searchParams);
     const mod = await import(file + "?t=" + Date.now());
     return mod.default(req, res);
   }
   let p = path.normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, "");
   if (p === "/" || p === "\\") p = "/index.html";
-  const file = path.join(root, p);
+  let file = path.join(root, p);
+  if (!path.extname(file) && fs.existsSync(file + ".html")) file += ".html"; // cleanUrls, like Vercel
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end("Not found"); }
   res.setHeader("Content-Type", types[path.extname(file)] || "application/octet-stream");
   fs.createReadStream(file).pipe(res);

@@ -1,6 +1,8 @@
 // POST /api/prework — saves a practice's pre-work, matched by registration number.
-// Which answers are accepted, and where they go in Airtable, comes from ./_lib/questions.js.
-import { TABLES, createRecord, findPracticeByNumber, readBody, str, isEmail, rateLimited, send } from "./_lib/airtable.js";
+// Which answers are accepted comes from ./_lib/questions.js; where they're saved, from ./_lib/store.js.
+import { readBody, str, isEmail, rateLimited, send } from "./_lib/airtable.js";
+import { findPracticeByNumber, savePrework } from "./_lib/store.js";
+import { sendPreworkThanks } from "./_lib/notify.js";
 import { PREWORK, allQuestions } from "./_lib/questions.js";
 
 const QUESTIONS = allQuestions(PREWORK);
@@ -11,47 +13,49 @@ function num(v, min, max) {
   return Number.isFinite(n) && n >= min && n <= max ? n : undefined;
 }
 
-// Turns the submitted answers into Airtable fields, ignoring anything not in the question list.
-export function prepareFields(b) {
-  const fields = {};
+// Cleans the submitted answers against the question list, keyed by question key. Values take
+// the same shape everywhere they are stored: numbers, choices, arrays for multi-picks, the
+// payer mix as parts plus a one-line summary, and the three challenges as a numbered list.
+export function cleanAnswers(b) {
+  const a = {};
   for (const q of QUESTIONS) {
     const v = b[q.k];
     switch (q.type) {
       case "text": case "email": case "textarea": case "url": {
-        const s = str(v, q.max || 300); if (s) fields[q.f] = s; break;
+        const s = str(v, q.max || 300); if (s) a[q.k] = s; break;
       }
       case "number": {
-        const n = num(v, q.min ?? 0, q.max ?? 1e6); if (n !== undefined) fields[q.f] = n; break;
+        const n = num(v, q.min ?? 0, q.max ?? 1e6); if (n !== undefined) a[q.k] = n; break;
       }
       case "choice": case "select": {
-        if (q.opts.includes(v)) fields[q.f] = v; break;
+        if (q.opts.includes(v)) a[q.k] = v; break;
       }
       case "multi": {
         const picked = (Array.isArray(v) ? v : []).filter((x) => q.opts.includes(x));
         const list = [...new Set(picked)].slice(0, q.pick || q.opts.length);
-        if (list.length) fields[q.f] = list; break;
+        if (list.length) a[q.k] = list; break;
       }
       case "pct3": {
         const parts = [];
         for (const p of q.parts) {
           const n = num(b[p.k], 0, 100);
-          if (n !== undefined) { fields[p.f] = Math.round(n); parts.push(`${p.label} ${Math.round(n)}%`); }
+          if (n !== undefined) { a[p.k] = Math.round(n); parts.push(`${p.label} ${Math.round(n)}%`); }
         }
-        if (parts.length) fields[q.summary] = parts.join(" · ");
+        if (parts.length) a[q.k] = parts.join(" · ");
         break;
       }
       case "scores": {
-        for (const p of q.parts) { const n = num(b[p.k], 1, 5); if (n !== undefined) fields[p.f] = Math.round(n); }
+        for (const p of q.parts) { const n = num(b[p.k], 1, 5); if (n !== undefined) a[p.k] = Math.round(n); }
         break;
       }
       case "list3": {
         const items = (Array.isArray(v) ? v : []).map((x) => str(x, q.max || 200)).filter(Boolean).slice(0, 3);
-        if (items.length) fields[q.f] = items.map((x, i) => `${i + 1}. ${x}`).join("\n");
+        if (items.length) a[q.k] = items.map((x, i) => `${i + 1}. ${x}`).join("\n");
         break;
       }
     }
   }
-  return fields;
+  return a;
 }
 
 export default async function handler(req, res) {
@@ -74,9 +78,10 @@ async function handle(req, res) {
   try {
     const match = await findPracticeByNumber(number);
     if (!match) return send(res, 404, { ok: false, error: `We couldn't find registration #${number}. Check the number in your confirmation email, or write to us.` });
-    const fields = prepareFields(b);
-    fields["fldr2cS8IAIZ4NYlr"] = number;
-    await createRecord(TABLES.prework, fields);
+    const answers = cleanAnswers(b);
+    answers.number = number;
+    await savePrework(number, answers);
+    await sendPreworkThanks(match, answers).catch((e) => console.error("Pre-work email failed", e));
     return send(res, 200, { ok: true });
   } catch (e) {
     return send(res, e.status || 500, { ok: false, error: e.message || "Something went wrong. Please try again." });

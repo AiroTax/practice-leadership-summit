@@ -28,7 +28,7 @@ export const W = {
 
 const API = "https://api.airtable.com/v0";
 
-async function airtable(path, init = {}) {
+export async function airtable(path, init = {}) {
   const token = process.env.AIRTABLE_TOKEN;
   if (!token) throw Object.assign(new Error("Registration is not configured yet (missing AIRTABLE_TOKEN)."), { status: 503 });
   const res = await fetch(`${API}/${BASE_ID}/${path}`, {

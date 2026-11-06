@@ -389,6 +389,11 @@
           $('[name="practice"]', pre.form).value = last.practice || "";
           $('[name="email"]', pre.form).value = last.email || "";
           pre.onChange({ target: pre.form });
+        } else {
+          // Links in our emails carry the registration number: /?n=12#prework
+          var n = (new URLSearchParams(location.search).get("n") || "").replace(/[^0-9]/g, "");
+          var numEl = $('[name="number"]', pre.form);
+          if (n && numEl && !numEl.value) { numEl.value = n; pre.onChange({ target: pre.form }); }
         }
       }
     },

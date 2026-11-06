@@ -1,5 +1,7 @@
-// POST /api/register — saves a practice registration to Airtable.
-import { P, TABLES, createRecord, getRecord, readBody, str, isEmail, rateLimited, send } from "./_lib/airtable.js";
+// POST /api/register — saves a practice registration, then emails the confirmation and a team notice.
+import { readBody, str, isEmail, rateLimited, send } from "./_lib/airtable.js";
+import { createPractice } from "./_lib/store.js";
+import { sendConfirmation, sendTeamNotice } from "./_lib/notify.js";
 
 const TYPES = ["Startup (under 5 years)", "Established, one location", "Multi-site"];
 const TICKETS = ["Team of 3", "Team of 2", "Single seat", "Team of 4 or more"];
@@ -30,36 +32,28 @@ async function handle(req, res) {
   if (b.terms !== true) missing.push("acceptance of the terms");
   if (missing.length) return send(res, 400, { ok: false, error: "Please add " + missing.join(", ") + "." });
 
-  const fields = {
-    [P.name]: practice, [P.town]: town, [P.type]: type, [P.ticket]: ticket, [P.kasper]: b.kasper === true,
-    [P.ownerName]: ownerName, [P.ownerEmail]: ownerEmail, [P.ownerPhone]: str(b.ownerPhone, 40),
-    [P.heard]: HEARD.includes(b.heard) ? b.heard : "Other", [P.referredBy]: str(b.referredBy, 120),
-    [P.diet]: str(b.diet), [P.access]: str(b.access),
-    [P.photo]: b.photo === true, [P.kasperUpdates]: b.kasperUpdates === true, [P.gadUpdates]: b.gadUpdates === true,
-    [P.partnerIntros]: b.partnerIntros === true, [P.terms]: true,
-    [P.hotel]: HOTEL.includes(b.hotel) ? b.hotel : "",
+  const site = str(b.website, 200), invoiceEmail = str(b.invoiceEmail, 120);
+  const practiceRec = {
+    name: practice, town, type, ticket, kasper: b.kasper === true,
+    website: site ? (/^https?:\/\//i.test(site) ? site : "https://" + site) : "",
+    extra: ticket === "Team of 4 or more" ? Math.max(1, Math.min(6, parseInt(b.extra, 10) || 1)) : 0,
+    owner: { name: ownerName, email: ownerEmail, phone: str(b.ownerPhone, 40) },
+    invoiceEmail: isEmail(invoiceEmail) ? invoiceEmail : "",
+    members: (Array.isArray(b.members) ? b.members : []).slice(0, 3).map((m) => ({
+      name: str(m && m.name, 100), role: ROLES.includes(m && m.role) ? m.role : "Other", email: isEmail(str(m && m.email, 120)) ? str(m.email, 120) : "",
+    })).filter((m) => m.name),
+    heard: HEARD.includes(b.heard) ? b.heard : "Other", referredBy: str(b.referredBy, 120),
+    diet: str(b.diet), access: str(b.access), hotel: HOTEL.includes(b.hotel) ? b.hotel : "",
+    consents: { photo: b.photo === true, kasper: b.kasperUpdates === true, gad: b.gadUpdates === true, intros: b.partnerIntros === true },
   };
-  const site = str(b.website, 200);
-  if (site) fields[P.website] = /^https?:\/\//i.test(site) ? site : "https://" + site;
-  const invoiceEmail = str(b.invoiceEmail, 120);
-  if (isEmail(invoiceEmail)) fields[P.invoiceEmail] = invoiceEmail;
-  if (ticket === "Team of 4 or more") fields[P.extra] = Math.max(1, Math.min(6, parseInt(b.extra, 10) || 1));
-  (Array.isArray(b.members) ? b.members : []).slice(0, 3).forEach((m, i) => {
-    const name = str(m && m.name, 100);
-    if (!name) return;
-    fields[P.members[i].name] = name;
-    fields[P.members[i].role] = ROLES.includes(m.role) ? m.role : "Other";
-    const email = str(m.email, 120);
-    if (isEmail(email)) fields[P.members[i].email] = email;
-  });
-  // Don't send empty strings for optional fields.
-  Object.keys(fields).forEach((k) => { if (fields[k] === "") delete fields[k]; });
 
   try {
-    let rec = await createRecord(TABLES.practices, fields);
-    let f = rec.fields || {};
-    if (f[P.number] == null) { rec = await getRecord(TABLES.practices, rec.id); f = rec.fields || {}; }
-    return send(res, 200, { ok: true, number: f[P.number], reference: f[P.reference] || "", price: f[P.price] ?? null });
+    const p = await createPractice(practiceRec);
+    // Emails never block the registration itself.
+    await Promise.allSettled([sendConfirmation(p), sendTeamNotice(p)]).then((rs) => rs.forEach((r) => {
+      if (r.status === "rejected") console.error("Registration email failed", r.reason);
+    }));
+    return send(res, 200, { ok: true, number: p.number, reference: p.reference || "", price: p.price ?? null });
   } catch (e) {
     return send(res, e.status || 500, { ok: false, error: e.message || "Something went wrong. Please try again." });
   }
