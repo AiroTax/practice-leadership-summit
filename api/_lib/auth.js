@@ -1,5 +1,5 @@
 // Team sign-in for /admin: an emailed link, then a signed cookie. No passwords to manage.
-//   ADMIN_EMAILS  comma-separated list of team emails allowed in (e.g. "a@x.com,b@y.com")
+//   ADMIN_EMAILS  comma-separated team emails allowed in (e.g. "a@x.com,b@y.com"), or a whole domain ("@x.com")
 //   ADMIN_SECRET  a long random string used to sign links and cookies (keep it secret)
 import crypto from "node:crypto";
 
@@ -11,7 +11,12 @@ const secret = () => {
   throw Object.assign(new Error("The console isn’t set up yet (ADMIN_SECRET is missing)."), { status: 503 });
 };
 export const admins = () => (process.env.ADMIN_EMAILS || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-export const isAdmin = (email) => admins().includes(String(email || "").trim().toLowerCase());
+// An entry that starts with "@" lets in everyone at that domain, e.g. "@amalandcompany.com".
+export const isAdmin = (email) => {
+  const e = String(email || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+$/.test(e)) return false;
+  return admins().some((a) => (a.startsWith("@") ? e.endsWith(a) : a === e));
+};
 
 const mac = (data) => crypto.createHmac("sha256", secret()).update(data).digest("base64url");
 export function sign(payload) {

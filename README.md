@@ -76,7 +76,7 @@ Supabase if `SUPABASE_URL` is set, otherwise Airtable (as before). Nothing chang
 | `EMAIL_FROM` | `Practice Leadership Summit <hello@send.yoursummitdomain.com>` |
 | `EMAIL_REPLY_TO` | the inbox replies should reach (default Programs@amalandcompany.com) |
 | `TEAM_EMAILS` | who gets the "new registration" notice, comma-separated |
-| `ADMIN_EMAILS` | who can sign in to /admin, comma-separated |
+| `ADMIN_EMAILS` | who can sign in to /admin: emails separated by commas, or a whole domain like `@amalandcompany.com` |
 | `ADMIN_SECRET` | any long random text, 32+ characters |
 | `CRON_SECRET` | any long random text; Vercel uses it for the daily email run |
 | `SITE_URL` | `https://practice-leadership-summit.vercel.app` (or your own domain) |
