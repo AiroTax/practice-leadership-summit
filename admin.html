@@ -306,6 +306,13 @@ table.t tr:last-child td{border-bottom:0}
 .grev{display:grid;gap:8px;background:var(--sunk);border-radius:12px;padding:12px 14px;font-size:14px}
 .grev blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 10px 10px 0}
 .grev cite{display:block;font-style:normal;color:var(--muted);font-size:12.5px;margin-top:4px}
+.paste{margin-top:6px}
+.paste summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--blue)}
+.paste[open]{display:grid;gap:8px}
+.paste textarea{min-height:120px;font:14px/1.5 var(--body);padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:100%}
+.prow2{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.prow2 label{display:grid;gap:3px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.prow2 input{width:90px;font:14px var(--body);padding:7px 9px;border:1.5px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink)}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -611,6 +618,20 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     } catch(x){ if (x.code !== "signin") toast(x.message, null, true); }
     btn.disabled = false; btn.textContent = "Draft from Google reviews";
   }
+  async function pastedDraft(p, btn){
+    var text = $("#d-ptext").value;
+    if (!text.trim()) { toast("Paste a few reviews first.", null, true); return; }
+    btn.disabled = true; btn.textContent = "Writing…";
+    try {
+      var j = await api({a:"pasteReviews", id:p.id, text:text, rating:$("#d-prating").value, count:$("#d-pcount").value});
+      var before = p.reportNote; p.reportNote = j.draft; renderDrawer();
+      var ok = await write(p, {reportNote:j.draft});
+      if (ok) toast("Draft written from " + j.reviews + " reviews" + (j.themes.length ? ": " + j.themes.join("; ") : "") + ". Edit it before releasing.", before ? function(){ p.reportNote = before; write(p, {reportNote:before}); renderDrawer(); toast("Your earlier note is back."); } : null);
+      else { p.reportNote = before; renderDrawer(); }
+      return;
+    } catch(x){ if (x.code !== "signin") toast(x.message, null, true); }
+    btn.disabled = false; btn.textContent = "Write the draft";
+  }
   async function emailReport(p, btn){
     if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
     try {
@@ -804,7 +825,10 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
         var link = reportLink(p);
         h += '<div class="rbar"><div><label style="font-size:12.5px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px">Report status</label><div class="seg" role="group" aria-label="Report status">'+["Draft","Ready","Sent"].map(function(o){return '<button type="button" data-rs="'+o+'" aria-pressed="'+(p.reportStatus===o)+'" class="'+(o==="Sent"?"g":"")+'"'+(state.canEdit?"":" disabled")+'>'+o+'</button>'}).join("")+'</div></div>'+
           '<div class="row" style="display:flex;gap:8px;flex-wrap:wrap">'+(p.pw ? '<button class="btn sm primary" type="button" data-emailrep>'+(p.reportStatus==="Sent"?"Email it again":"Email it to the office")+'</button>' : '')+(link && p.reportStatus!=="Draft" ? '<button class="btn sm dark" type="button" data-copylink>Copy office link</button><a class="btn sm" href="'+esc(link)+'" target="_blank" rel="noopener">Open as the office sees it</a>' : '<span class="muted" style="font-size:13px">Set it to Ready to create the office’s private link.</span>')+'<button class="btn sm" type="button" data-copyreport>Copy as text</button></div></div>';
-        h += '<div class="rnote card"><div class="viewhead"><h3>Note from the facilitator</h3><span style="display:flex;gap:8px;align-items:center"><span class="saved" id="d-rsaved">Saved</span>'+(state.meta.reviewsReady?'<button class="btn sm" type="button" data-greviews>Draft from Google reviews</button>':'')+'</span></div>'+greviewsHtml(gcache[p.id])+'<textarea id="d-rnote" placeholder="A short personal note at the top of the report: what you noticed, what you’ll cover on the welcome call."'+(state.canEdit?"":" disabled")+'>'+esc(p.reportNote)+'</textarea></div>';
+        h += '<div class="rnote card"><div class="viewhead"><h3>Note from the facilitator</h3><span style="display:flex;gap:8px;align-items:center"><span class="saved" id="d-rsaved">Saved</span>'+(state.meta.reviewsReady?'<button class="btn sm" type="button" data-greviews>Draft from Google reviews</button>':'')+'</span></div>'+greviewsHtml(gcache[p.id])+
+          '<details class="paste"'+(p.reportNote?'':' open')+'><summary>Write the note from Google reviews</summary><p class="muted" style="font-size:13.5px">Open the practice on Google Maps, copy 3–5 good reviews, and paste them here, one per paragraph. Add the star rating and review count if you like.</p>'+
+          '<textarea id="d-ptext" placeholder="Paste reviews here…"></textarea><div class="prow2"><label>Rating<input id="d-prating" inputmode="decimal" placeholder="4.8"></label><label>Reviews<input id="d-pcount" inputmode="numeric" placeholder="312"></label>'+
+          '<a class="btn sm" href="https://www.google.com/maps/search/'+encodeURIComponent(p.name+" "+p.town+" NJ")+'" target="_blank" rel="noopener">Find on Google Maps</a><button class="btn sm dark" type="button" data-pastedraft>Write the draft</button></div></details>'+'<textarea id="d-rnote" placeholder="A short personal note at the top of the report: what you noticed, what you’ll cover on the welcome call."'+(state.canEdit?"":" disabled")+'>'+esc(p.reportNote)+'</textarea></div>';
         h += '<div class="rpwrap">'+window.PLS_REPORT.render(reportData(p))+'</div>';
       }
     }
@@ -819,6 +843,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     if (e.target.closest("[data-remind]")) copyText(reminder(p), "Reminder copied. Paste it into an email.");
     var er = e.target.closest("[data-emailrep]"); if (er) { emailReport(p, er); return; }
     var gr = e.target.closest("[data-greviews]"); if (gr) { googleDraft(p, gr); return; }
+    var pd = e.target.closest("[data-pastedraft]"); if (pd) { pastedDraft(p, pd); return; }
     if (e.target.closest("[data-copyreport]")) copyText(window.PLS_REPORT.text(reportData(p)), "Report copied as text.");
     if (e.target.closest("[data-copylink]")) copyText(linkEmail(p), "Link copied with a short email. Paste it to " + ((p.people[0]||{}).email || "the owner") + ".");
     if (e.target.closest("[data-day30]")){ if (!state.canEdit) return; var before = p.day30; p.day30 = !before; renderDrawer(); write(p, (function(){var f={}; f[F.day30]=p.day30; return f})()).then(function(ok){ if (ok) toast(p.name+": Day-30 call "+(p.day30?"marked done":"marked not done")); else { p.day30 = before; renderDrawer(); } }); }

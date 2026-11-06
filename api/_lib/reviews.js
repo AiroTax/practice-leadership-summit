@@ -84,3 +84,17 @@ export function draftNote(place, themes, quote) {
   if (parts.length) parts.push("That reputation is the strongest asset your team brings to the weekend, and we’ll build on it in your positioning session.");
   return parts.join(" ");
 }
+
+// No Google key needed: the team pastes a few good reviews from Google Maps (one per paragraph),
+// optionally with the star rating and review count shown there, and we write the same draft.
+export function draftFromPasted(name, text, rating, count) {
+  const reviews = String(text || "").replace(/\r/g, "").split(/\n\s*\n|\n(?=[“"])/)
+    .map((t) => t.replace(/\s+/g, " ").trim()).filter((t) => t.split(" ").length >= 4).slice(0, 12)
+    .map((t) => ({ rating: 5, text: t }));
+  const counts = THEMES.map((t) => ({ say: t.say, n: reviews.filter((r) => t.words.test(r.text)).length })).filter((t) => t.n).sort((a, b) => b.n - a.n);
+  const themes = counts.slice(0, 3).map((t) => t.say);
+  const quote = reviews.slice().sort((a, b) => a.text.length - b.text.length).find((r) => r.text.split(" ").length >= 6);
+  const r = parseFloat(rating), c = parseInt(String(count || "").replace(/[^0-9]/g, ""), 10);
+  const place = { name, rating: r >= 1 && r <= 5 ? r : null, count: c > 0 ? c : 0 };
+  return { reviews: reviews.length, themes, draft: draftNote(place, themes, quote) };
+}

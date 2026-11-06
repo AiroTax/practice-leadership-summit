@@ -81,7 +81,7 @@
   var SESS = [
     ["Opening keynote, then an honest baseline. Your team scores itself on patients, team, technology, finances and market, against its own pre-work.", "Keynote speaker and facilitators. 1.5 CE hours."],
     ["Who you serve, what you’re known for and why patients choose you. You write the position your practice will own, then test it on the next table.", "Facilitators. 1.5 CE hours."],
-    ["The three or four strategic bets that carry your positioning: scaling with Medicaid, investing in technology, adding a specialty, opening a second location.", "Facilitators. 1.5 CE hours."],
+    ["Four areas of focus carry your positioning: operate with excellence, patient experience, technology and innovation, and staff development. Your team picks what to change in each.", "Facilitators. 1.5 CE hours."],
     ["Adaptive leadership for practice leaders: tell technical problems from adaptive ones, read how your team reacts to change, and practise the conversations that move people.", "Omar Awad, Harvard Kennedy School negotiation faculty. 1.5 CE hours."],
     ["Second keynote, then each practice measures the distance between today and its positioning, area by area, and names the real problems in the way.", "Keynote speaker and facilitators. 1.5 CE hours."],
     ["Priorities set with the whole team: impact against effort, dependencies and sequence. Expert clinics on technology, patient engagement, payments and insurance.", "Facilitators and expert tables. 1.5 CE hours."],
