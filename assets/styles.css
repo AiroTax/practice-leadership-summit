@@ -185,8 +185,6 @@ main > section{padding-block:clamp(64px,9vh,104px)}
 /* page 2 */
 .pos{margin:0;font-family:var(--display);font-size:24px;line-height:1.28;font-weight:600;letter-spacing:-.01em;position:relative;padding-top:34px}
 .pos::before{content:"“";position:absolute;top:-18px;left:-4px;font-size:90px;line-height:1;color:var(--accent)}
-.tested{margin-top:auto;display:grid;gap:2px;border-left:3px solid var(--accent);padding:6px 0 6px 14px}
-.tested span{font-size:13px;opacity:.65}.tested b{font-size:16px}
 /* page 3 */
 .bets{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:b}
 .bets li{counter-increment:b;display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:12px;opacity:0;transform:translateY(8px);transition:all .45s}
