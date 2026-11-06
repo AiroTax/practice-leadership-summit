@@ -282,13 +282,11 @@ window.PLS_Q = {
     "questions": [
      {
       "k": "years",
-      "type": "slider",
+      "type": "number",
       "label": "Years open",
       "min": 0,
-      "max": 50,
-      "step": 1,
-      "plus": true,
-      "unit": "years",
+      "max": 80,
+      "w": "third",
       "why": "Startups and established practices are benchmarked separately.",
       "feeds": [
        "profile"
@@ -296,12 +294,11 @@ window.PLS_Q = {
      },
      {
       "k": "locations",
-      "type": "slider",
+      "type": "number",
       "label": "Locations",
       "min": 1,
-      "max": 10,
-      "step": 1,
-      "plus": true,
+      "max": 50,
+      "w": "third",
       "why": "Multi-site practices get a separate operations lens.",
       "feeds": [
        "profile"
@@ -309,13 +306,12 @@ window.PLS_Q = {
      },
      {
       "k": "operatories",
-      "type": "slider",
+      "type": "number",
       "label": "Operatories",
       "hint": "all locations",
       "min": 1,
-      "max": 40,
-      "step": 1,
-      "plus": true,
+      "max": 300,
+      "w": "third",
       "why": "Chair capacity. Production per chair is a core benchmark.",
       "feeds": [
        "profile",
@@ -324,13 +320,13 @@ window.PLS_Q = {
      },
      {
       "k": "dentists",
-      "type": "slider",
+      "type": "number",
       "label": "Dentists",
       "hint": "full-time equivalent",
-      "min": 0.5,
-      "max": 15,
+      "min": 0,
+      "max": 100,
       "step": 0.5,
-      "plus": true,
+      "w": "third",
       "why": "New patients and production are compared per dentist.",
       "feeds": [
        "profile",
@@ -339,13 +335,13 @@ window.PLS_Q = {
      },
      {
       "k": "hygienists",
-      "type": "slider",
+      "type": "number",
       "label": "Hygienists",
       "hint": "full-time equivalent",
       "min": 0,
-      "max": 20,
+      "max": 100,
       "step": 0.5,
-      "plus": true,
+      "w": "third",
       "why": "Hygiene capacity drives recall and steady production.",
       "feeds": [
        "profile",
@@ -354,14 +350,12 @@ window.PLS_Q = {
      },
      {
       "k": "teamSize",
-      "type": "slider",
+      "type": "number",
       "label": "Whole team",
-      "hint": "every role, all locations",
+      "hint": "every role",
       "min": 1,
-      "max": 80,
-      "step": 1,
-      "plus": true,
-      "unit": "people",
+      "max": 500,
+      "w": "third",
       "why": "Team size against production shows staffing efficiency.",
       "feeds": [
        "profile",
@@ -395,13 +389,11 @@ window.PLS_Q = {
     "questions": [
      {
       "k": "newPatients",
-      "type": "slider",
+      "type": "number",
       "label": "New patients a month",
-      "hint": "roughly",
       "min": 0,
-      "max": 200,
-      "step": 5,
-      "plus": true,
+      "max": 5000,
+      "w": "half",
       "why": "The main growth signal, compared with peers per dentist.",
       "feeds": [
        "patients"
@@ -430,7 +422,7 @@ window.PLS_Q = {
       "k": "payer",
       "type": "pct3",
       "label": "Payer mix",
-      "hint": "slide each one; should add up to about 100%",
+      "hint": "should add up to about 100%",
       "parts": [
        {
         "k": "ppo",

@@ -603,7 +603,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
         if (j.draft) {
           var before = p.reportNote; p.reportNote = j.draft; renderDrawer();
           var ok = await write(p, {reportNote:j.draft});
-          if (ok) toast("Note drafted from " + j.place.count + " Google reviews. Edit it before releasing.", before ? function(){ p.reportNote = before; write(p, {reportNote:before}); renderDrawer(); toast("Your earlier note is back."); } : null);
+          if (ok) toast("Note drafted from Google reviews (" + j.used + " of " + j.limit + " free lookups used this month). Edit it before releasing.", before ? function(){ p.reportNote = before; write(p, {reportNote:before}); renderDrawer(); toast("Your earlier note is back."); } : null);
           else p.reportNote = before;
         } else toast("No positive reviews to draw from yet.");
         renderDrawer(); return;

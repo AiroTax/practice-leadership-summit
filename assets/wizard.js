@@ -35,8 +35,6 @@
           (q.type === "url" ? ' inputmode="url" autocomplete="url"' : "") + (q.type === "email" ? ' autocomplete="email"' : "");
         return '<div class="q' + w + '" data-q="' + q.k + '"' + sh + ">" + head(q, i) +
           '<input type="' + type + '" id="' + i + '" name="' + q.k + '"' + attrs + ">" + why(q, showWhy) + "</div>";
-      case "slider":
-        return '<div class="q qslider" data-q="' + q.k + '">' + head(q, i) + slider(q.k, i, q.min, q.max, q.step || 1, q.plus, q.unit) + why(q, showWhy) + "</div>";
       case "textarea":
         return '<div class="q" data-q="' + q.k + '">' + head(q, i) + '<textarea id="' + i + '" name="' + q.k + '" maxlength="' + (q.max || 1500) + '" rows="3"></textarea>' + why(q, showWhy) + "</div>";
       case "select":
@@ -54,7 +52,7 @@
       case "pct3":
         return '<fieldset class="q" data-q="' + q.k + '">' + head(q, null, "legend") + '<div class="pct">' + q.parts.map(function (p) {
           var pi = id(p.k);
-          return '<div class="pctin"><label for="' + pi + '">' + esc(p.label) + '</label>' + slider(p.k, pi, 0, 100, 5, false, "%") + '</div>';
+          return '<div class="pctin"><label for="' + pi + '">' + esc(p.label) + '</label><span class="sfx"><input type="number" id="' + pi + '" name="' + p.k + '" min="0" max="100" inputmode="numeric"><i>%</i></span></div>';
         }).join("") + '<p class="pcttotal" aria-live="polite"></p></div>' + why(q, showWhy) + "</fieldset>";
       case "scores":
         return '<fieldset class="q" data-q="' + q.k + '">' + head(q, null, "legend") + '<div class="scores">' + q.parts.map(function (p) {
@@ -89,38 +87,6 @@
     return "";
   }
 
-  // A slider that starts unanswered: nothing is saved until it is moved, and "Skip" clears it again.
-  function slider(k, i, min, max, step, plus, unit) {
-    return '<div class="sl" data-min="' + min + '" data-max="' + max + '" data-plus="' + (plus ? 1 : "") + '" data-unit="' + esc(unit || "") + '">' +
-      '<input type="range" id="' + i + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + (min + Math.round((max - min) / 2 / step) * step) + '" aria-valuetext="Not answered">' +
-      '<output for="' + i + '">Not answered</output><button type="button" class="slskip" hidden>Skip</button>' +
-      '<input type="hidden" name="' + k + '" value=""></div>';
-  }
-  function slText(box, v) {
-    if (v === "") return "Not answered";
-    var u = box.dataset.unit, top = box.dataset.plus && +v >= +box.dataset.max;
-    return v + (top ? "+" : "") + (u === "%" ? "%" : u ? " " + u : "");
-  }
-  function slShow(box) {
-    var r = $("input[type=range]", box), h = $("input[type=hidden]", box), set = h.value !== "";
-    if (set) r.value = h.value;
-    box.classList.toggle("set", set);
-    $("output", box).textContent = slText(box, h.value);
-    r.setAttribute("aria-valuetext", slText(box, h.value));
-    $(".slskip", box).hidden = !set;
-    var pct = (r.value - r.min) / (r.max - r.min) * 100; r.style.setProperty("--fill", (set ? pct : 0) + "%");
-  }
-  function syncSliders(root) { $$(".sl", root).forEach(slShow); }
-  document.addEventListener("input", function (e) {
-    var r = e.target; if (!r.matches || !r.matches(".sl input[type=range]")) return;
-    var box = r.closest(".sl"); $("input[type=hidden]", box).value = r.value; slShow(box);
-  }, true); // capture: update the saved value before the form's own listeners run
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest(".slskip"); if (!b) return;
-    var box = b.closest(".sl"), h = $("input[type=hidden]", box); h.value = ""; slShow(box);
-    h.dispatchEvent(new Event("input", { bubbles: true }));
-  });
-
   function memberRow(i, prev) {
     var defaults = ["Office manager", "Hygienist", "Dental assistant"], p = prev || {};
     var role = p.role || defaults[i];
@@ -148,7 +114,24 @@
     this.next = $(".next", dialog); this.back = $(".back", dialog);
     this.next.addEventListener("click", function () { self.forward(); });
     this.back.addEventListener("click", function () { self.go(self.i - 1); });
-    $(".steps", dialog).addEventListener("click", function (e) { var b = e.target.closest("[data-go]"); if (b && +b.dataset.go < self.i) self.go(+b.dataset.go); });
+    $(".steps", dialog).addEventListener("click", function (e) { var b = e.target.closest("[data-go]"); if (b && (opts.freeNav || +b.dataset.go < self.i)) self.go(+b.dataset.go); });
+    if (opts.freeNav) {
+      // A sliding bar of the sections: tap any one, or swipe the form left and right to move between them.
+      var cat = document.createElement("nav"); cat.className = "catbar"; cat.setAttribute("aria-label", "Sections");
+      cat.innerHTML = '<div class="cattrack"><span class="catind" aria-hidden="true"></span>' + def.steps.map(function (s, n) {
+        return '<button type="button" data-cat="' + n + '"><b>' + (n + 1) + "</b>" + esc(s.title) + "</button>"; }).join("") + "</div>";
+      $(".wiz-scroll", dialog).insertBefore(cat, this.form);
+      cat.addEventListener("click", function (e) { var b = e.target.closest("[data-cat]"); if (b) self.go(+b.dataset.cat); });
+      this.cat = cat;
+      var sx = 0, sy = 0, live = false, scroller = $(".wiz-scroll", dialog);
+      scroller.addEventListener("touchstart", function (e) {
+        live = !e.target.closest("input,textarea,select,.catbar"); var t = e.touches[0]; sx = t.clientX; sy = t.clientY;
+      }, { passive: true });
+      scroller.addEventListener("touchend", function (e) {
+        if (!live || self.busy) return; var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) self.go(self.i + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+    }
     this.form.addEventListener("submit", function (e) { e.preventDefault(); self.forward(); });
     this.form.addEventListener("input", function (e) { self.showErr(""); var q = e.target.closest && e.target.closest(".q.bad"); if (q) q.classList.remove("bad"); self.onChange(e); });
     this.form.addEventListener("change", function (e) { self.onChange(e); });
@@ -175,6 +158,15 @@
     this.showErr("");
     $(".wiz-scroll", this.d).scrollTop = 0;
     if (!quiet) { var h = $("h3", steps[n]); setTimeout(function () { h.focus({ preventScroll: true }); }, 20); }
+    if (this.cat) {
+      var btns = $$("[data-cat]", this.cat), on = btns[n], ind = $(".catind", this.cat);
+      btns.forEach(function (b, k) { b.classList.toggle("on", k === n); b.classList.toggle("seen", k < n); if (k === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+      requestAnimationFrame(function () {
+        ind.style.width = on.offsetWidth + "px"; ind.style.transform = "translateX(" + on.offsetLeft + "px)";
+        var tr = on.parentNode, want = on.offsetLeft - (tr.clientWidth - on.offsetWidth) / 2;
+        tr.scrollTo({ left: Math.max(0, want), behavior: quiet ? "auto" : "smooth" });
+      });
+    }
     if (this.o.onStep) this.o.onStep(this, n);
   };
   Wizard.prototype.showErr = function (m) { var e = this.err; e.hidden = true; e.textContent = m; if (m) { void e.offsetWidth; e.hidden = false; } };
@@ -233,6 +225,11 @@
   Wizard.prototype.forward = function () {
     if (this.busy || !this.check()) return;
     if (this.i < this.def.steps.length - 1) return this.go(this.i + 1);
+    if (this.o.freeNav && this.i !== 0) {
+      // sections can be visited in any order, so check the first one (the registration number) before sending
+      var at = this.i; this.i = 0; var ok = this.check(); this.i = at;
+      if (!ok) { var msg = this.err.textContent; this.go(0); this.showErr(msg); return; }
+    }
     this.submit();
   };
   Wizard.prototype.submit = function () {
@@ -242,7 +239,7 @@
       .catch(function (x) { self.showErr(x.message); })
       .then(function () { self.busy = false; self.next.disabled = false; self.next.textContent = label; self.next.classList.remove("loading"); self.next.removeAttribute("aria-busy"); });
   };
-  Wizard.prototype.reset = function () { this.form.reset(); $$(".sl input[type=hidden]", this.form).forEach(function (h) { h.value = ""; }); syncSliders(this.form); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
+  Wizard.prototype.reset = function () { this.form.reset(); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
   Wizard.prototype.finish = function () { $(".count", this.d).textContent = "Done"; this.form.hidden = true; $(".wiz-foot", this.d).hidden = true; $(".wiz-main", this.d).classList.add("finished"); var dn = $(".wiz-done", this.d); dn.hidden = false; $(".wiz-scroll", this.d).scrollTop = 0; dn.focus(); };
 
   // Posts a form. Retries once on a dropped connection or a reply that isn't ours.
@@ -371,7 +368,7 @@
   }
   function pctTotal(w) {
     var el = $(".pcttotal", w.form); if (!el) return;
-    var parts = $$(".pct input[type=hidden]", w.form).map(function (i) { return i.value === "" ? null : +i.value; });
+    var parts = $$(".pct input", w.form).map(function (i) { return i.value === "" ? null : +i.value; });
     if (parts.every(function (v) { return v === null; })) { el.textContent = ""; return; }
     var t = parts.reduce(function (a, b) { return a + (b || 0); }, 0);
     el.textContent = "Total " + t + "%"; el.className = "pcttotal" + (Math.abs(t - 100) <= 5 ? " ok" : "");
@@ -393,8 +390,8 @@
   }
   function setupPrework() {
     pre = new Wizard($("#dlg-prework"), Q.PREWORK, {
-      url: "/api/prework", submitLabel: "Send our pre-work", showWhy: true,
-      setup: function (w) { loadDraft(w); syncSliders(w.form); w.onChange({ target: w.form }); },
+      url: "/api/prework", submitLabel: "Send our pre-work", showWhy: true, freeNav: true,
+      setup: function (w) { loadDraft(w); w.onChange({ target: w.form }); },
       onChange: function (w) { pctTotal(w); reportProgress(w); saveDraft(w); },
       onStep: function (w) { reportProgress(w); },
       collect: function (w) { return w.values(); },

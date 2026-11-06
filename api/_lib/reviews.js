@@ -1,8 +1,28 @@
 // Drafts the facilitator's note from what patients praise in a practice's Google reviews.
 // Needs GOOGLE_PLACES_API_KEY (Google Cloud → APIs & Services → enable "Places API (New)" → Credentials).
 // The draft is never sent on its own: the team reads it in the console and releases the report.
+//
+// Cost: a lookup that includes reviews is Google's "Text Search Enterprise + Atmosphere" request.
+// The first 1,000 a month are free. We count every lookup in the database and stop at 900 a month
+// (GOOGLE_PLACES_MONTHLY_LIMIT can lower it, never raise it past 900), so this stays free.
+import { backend, getJourneyState, saveJourneyState } from "./store.js";
 
-export const reviewsReady = () => !!process.env.GOOGLE_PLACES_API_KEY;
+const HARD_CAP = 900;
+const limit = () => Math.min(HARD_CAP, Math.max(0, parseInt(process.env.GOOGLE_PLACES_MONTHLY_LIMIT, 10) || HARD_CAP));
+const monthKey = () => "places-" + new Date().toISOString().slice(0, 7);
+// Needs the key, and a database that remembers the count (not the old Airtable setup).
+export const reviewsReady = () => !!process.env.GOOGLE_PLACES_API_KEY && backend() !== "airtable";
+
+export async function usage() {
+  const row = (await getJourneyState()).find((r) => r.id === monthKey());
+  return { used: (row && row.vars && row.vars.count) || 0, limit: limit() };
+}
+async function takeOne() {
+  const u = await usage();
+  if (u.used >= u.limit) throw Object.assign(new Error(`This month’s free Google lookups are used up (${u.used} of ${u.limit}). They reset on the 1st.`), { status: 429 });
+  await saveJourneyState(monthKey(), { status: "paused", vars: { count: u.used + 1 } });
+  return u.used + 1;
+}
 
 // Things patients praise, the words that signal them, and how we say it back.
 const THEMES = [
@@ -30,6 +50,7 @@ const join = (a) => (a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " a
 // Finds the practice on Google and returns its rating, positive reviews, themes and a draft note.
 export async function reviewsFor({ name, town, website }) {
   if (!reviewsReady()) throw Object.assign(new Error("Google reviews aren’t switched on yet (GOOGLE_PLACES_API_KEY is missing)."), { status: 503 });
+  const used = await takeOne();
   const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
     method: "POST",
     headers: {
@@ -41,7 +62,7 @@ export async function reviewsFor({ name, town, website }) {
   const j = await res.json().catch(() => ({}));
   if (!res.ok) { console.error("Places error", res.status, JSON.stringify(j)); throw Object.assign(new Error("Google said: " + ((j.error && j.error.message) || res.status)), { status: 502 }); }
   const places = j.places || [];
-  if (!places.length) return { found: false };
+  if (!places.length) return { found: false, used, limit: limit() };
   // Prefer the result whose website matches the one they gave us, else Google's top match.
   const host = (u) => String(u || "").replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0].toLowerCase();
   const p = (website && places.find((x) => host(x.websiteUri) && host(x.websiteUri) === host(website))) || places[0];
@@ -52,7 +73,7 @@ export async function reviewsFor({ name, town, website }) {
   const themes = counts.slice(0, 3).map((t) => t.say);
   const quote = positives.slice().sort((a, b) => (b.rating - a.rating) || (a.text.length - b.text.length)).find((r) => r.text.split(" ").length >= 6);
   const place = { name: (p.displayName && p.displayName.text) || name, address: p.formattedAddress || "", rating: p.rating || null, count: p.userRatingCount || 0, url: p.googleMapsUri || "" };
-  return { found: true, place, positives, themes, draft: draftNote(place, themes, quote) };
+  return { found: true, place, positives, themes, draft: draftNote(place, themes, quote), used, limit: limit() };
 }
 
 export function draftNote(place, themes, quote) {
