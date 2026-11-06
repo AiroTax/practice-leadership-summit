@@ -1,0 +1,1949 @@
+{
+ "page": "/home/claude/practice-leadership-summit/index.html",
+ "url": "http://127.0.0.1:5200/index.html",
+ "at": "2026-11-06T13:06:27.139Z",
+ "out": "/home/claude/practice-leadership-summit/.taste-skill/consistency",
+ "widths": [
+  {
+   "width": 1440,
+   "height": 900,
+   "screens": 5,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "assets",
+     "sev": "FAIL",
+     "sel": "(the page)",
+     "text": "",
+     "stop": null,
+     "msg": "the stylesheet https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap did not load (ERR_TUNNEL_CONNECTION_FAILED): everything here was measured without it",
+     "fix": "fix the path, or remove the reference"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan.",
+     "msg": "the quote section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 1,
+     "crop": "1440-07-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs more tha",
+     "msg": "the section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 2,
+     "crop": "1440-13-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owners ask",
+     "msg": "the closing section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 4,
+     "crop": "1440-16-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "assets",
+     "sev": "WARN",
+     "sel": "(the page)",
+     "text": "",
+     "stop": null,
+     "msg": "the data file api/stats did not load (404)",
+     "fix": "fix the path, or remove the reference"
+    },
+    {
+     "check": "copy-buttons",
+     "sev": "WARN",
+     "sel": "div.agenda > ol.slist > li:nth-of-type(1) > button.now",
+     "text": "9:00 Where you are today",
+     "msg": "\"9:00 Where you are today\" does not start with a verb (book, buy, try, start, get, see...) (and 2 more like it: \"11:00 Your unique positi\", \"1:30 Areas of focus\")",
+     "stop": 1,
+     "crop": "1440-08-copy-buttons.jpg",
+     "fix": "label buttons with a verb and what the visitor gets (\"Book a room\", \"Start free trial\")"
+    },
+    {
+     "check": "copy-buttons",
+     "sev": "WARN",
+     "sel": "div.agenda > ol.slist > li:nth-of-type(1) > button.now",
+     "text": "9:00 Where you are today",
+     "msg": "\"9:00 Where you are today\" is 6 words (1 to 5) (and 1 more like it: \"3:30 Negotiating change \")",
+     "stop": 1,
+     "crop": "1440-09-copy-buttons.jpg",
+     "fix": "label buttons with a verb and what the visitor gets (\"Book a room\", \"Start free trial\")"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "figures in 2 sizes, 30, 68px (\"63\" at 30px, \"$3,400\" at 68px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 2,
+     "crop": "1440-14-heading-scale.jpg"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "div.bookwrap > div.book > div.tabs > i.on",
+     "text": "",
+     "stop": 1,
+     "msg": "left edge at 1252px, 2px off a common edge of its section at 1250px (7 elements, like i:nth-of-type(2))",
+     "crop": "1440-10-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "section#faq > div.wrap > div.sechead > h2",
+     "text": "What your team takes home, and what owners ask",
+     "msg": "the section's heading starts at 202px, 62px off the page margin (140px), and no other section starts there",
+     "stop": 3,
+     "crop": "1440-15-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "nav-labels",
+     "sev": "WARN",
+     "sel": "nav.nav > div.wrap > div.navlinks > a:nth-of-type(1)",
+     "text": "The weekend",
+     "msg": "\"The weekend\" opens a section headed \"Eight sessions. Eight pages of your plan.\"",
+     "stop": 0,
+     "crop": "1440-01-nav-labels.jpg",
+     "fix": "name each nav link after the heading of the section it opens"
+    },
+    {
+     "check": "nav-labels",
+     "sev": "WARN",
+     "sel": "nav.nav > div.wrap > div.navlinks > a:nth-of-type(2)",
+     "text": "Pricing",
+     "msg": "\"Pricing\" opens a section headed \"Priced per team, because the plan needs more than \"",
+     "stop": 0,
+     "crop": "1440-02-nav-labels.jpg",
+     "fix": "name each nav link after the heading of the section it opens"
+    },
+    {
+     "check": "nav-labels",
+     "sev": "WARN",
+     "sel": "nav.nav > div.wrap > div.navlinks > a:nth-of-type(3)",
+     "text": "Questions",
+     "msg": "\"Questions\" opens a section headed \"What your team takes home, and what owners ask\"",
+     "stop": 0,
+     "crop": "1440-03-nav-labels.jpg",
+     "fix": "name each nav link after the heading of the section it opens"
+    },
+    {
+     "check": "label-centre",
+     "sev": "WARN",
+     "sel": "div.agenda > ol.slist > li:nth-of-type(2) > button",
+     "text": "11:00 Your unique positioning",
+     "msg": "its label sits 236px off-centre (17px of room at the left, 253px at the right)",
+     "stop": 1,
+     "crop": "1440-11-label-centre.jpg",
+     "fix": "centre the label in its button, or fill the empty side with an icon"
+    },
+    {
+     "check": "nav-current",
+     "sev": "WARN",
+     "sel": "nav.nav",
+     "text": "",
+     "stop": 1,
+     "msg": "the nav stays on screen with 3 links to the page's sections, but never marks the one you are in (no link changes as the page scrolls)",
+     "crop": "1440-12-nav-current.jpg",
+     "fix": "mark the link of the section on screen (a colour, a weight or a line under it) as the visitor scrolls"
+    },
+    {
+     "check": "split-align",
+     "sev": "WARN",
+     "sel": "main#top > section.hero > div.wrap.hero-grid",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the picture beside \"Practice Leadership Summit, Ne\" sits loose against a text column 248px taller: its top and bottom line up with nothing",
+     "fix": "set the picture's top on the heading's top (align-items: start), or let it run the column's full height",
+     "stop": 0,
+     "crop": "1440-04-split-align.jpg"
+    },
+    {
+     "check": "font-load",
+     "sev": "WARN",
+     "sel": "section.hero > div.wrap.hero-grid > div.hero-copy > h1",
+     "text": "Bricolage Grotesque",
+     "msg": "\"Bricolage Grotesque\" is asked for by the h1 and the h2s but never loaded (no font link or @font-face loads it): it shows in its fallback",
+     "stop": 0,
+     "crop": "1440-05-font-load.jpg",
+     "fix": "load every family the type asks for: name it in the font link as start.mjs prints it, spelt as Google Fonts spells it, or ask for a family the page loads"
+    },
+    {
+     "check": "font-load",
+     "sev": "WARN",
+     "sel": "body",
+     "text": "Atkinson Hyperlegible",
+     "msg": "\"Atkinson Hyperlegible\" is asked for by the body text but never loaded (no font link or @font-face loads it): it shows in its fallback",
+     "stop": null,
+     "fix": "load every family the type asks for: name it in the font link as start.mjs prints it, spelt as Google Fonts spells it, or ask for a family the page loads"
+    },
+    {
+     "check": "visual-caption",
+     "sev": "WARN",
+     "sel": "div.wrap.hero-grid > div.floor > div.legend > span:nth-of-type(1)",
+     "text": "Claimed",
+     "msg": "a muted 13px line of 1 row sits 12px under the drawing (svg): it reads as a caption: \"Claimed\"; no caption or description under any image, render or visual (house rule)",
+     "stop": 0,
+     "crop": "1440-06-visual-caption.jpg",
+     "fix": "take the line away: no caption or description under, over or on any image, render or visual; a licence credit goes in one footer line"
+    },
+    {
+     "check": "motion-layer",
+     "sev": "WARN",
+     "sel": "html",
+     "text": "",
+     "msg": "motion.css is loaded but <html> carries no data-motion: the hover layer stays off",
+     "stop": null,
+     "fix": "link assets/motion/motion.css after cards.css and keep data-motion on <html> (both, or neither)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "article.pg.next:nth-of-type(3) > ol.bets > li:nth-of-type(1) > b",
+     "text": "Evening and Saturday hours",
+     "msg": "with reduced motion asked for, 40 lines stay hidden on this screen (opacity 0): \"carries the position\", \"Family booking in on\", \"new scheduling rules\": reduced motion must show the finished page",
+     "crop": "1440-rm-01-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "hidden-content",
+     "sev": "FAIL",
+     "sel": "article.pg.next:nth-of-type(3) > ol.bets > li:nth-of-type(1) > b",
+     "text": "Evening and Saturday hours",
+     "msg": "with no IntersectionObserver callback (a script that never gets that far) 40 lines stay hidden on screen 2, 4 s after load (opacity 0): \"carries the position\", \"Family booking in on\", \"new scheduling rules\": the page shows it only when a script reveals it",
+     "crop": "1440-io-01-hidden-content.jpg",
+     "fix": "show the content at rest: the hidden state only under a class the script adds on its live path, never in the plain CSS (prefers-reduced-motion and a script that never runs show the finished page)"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section is 141px tall (0.2 screens), 759px short of one screen (900px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "1440-rhythm-01-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the section is 912px tall (1 screens), 12px over one screen (900px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "1440-rhythm-02-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the section starts at 65px, 65px below the screen grid (0 x 900px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "1440-rhythm-03-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "the section starts at 2713px, 13px below the screen grid (3 x 900px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "1440-rhythm-04-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section starts at 3613px, 13px below the screen grid (4 x 900px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "1440-rhythm-05-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section's content does not fit it: its lowest content ends 94px below its top, past 69px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "fit the content above the section's bottom padding (--padb), or make it two screens (.g2) in two groups",
+     "rule": "SR-2 T-fit",
+     "crop": "1440-rhythm-06-section-height.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the screen at scroll 2854px (the top of section 5) shows 141px of section 5 and the content of 2 sections, over 24px each beside section 4: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "1440-rhythm-07-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the screen at scroll 65px (the top of section 1) shows 64px of section 2 beside section 1: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "1440-rhythm-08-one-section.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "the content of section 4 runs 182px from the left and 182px from the right: the page's container starts at 120px; the margin is 64-120px at 1440px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "1440-rhythm-09-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "nav.nav",
+     "text": "Kasper × Global Academy of Dentistry The",
+     "msg": "a <nav> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "1440-rhythm-10-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "a <footer> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "1440-rhythm-11-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero > div.wrap.hero-grid",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the hero's .wrap holds 2 children, 0 of them .hero-text: one .hero-text and at most one strip (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "1440-rhythm-12-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing > p",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "1 text block starts on a left line at x 168, 48px from the container's left: text starts on the container's left, or on one split line (x 630, 732, 834) (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "1440-rhythm-13-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section.hero > div.wrap.hero-grid > div.hero-copy > p.eyebrow",
+     "text": "Practice Leadership Summit, New Jersey",
+     "msg": "25 text blocks start on a left line at x 140, 20px from the container's left: text starts on the container's left, or on one split line (x 630, 732, 834) (also \"35 tables. One plan per practice\", \"A two-day working weekend for de\", \"63\") (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "1440-rhythm-14-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section.hero > div.wrap.hero-grid > div.hero-copy > h1",
+     "text": "35 tables. One plan per practice.",
+     "msg": "the h1 starts 20px right of the container's left: every h1 and h2 starts on it, 2px either way (and 3 more like it: \"Eight sessions. Eight pa\", \"Priced per team, because\", \"What your team takes hom\") (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "1440-rhythm-15-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a box over half the container wide runs 202-1238px, not on the container's lines at 182-1258px (SR-6)",
+     "fix": "run the picture or box from the container's left line to its right line, or put it in a row or a split",
+     "rule": "SR-6 T6-right-edges",
+     "crop": "1440-rhythm-16-container-edges.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "section#price > div.wrap > div.pricer",
+     "text": "How many people are coming? 1single seat",
+     "msg": "a row of 2 items: its first item starts at 140px, the container's left line at 120px; its last item ends at 1300px, the container's right line at 1320px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "1440-rhythm-17-row-lines.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "div#kit > ul",
+     "text": "Practice SnapshotYour scored baseline, b",
+     "msg": "a row of 3 items: its first item starts at 202px, the container's left line at 182px; its last item ends at 1238px, the container's right line at 1258px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "1440-rhythm-18-row-lines.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.faq",
+     "text": "Where exactly is it?A hotel within an ho",
+     "msg": "a row of 2 items: its first item starts at 202px, the container's left line at 182px; its last item ends at 1238px, the container's right line at 1258px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "1440-rhythm-19-row-lines.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#days > div.wrap > div.wk",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the two columns of the split start 67px apart at the top: a split's columns are top-aligned, 8px either way (SR-8)",
+     "fix": "top-align both columns of the split (align-items: start)",
+     "rule": "SR-8 T-mode",
+     "crop": "1440-rhythm-20-split-pair.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero > div.wrap.hero-grid",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the two columns of the split start 34px apart at the top: a split's columns are top-aligned, 8px either way (SR-8)",
+     "fix": "top-align both columns of the split (align-items: start)",
+     "rule": "SR-8 T-mode",
+     "crop": "1440-rhythm-21-split-pair.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero > div.wrap.hero-grid",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the split's columns are off the page's one pair of lines: its right column starts at x 744, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (SR-8)",
+     "fix": "start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it",
+     "rule": "SR-8 T-pair",
+     "crop": "1440-rhythm-22-split-pair.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#days > div.wrap > div.wk",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the split's columns are off the page's one pair of lines: its right column starts at x 744, on none of the split lines 630 (k=5), 732 (k=6), 834 (k=7) (SR-8)",
+     "fix": "start every split's right column on one shared line (wrap.left + k x (width + 24) / 12, k 5, 6 or 7; 6 on a place page) and end the left one 24px before it",
+     "rule": "SR-8 T-pair",
+     "crop": "1440-rhythm-23-split-pair.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero > div.wrap.hero-grid",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the split does not run edge to edge on the container: its left column starts at 140px, the container's left at 120px; its right column ends at 1300px, the container's right at 1320px (SR-8)",
+     "fix": "run the split from the container's left line to its right line",
+     "rule": "SR-8 T-edges",
+     "crop": "1440-rhythm-24-split-pair.jpg"
+    },
+    {
+     "check": "split-pair",
+     "sev": "FAIL",
+     "sel": "section#days > div.wrap > div.wk",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the split does not run edge to edge on the container: its left column starts at 140px, the container's left at 120px; its right column ends at 1300px, the container's right at 1320px (SR-8)",
+     "fix": "run the split from the container's left line to its right line",
+     "rule": "SR-8 T-edges",
+     "crop": "1440-rhythm-25-split-pair.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section's content does not fit it: its lowest content ends 94px below its top, past 69px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "show answers and panels open and size the section for its open content, or make it two screens (.g2)",
+     "rule": "SR-2 T-fit-expanded",
+     "crop": "1440-rhythm-26-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section starts at 4013px, 413px below the screen grid (4 x 900px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "1440-rhythm-27-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "with every answer and tab open, the section starts at 65px, 65px below the screen grid (0 x 900px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "1440-rhythm-28-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "with every answer and tab open, the section starts at 2713px, 13px below the screen grid (3 x 900px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "1440-rhythm-29-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "with every answer and tab open the section is 1300px tall, not 900px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "1440-rhythm-30-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open the section is 141px tall, not 141px, and starts at 4013px, not 3613px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "1440-rhythm-31-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "div.wrap > div.faq > details:nth-of-type(1) > summary",
+     "text": "Where exactly is it?",
+     "msg": "opening \"Where exactly is it?\" changes section#faq from 900 to 963px: nothing in a section may change its height after load (and 5 more like it: \"How do the CE hours work\", \"Who should we bring?\", \"Who is teaching?\") (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "1440-rhythm-32-section-height.jpg"
+    }
+   ],
+   "glAsked": 0
+  },
+  {
+   "width": 1024,
+   "height": 768,
+   "screens": 6,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan.",
+     "msg": "the quote section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 1,
+     "crop": "1024-03-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs more tha",
+     "msg": "the section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 3,
+     "crop": "1024-09-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owners ask",
+     "msg": "the closing section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 4,
+     "crop": "1024-10-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "FAIL",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "the figure \"$3,400\" is set at 68px, larger than the h1 (65.5px)",
+     "fix": "set figures below the h1: a stat reads as data, not as the headline",
+     "stop": 2,
+     "crop": "1024-07-heading-scale.jpg"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "figures in 2 sizes, 30, 68px (\"63\" at 30px, \"$3,400\" at 68px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 2,
+     "crop": "1024-08-heading-scale.jpg"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "div.bookwrap > div.book > div.tabs > i.on",
+     "text": "",
+     "stop": 1,
+     "msg": "left edge at 992px, 2px off a common edge of its section at 990px (7 elements, like i:nth-of-type(2))",
+     "crop": "1024-04-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "label-centre",
+     "sev": "WARN",
+     "sel": "div.agenda > ol.slist > li:nth-of-type(2) > button",
+     "text": "11:00 Your unique positioning",
+     "msg": "its label sits 148px off-centre (17px of room at the left, 165px at the right)",
+     "stop": 1,
+     "crop": "1024-05-label-centre.jpg",
+     "fix": "centre the label in its button, or fill the empty side with an icon"
+    },
+    {
+     "check": "nav-current",
+     "sev": "WARN",
+     "sel": "nav.nav",
+     "text": "",
+     "stop": 1,
+     "msg": "the nav stays on screen with 3 links to the page's sections, but never marks the one you are in (no link changes as the page scrolls)",
+     "crop": "1024-06-nav-current.jpg",
+     "fix": "mark the link of the section on screen (a colour, a weight or a line under it) as the visitor scrolls"
+    },
+    {
+     "check": "split-align",
+     "sev": "WARN",
+     "sel": "main#top > section.hero > div.wrap.hero-grid",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the picture beside \"Practice Leadership Summit, Ne\" sits loose against a text column 268px taller: its top and bottom line up with nothing",
+     "fix": "set the picture's top on the heading's top (align-items: start), or let it run the column's full height",
+     "stop": 0,
+     "crop": "1024-01-split-align.jpg"
+    },
+    {
+     "check": "visual-caption",
+     "sev": "WARN",
+     "sel": "div.wrap.hero-grid > div.floor > div.legend > span:nth-of-type(1)",
+     "text": "Claimed",
+     "msg": "a muted 13px line of 1 row sits 12px under the drawing (svg): it reads as a caption: \"Claimed\"; no caption or description under any image, render or visual (house rule)",
+     "stop": 0,
+     "crop": "1024-02-visual-caption.jpg",
+     "fix": "take the line away: no caption or description under, over or on any image, render or visual; a licence credit goes in one footer line"
+    }
+   ],
+   "glAsked": 0
+  },
+  {
+   "width": 820,
+   "height": 1180,
+   "screens": 6,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan.",
+     "msg": "the quote section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 1,
+     "crop": "820-01-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs more tha",
+     "msg": "the section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 3,
+     "crop": "820-03-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owners ask",
+     "msg": "the closing section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 4,
+     "crop": "820-06-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "FAIL",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "the figure \"$3,400\" is set at 68px, larger than the h1 (52.5px)",
+     "fix": "set figures below the h1: a stat reads as data, not as the headline",
+     "stop": 3,
+     "crop": "820-04-heading-scale.jpg"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "figures in 2 sizes, 30, 68px (\"63\" at 30px, \"$3,400\" at 68px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 3,
+     "crop": "820-05-heading-scale.jpg"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "div.wrap > div.faq > details:nth-of-type(2) > summary",
+     "text": "How do the CE hours work?",
+     "stop": 4,
+     "msg": "two common left edges of one section 4px apart: 430px (4 elements, like this one) and 426px (6)",
+     "crop": "820-07-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "section-gaps",
+     "sev": "WARN",
+     "sel": "section#price / section#faq",
+     "text": "",
+     "stop": 4,
+     "msg": "205px between these sections, +26% against the median 163px",
+     "crop": "820-08-section-gaps.jpg",
+     "fix": "use one gap between sections (all within 25% of each other)"
+    },
+    {
+     "check": "visual-caption",
+     "sev": "WARN",
+     "sel": "div.wrap.hero-grid > div.floor > div.legend > span:nth-of-type(1)",
+     "text": "Claimed",
+     "msg": "a muted 13px line of 1 row sits 12px under the drawing (svg): it reads as a caption: \"Claimed\"; no caption or description under any image, render or visual (house rule)",
+     "stop": 1,
+     "crop": "820-02-visual-caption.jpg",
+     "fix": "take the line away: no caption or description under, over or on any image, render or visual; a licence credit goes in one footer line"
+    },
+    {
+     "check": "hero-screen",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the hero ends at 1380px on a 1180px screen, 200px below the fold: it ends at the fold, 1px either way (SR-1)",
+     "fix": "make the hero exactly one screen (height: 100svh, its content fitted inside), never taller or shorter",
+     "rule": "SR-1 T1",
+     "crop": "820-rhythm-01-hero-screen.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section is 164px tall (0.1 screens), 1016px short of one screen (1180px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "820-rhythm-05-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the section is 1397px tall (1.2 screens), 217px over one screen (1180px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "820-rhythm-06-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the section is 1390px tall (1.2 screens), 210px over one screen (1180px): every section after the hero is one screen or two, 2px either way (and 1 more like it: \"What your team takes hom\") (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "820-rhythm-07-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "the section starts at 4168px, 552px above the screen grid (4 x 1180px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "820-rhythm-08-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section starts at 5161px, 441px below the screen grid (4 x 1180px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "820-rhythm-09-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the section starts at 2770px, 410px below the screen grid (2 x 1180px): sections start on whole screens (and 2 more like it: \"Eight sessions. Eight pa\", \"Practice Leadership Summ\") (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "820-rhythm-10-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section's content does not fit it: its lowest content ends 117px below its top, past 92px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "fit the content above the section's bottom padding (--padb), or make it two screens (.g2) in two groups",
+     "rule": "SR-2 T-fit",
+     "crop": "820-rhythm-11-section-height.jpg"
+    },
+    {
+     "check": "section-air",
+     "sev": "FAIL",
+     "sel": "p#sday",
+     "text": "Breakfast from 8:00. Lunch at 12:30, wit",
+     "msg": "a top border across 95% of the container, between the section's content: sections and their parts are told apart by air and ground, not lines (SR-3)",
+     "fix": "take the rule out: sections and their parts are parted by their ground and the air between them",
+     "rule": "SR-3 T-dividers",
+     "crop": "820-rhythm-12-section-air.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.sechead > h2",
+     "text": "What your team takes home, and what owne",
+     "msg": "the screen at scroll 3540px (stride 3) shows 552px of section 4 and the heading of section 4 whole and the content of 2 sections, over 24px each beside section 3: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "820-rhythm-13-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the screen at scroll 2360px (stride 2) shows 345px of section 2 and the content of 2 sections, over 24px each beside section 3: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "820-rhythm-14-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the screen at scroll 4145px (the top of section 4) shows 164px of section 5 and the content of 2 sections, over 24px each beside section 4: a screen shows one section (another may peek 8px, 24px WARN) (and 1 more like it: scroll 1180px) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "820-rhythm-15-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a band: a box 95% of the section wide on a ground of its own that holds the heading or the intro: the section's own ground is the band (SR-4)",
+     "fix": "put every block of <main> in a <section>, and give a band its own section instead of a ground inside one",
+     "rule": "SR-4 T-dom",
+     "crop": "820-rhythm-16-one-section.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the content of section 1 runs 0px from the left and 0px from the right: the margin is 64-120px at 820px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "820-rhythm-17-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the content of section 2 runs 0px from the left and 0px from the right: the margin is 64-120px at 820px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "820-rhythm-18-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the content of section 3 runs 0px from the left and 0px from the right: the margin is 64-120px at 820px (one container, equal margins, 2px either way) (and 2 more like it: \"What your team takes hom\", \"Practice Leadership Summ\") (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "820-rhythm-19-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "nav.nav",
+     "text": "Kasper × Global Academy of Dentistry The",
+     "msg": "a <nav> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "820-rhythm-20-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "a <footer> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (and 1 more like it: \"Practice Leadership Summ\") (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "820-rhythm-21-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing > p",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "1 text block starts on a left line at x 48, 48px from the container's left: text starts on the container's left, or on one split line (x 352, 422, 492) (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "820-rhythm-22-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section.hero > div.wrap.hero-grid > div.hero-copy > p.eyebrow",
+     "text": "Practice Leadership Summit, New Jersey",
+     "msg": "22 text blocks start on a left line at x 20, 20px from the container's left: text starts on the container's left, or on one split line (x 352, 422, 492) (also \"35 tables. One plan per practice\", \"A two-day working weekend for de\", \"63\") (and 4 more like it: \"35 tables. One plan per \", \"Eight sessions. Eight pa\", \"Priced per team, because\") (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "820-rhythm-23-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a box over half the container wide runs 20-800px, not on the container's lines at 0-820px (SR-6)",
+     "fix": "run the picture or box from the container's left line to its right line, or put it in a row or a split",
+     "rule": "SR-6 T6-right-edges",
+     "crop": "820-rhythm-24-container-edges.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "div.wrap > div.pricer > div.panel.totalpanel > ol.path",
+     "text": "Register in four short steps Invoice wit",
+     "msg": "a row of 2 items: its first item starts at 49px, the container's left line at 0px; its last item ends at 771px, the container's right line at 820px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "820-rhythm-25-row-lines.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "div#kit > ul",
+     "text": "Practice SnapshotYour scored baseline, b",
+     "msg": "a row of 2 items: its first item starts at 20px, the container's left line at 0px; its last item ends at 800px, the container's right line at 820px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "820-rhythm-26-row-lines.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.faq",
+     "text": "Where exactly is it?A hotel within an ho",
+     "msg": "a row of 2 items: its first item starts at 20px, the container's left line at 0px; its last item ends at 800px, the container's right line at 820px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "820-rhythm-27-row-lines.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section's content does not fit it: its lowest content ends 117px below its top, past 92px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "show answers and panels open and size the section for its open content, or make it two screens (.g2)",
+     "rule": "SR-2 T-fit-expanded",
+     "crop": "820-rhythm-28-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "with every answer and tab open, the section starts at 4145px, 575px above the screen grid (4 x 1180px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "820-rhythm-29-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "with every answer and tab open, the section starts at 2748px, 388px below the screen grid (2 x 1180px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "820-rhythm-30-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "with every answer and tab open, the section starts at 1380px, 200px below the screen grid (1 x 1180px): sections start on whole screens (and 2 more like it: \"Practice Leadership Summ\", \"Practice Leadership Summ\") (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "820-rhythm-31-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "with every answer and tab open the section is 1622px tall, not 994px, and starts at 4145px, not 4168px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "820-rhythm-32-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "with every answer and tab open the section is 1368px tall, not 1390px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "820-rhythm-33-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "with every answer and tab open the section is 1397px tall, not 1397px, and starts at 2748px, not 2770px: nothing in a section may change its height after load (and 9 more like it: \"Practice Leadership Summ\", \"Where exactly is it?\", \"How do the CE hours work\") (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "820-rhythm-34-section-height.jpg"
+    }
+   ],
+   "glAsked": 0
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "screens": 6,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan.",
+     "msg": "the quote section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 2,
+     "crop": "768-02-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs more tha",
+     "msg": "the section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 3,
+     "crop": "768-03-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owners ask",
+     "msg": "the closing section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 5,
+     "crop": "768-06-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "FAIL",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "the figure \"$3,400\" is set at 68px, larger than the h1 (49.2px)",
+     "fix": "set figures below the h1: a stat reads as data, not as the headline",
+     "stop": 3,
+     "crop": "768-04-heading-scale.jpg"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "figures in 2 sizes, 30, 68px (\"63\" at 30px, \"$3,400\" at 68px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 3,
+     "crop": "768-05-heading-scale.jpg"
+    },
+    {
+     "check": "off-grid",
+     "sev": "WARN",
+     "sel": "div.wrap > div.faq > details:nth-of-type(2) > summary",
+     "text": "How do the CE hours work?",
+     "stop": 5,
+     "msg": "two common left edges of one section 4px apart: 404px (4 elements, like this one) and 400px (6)",
+     "crop": "768-07-off-grid.jpg",
+     "fix": "move it onto the page margin, or the column edge its section uses"
+    },
+    {
+     "check": "visual-caption",
+     "sev": "WARN",
+     "sel": "div.wrap.hero-grid > div.floor > div.legend > span:nth-of-type(1)",
+     "text": "Claimed",
+     "msg": "a muted 13px line of 1 row sits 12px under the drawing (svg): it reads as a caption: \"Claimed\"; no caption or description under any image, render or visual (house rule)",
+     "stop": 1,
+     "crop": "768-01-visual-caption.jpg",
+     "fix": "take the line away: no caption or description under, over or on any image, render or visual; a licence credit goes in one footer line"
+    },
+    {
+     "check": "hero-screen",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the hero ends at 1342px on a 1024px screen, 318px below the fold: it ends at the fold, 1px either way (SR-1)",
+     "fix": "make the hero exactly one screen (height: 100svh, its content fitted inside), never taller or shorter",
+     "rule": "SR-1 T1",
+     "crop": "768-rhythm-01-hero-screen.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section is 164px tall (0.2 screens), 860px short of one screen (1024px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "768-rhythm-05-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the section is 1373px tall (1.3 screens), 349px over one screen (1024px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "768-rhythm-06-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the section is 1372px tall (1.3 screens), 348px over one screen (1024px): every section after the hero is one screen or two, 2px either way (and 1 more like it: \"What your team takes hom\") (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "768-rhythm-07-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the section starts at 2715px, 357px above the screen grid (3 x 1024px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "768-rhythm-08-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the section starts at 1342px, 318px below the screen grid (1 x 1024px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "768-rhythm-09-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the section starts at 65px, 65px below the screen grid (0 x 1024px): sections start on whole screens (and 2 more like it: \"Practice Leadership Summ\", \"What your team takes hom\") (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "768-rhythm-10-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section's content does not fit it: its lowest content ends 117px below its top, past 92px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "fit the content above the section's bottom padding (--padb), or make it two screens (.g2) in two groups",
+     "rule": "SR-2 T-fit",
+     "crop": "768-rhythm-11-section-height.jpg"
+    },
+    {
+     "check": "section-air",
+     "sev": "FAIL",
+     "sel": "p#sday",
+     "text": "Breakfast from 8:00. Lunch at 12:30, wit",
+     "msg": "a top border across 95% of the container, between the section's content: sections and their parts are told apart by air and ground, not lines (SR-3)",
+     "fix": "take the rule out: sections and their parts are parted by their ground and the air between them",
+     "rule": "SR-3 T-dividers",
+     "crop": "768-rhythm-12-section-air.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#price > div.wrap > div.sechead > h2",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the screen at scroll 2048px (stride 2) shows 357px of section 3 and the heading of section 3 whole and the content of 2 sections, over 24px each beside section 2: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "768-rhythm-13-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the screen at scroll 1024px (stride 1) shows 253px of section 1 and the content of 2 sections, over 24px each beside section 2: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "768-rhythm-14-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the screen at scroll 4229px (the top of section 5) shows 164px of section 5 and the content of 2 sections, over 24px each beside section 4: a screen shows one section (another may peek 8px, 24px WARN) (and 3 more like it: scroll 4096px, scroll 4087px, scroll 3072px) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "768-rhythm-15-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a band: a box 95% of the section wide on a ground of its own that holds the heading or the intro: the section's own ground is the band (SR-4)",
+     "fix": "put every block of <main> in a <section>, and give a band its own section instead of a ground inside one",
+     "rule": "SR-4 T-dom",
+     "crop": "768-rhythm-16-one-section.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the content of section 1 runs 0px from the left and 0px from the right: the margin is 64-120px at 768px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "768-rhythm-17-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the content of section 2 runs 0px from the left and 0px from the right: the margin is 64-120px at 768px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "768-rhythm-18-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the content of section 3 runs 0px from the left and 0px from the right: the margin is 64-120px at 768px (one container, equal margins, 2px either way) (and 2 more like it: \"What your team takes hom\", \"Practice Leadership Summ\") (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "768-rhythm-19-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "nav.nav",
+     "text": "Kasper × Global Academy of Dentistry The",
+     "msg": "a <nav> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "768-rhythm-20-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "a <footer> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (and 1 more like it: \"Practice Leadership Summ\") (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "768-rhythm-21-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing > p",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "1 text block starts on a left line at x 48, 48px from the container's left: text starts on the container's left, or on one split line (x 330, 396, 462) (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "768-rhythm-22-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section.hero > div.wrap.hero-grid > div.hero-copy > p.eyebrow",
+     "text": "Practice Leadership Summit, New Jersey",
+     "msg": "22 text blocks start on a left line at x 20, 20px from the container's left: text starts on the container's left, or on one split line (x 330, 396, 462) (also \"35 tables. One plan per practice\", \"A two-day working weekend for de\", \"63\") (and 4 more like it: \"35 tables. One plan per \", \"Eight sessions. Eight pa\", \"Priced per team, because\") (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "768-rhythm-23-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a box over half the container wide runs 20-748px, not on the container's lines at 0-768px (SR-6)",
+     "fix": "run the picture or box from the container's left line to its right line, or put it in a row or a split",
+     "rule": "SR-6 T6-right-edges",
+     "crop": "768-rhythm-24-container-edges.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "div.wrap > div.pricer > div.panel.totalpanel > ol.path",
+     "text": "Register in four short steps Invoice wit",
+     "msg": "a row of 2 items: its first item starts at 49px, the container's left line at 0px; its last item ends at 719px, the container's right line at 768px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "768-rhythm-25-row-lines.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "div#kit > ul",
+     "text": "Practice SnapshotYour scored baseline, b",
+     "msg": "a row of 2 items: its first item starts at 20px, the container's left line at 0px; its last item ends at 748px, the container's right line at 768px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "768-rhythm-26-row-lines.jpg"
+    },
+    {
+     "check": "row-lines",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.faq",
+     "text": "Where exactly is it?A hotel within an ho",
+     "msg": "a row of 2 items: its first item starts at 20px, the container's left line at 0px; its last item ends at 748px, the container's right line at 768px (2px either way) (SR-7)",
+     "fix": "start the row's first item on the container's left line and end its last on the right line, every item one height",
+     "rule": "SR-7 T-rows",
+     "crop": "768-rhythm-27-row-lines.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section's content does not fit it: its lowest content ends 117px below its top, past 92px (the section less 72px of bottom padding) (SR-2)",
+     "fix": "show answers and panels open and size the section for its open content, or make it two screens (.g2)",
+     "rule": "SR-2 T-fit-expanded",
+     "crop": "768-rhythm-28-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section starts at 5721px, 423px above the screen grid (6 x 1024px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "768-rhythm-29-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "with every answer and tab open, the section starts at 2692px, 380px above the screen grid (3 x 1024px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "768-rhythm-30-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "with every answer and tab open, the section starts at 1342px, 318px below the screen grid (1 x 1024px): sections start on whole screens (and 2 more like it: \"Practice Leadership Summ\", \"What your team takes hom\") (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "768-rhythm-31-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "with every answer and tab open the section is 1657px tall, not 1002px, and starts at 4064px, not 4087px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "768-rhythm-32-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "with every answer and tab open the section is 1350px tall, not 1373px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "768-rhythm-33-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "with every answer and tab open the section is 1372px tall, not 1372px, and starts at 2692px, not 2715px: nothing in a section may change its height after load (and 8 more like it: \"Practice Leadership Summ\", \"Where exactly is it?\", \"How do the CE hours work\") (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "768-rhythm-34-section-height.jpg"
+    }
+   ],
+   "glAsked": 0
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "screens": 9,
+   "held": 0,
+   "errors": [],
+   "findings": [
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan.",
+     "msg": "the quote section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 2,
+     "crop": "390-03-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs more tha",
+     "msg": "the section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 5,
+     "crop": "390-05-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "text-only",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owners ask",
+     "msg": "the closing section is only text: no picture, icon, mock or effect in it (3 sections like it at this width)",
+     "stop": 7,
+     "crop": "390-07-text-only.jpg",
+     "fix": "give the section a visual: a photograph that fits, the real icons, or a UI fragment on a ground"
+    },
+    {
+     "check": "button-styles",
+     "sev": "FAIL",
+     "sel": "div.agenda > ol.slist > li:nth-of-type(2) > button",
+     "text": "11:00 Your unique positioning",
+     "stop": 2,
+     "msg": "one button style (soft, fill #ffffff, outline #d9dee9) in 2 heights: 48, 74px (\"11:00 Your unique positioning\" 74px, \"See the weekend\" 48px)",
+     "crop": "390-04-button-styles.jpg",
+     "fix": "one primary and one secondary button: one shape, one height per size, one label size"
+    },
+    {
+     "check": "nav",
+     "sev": "WARN",
+     "sel": "nav.nav > div.wrap > div.navlinks > button.cta",
+     "text": "Register",
+     "stop": 0,
+     "msg": "the nav is lopsided: its last item ends 18px outside the content's edge (370px), while its first starts on the other edge",
+     "fix": "start the nav's first item and end its last on the content's two edges",
+     "crop": "390-01-nav.jpg"
+    },
+    {
+     "check": "heading-scale",
+     "sev": "WARN",
+     "sel": "span#ptotal",
+     "text": "$3,400",
+     "msg": "figures in 2 sizes, 30, 44px (\"63\" at 30px, \"$3,400\" at 44px)",
+     "fix": "set the page's figures (stats, measures, prices) in one or two sizes",
+     "stop": 5,
+     "crop": "390-06-heading-scale.jpg"
+    },
+    {
+     "check": "visual-caption",
+     "sev": "WARN",
+     "sel": "div.wrap.hero-grid > div.floor > div.legend > span:nth-of-type(1)",
+     "text": "Claimed",
+     "msg": "a muted 13px line of 1 row sits 12px under the drawing (svg): it reads as a caption: \"Claimed\"; no caption or description under any image, render or visual (house rule)",
+     "stop": 1,
+     "crop": "390-02-visual-caption.jpg",
+     "fix": "take the line away: no caption or description under, over or on any image, render or visual; a licence credit goes in one footer line"
+    },
+    {
+     "check": "hero-screen",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the hero ends at 1339px on a 844px screen, 495px below the fold: it ends at the fold, 1px either way (SR-1)",
+     "fix": "make the hero exactly one screen (height: 100svh, its content fitted inside), never taller or shorter",
+     "rule": "SR-1 T1",
+     "crop": "390-rhythm-01-hero-screen.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section is 239px tall (0.3 screens), 605px short of one screen (844px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "390-rhythm-05-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the section is 1490px tall (1.8 screens), 198px short of two screens (1688px): every section after the hero is one screen or two, 2px either way (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "390-rhythm-06-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "the section is 1563px tall (1.9 screens), 125px short of two screens (1688px): every section after the hero is one screen or two, 2px either way (and 1 more like it: \"Priced per team, because\") (SR-2)",
+     "fix": "set the section to one screen or two (height: calc(var(--h,1) * 100vh), --h 1 or 2) and cut or split its content to fit",
+     "rule": "SR-2 T-height",
+     "crop": "390-rhythm-07-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the section starts at 1339px, 349px above the screen grid (2 x 844px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "390-rhythm-08-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the section starts at 2829px, 297px below the screen grid (3 x 844px): sections start on whole screens (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "390-rhythm-09-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "the section starts at 4495px, 275px below the screen grid (5 x 844px): sections start on whole screens (and 2 more like it: \"Practice Leadership Summ\", \"Practice Leadership Summ\") (SR-2)",
+     "fix": "make every section above it exactly one or two screens tall, so this one starts on a whole screen",
+     "rule": "SR-2 T-grid",
+     "crop": "390-rhythm-10-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the section's content does not fit it: its lowest content ends 203px below its top, past 191px (the section less 48px of bottom padding) (SR-2)",
+     "fix": "fit the content above the section's bottom padding (--padb), or make it two screens (.g2) in two groups",
+     "rule": "SR-2 T-fit",
+     "crop": "390-rhythm-11-section-height.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "div.wk > div.agenda > div.wkhead > h2",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the screen at scroll 844px (stride 1) shows 349px of section 2 and the heading of section 2 whole and the content of 2 sections, over 24px each beside section 1: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "390-rhythm-12-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "the screen at scroll 5454px (the top of section 5) shows 239px of section 5 and the content of 2 sections, over 24px each beside section 4: a screen shows one section (another may peek 8px, 24px WARN) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "390-rhythm-13-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the screen at scroll 2532px (stride 3) shows 232px of section 2 and the content of 2 sections, over 24px each beside section 3: a screen shows one section (another may peek 8px, 24px WARN) (and 1 more like it: scroll 4220px) (SR-4)",
+     "fix": "make each section exactly one screen or two, so a screen shows one section and no neighbour peeks",
+     "rule": "SR-4 T-views",
+     "crop": "390-rhythm-14-one-section.jpg"
+    },
+    {
+     "check": "one-section",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a band: a box 90% of the section wide on a ground of its own that holds the heading or the intro: the section's own ground is the band (SR-4)",
+     "fix": "put every block of <main> in a <section>, and give a band its own section instead of a ground inside one",
+     "rule": "SR-4 T-dom",
+     "crop": "390-rhythm-15-one-section.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "main#top > section.hero",
+     "text": "Practice Leadership Summit, New Jersey 3",
+     "msg": "the content of section 1 runs 0px from the left and 0px from the right: the margin is 16-24px at 390px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "390-rhythm-16-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "the content of section 2 runs 0px from the left and 0px from the right: the margin is 16-24px at 390px (one container, equal margins, 2px either way) (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "390-rhythm-17-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "the content of section 3 runs 0px from the left and 0px from the right: the margin is 16-24px at 390px (one container, equal margins, 2px either way) (and 2 more like it: \"What your team takes hom\", \"Practice Leadership Summ\") (SR-6)",
+     "fix": "use one container on every section and the nav (.wrap): one margin left and right, 64-120px on a desktop, 16-24px on a phone",
+     "rule": "SR-6 T1-margins",
+     "crop": "390-rhythm-18-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "nav.nav",
+     "text": "Kasper × Global Academy of Dentistry The",
+     "msg": "a <nav> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "390-rhythm-19-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "a <footer> at the top of the page, outside header.nav, main, footer.closing and nav.actionbar (and 1 more like it: \"Practice Leadership Summ\") (SR-6)",
+     "fix": "build the page as header.nav, a main of sections (each one in-flow .wrap plus background layers) and footer.closing",
+     "rule": "SR-6 T1-structure",
+     "crop": "390-rhythm-20-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing > p",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "1 text block starts on a left line at x 40, 40px from the container's left: text starts on the container's left, or on one split line (x 173, 207, 242) (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "390-rhythm-21-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section.hero > div.wrap.hero-grid > div.hero-copy > p.eyebrow",
+     "text": "Practice Leadership Summit, New Jersey",
+     "msg": "26 text blocks start on a left line at x 20, 20px from the container's left: text starts on the container's left, or on one split line (x 173, 207, 242) (also \"35 tables. One plan per practice\", \"A two-day working weekend for de\", \"63\") (and 4 more like it: \"35 tables. One plan per \", \"Eight sessions. Eight pa\", \"Priced per team, because\") (SR-6)",
+     "fix": "start the text on the container's left, or on the one split line every split shares",
+     "rule": "SR-6 T3-left-lines",
+     "crop": "390-rhythm-22-container-edges.jpg"
+    },
+    {
+     "check": "container-edges",
+     "sev": "FAIL",
+     "sel": "section#faq > div.wrap > div.closing",
+     "text": "35 tables, one per practice, held in the",
+     "msg": "a box over half the container wide runs 20-370px, not on the container's lines at 0-390px (SR-6)",
+     "fix": "run the picture or box from the container's left line to its right line, or put it in a row or a split",
+     "rule": "SR-6 T6-right-edges",
+     "crop": "390-rhythm-23-container-edges.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section's content does not fit it: its lowest content ends 203px below its top, past 191px (the section less 48px of bottom padding) (SR-2)",
+     "fix": "show answers and panels open and size the section for its open content, or make it two screens (.g2)",
+     "rule": "SR-2 T-fit-expanded",
+     "crop": "390-rhythm-24-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "footer",
+     "text": "Practice Leadership Summit, Jan 9–10, 20",
+     "msg": "with every answer and tab open, the section starts at 7191px, 405px above the screen grid (9 x 844px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "390-rhythm-25-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "with every answer and tab open, the section starts at 1339px, 349px above the screen grid (2 x 844px): sections start on whole screens (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "390-rhythm-26-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "with every answer and tab open, the section starts at 2807px, 275px below the screen grid (3 x 844px): sections start on whole screens (and 2 more like it: \"What your team takes hom\", \"Practice Leadership Summ\") (SR-2)",
+     "fix": "size each section for its content with every answer and tab open, so the tops below stay on whole screens",
+     "rule": "SR-2 T-grid-expanded",
+     "crop": "390-rhythm-27-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#faq",
+     "text": "What your team takes home, and what owne",
+     "msg": "with every answer and tab open the section is 2718px tall, not 1563px, and starts at 4473px, not 4496px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "390-rhythm-28-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#days",
+     "text": "Eight sessions. Eight pages of your plan",
+     "msg": "with every answer and tab open the section is 1468px tall, not 1490px: nothing in a section may change its height after load (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "390-rhythm-29-section-height.jpg"
+    },
+    {
+     "check": "section-height",
+     "sev": "FAIL",
+     "sel": "section#price",
+     "text": "Priced per team, because the plan needs ",
+     "msg": "with every answer and tab open the section is 1667px tall, not 1667px, and starts at 2807px, not 2829px: nothing in a section may change its height after load (and 10 more like it: \"Practice Leadership Summ\", \"Where exactly is it?\", \"How do the CE hours work\") (SR-2)",
+     "fix": "show every answer and panel open from the start (no accordion, no tabs that resize), so nothing changes a section's height after load",
+     "rule": "SR-2 T-height-change",
+     "crop": "390-rhythm-30-section-height.jpg"
+    }
+   ],
+   "glAsked": 0
+  }
+ ],
+ "shaders": 0,
+ "reduced": {
+  "screens": 5,
+  "notRead": 0
+ },
+ "hidden": {
+  "screens": 5
+ },
+ "slow": {
+  "stops": 9,
+  "late": 0
+ },
+ "sweep": {
+  "widths": [
+   1280,
+   1152,
+   896
+  ],
+  "errors": [],
+  "findings": []
+ },
+ "counts": {
+  "FAIL": 143,
+  "WARN": 32
+ },
+ "checks": {
+  "assets": "FAIL",
+  "shader-lint": "PASS",
+  "gl-fallback": "PASS",
+  "empty-visual": "PASS",
+  "hero-fill": "PASS",
+  "flush": "PASS",
+  "placeholder": "PASS",
+  "sample-label": "PASS",
+  "caption": "PASS",
+  "credit-wall": "PASS",
+  "nav": "WARN",
+  "nav-covers": "PASS",
+  "spill": "PASS",
+  "off-viewport": "PASS",
+  "fold-card": "PASS",
+  "hover-spill": "PASS",
+  "overlap-text": "PASS",
+  "row-gap": "PASS",
+  "cut-text": "PASS",
+  "fold-cut": "PASS",
+  "marquee": "PASS",
+  "scroll-linked": "PASS",
+  "scroll-reveal": "PASS",
+  "pinned": "PASS",
+  "loop-pause": "PASS",
+  "reduced-motion": "PASS",
+  "hidden-content": "FAIL",
+  "webgl": "PASS",
+  "no-visual": "PASS",
+  "text-only": "FAIL",
+  "card-visual": "PASS",
+  "hidden-visual": "PASS",
+  "card-family": "PASS",
+  "card-layout": "PASS",
+  "nesting": "PASS",
+  "effect-repeat": "PASS",
+  "ui-fit": "PASS",
+  "ui-centre": "PASS",
+  "dark-ground": "PASS",
+  "button-styles": "FAIL",
+  "button-shape": "PASS",
+  "same-action": "PASS",
+  "button-picture": "PASS",
+  "cta": "PASS",
+  "pricing-tiers": "PASS",
+  "copy-headline": "PASS",
+  "copy-fact": "PASS",
+  "copy-headings": "PASS",
+  "copy-buttons": "WARN",
+  "copy-actions": "PASS",
+  "heading-scale": "FAIL",
+  "stagger": "PASS",
+  "top-stagger": "PASS",
+  "off-grid": "WARN",
+  "col-edge": "PASS",
+  "right-edge": "PASS",
+  "centre-axis": "PASS",
+  "tilt": "PASS",
+  "contrast": "PASS",
+  "text-contrast": "PASS",
+  "body-size": "PASS",
+  "busy-ground": "PASS",
+  "section-gaps": "WARN",
+  "proximity": "PASS",
+  "hole": "PASS",
+  "links": "PASS",
+  "forms": "PASS",
+  "photo-upscale": "PASS",
+  "photo-set": "PASS",
+  "photo-credit": "PASS",
+  "nav-family": "PASS",
+  "nav-labels": "WARN",
+  "link-styles": "PASS",
+  "heading-align": "PASS",
+  "label-centre": "WARN",
+  "fake-button": "PASS",
+  "stranded-action": "PASS",
+  "orphan": "PASS",
+  "unit-break": "PASS",
+  "tab-wrap": "PASS",
+  "effects-fit": "PASS",
+  "fade-cut": "PASS",
+  "photo-weight": "PASS",
+  "copy-length": "PASS",
+  "nav-current": "WARN",
+  "progress-bar": "PASS",
+  "photo-repeat": "PASS",
+  "button-contrast": "PASS",
+  "photo-print": "PASS",
+  "grounds": "PASS",
+  "split-align": "WARN",
+  "fact-agree": "PASS",
+  "fold-action": "PASS",
+  "action-count": "PASS",
+  "one-screen": "PASS",
+  "hover": "PASS",
+  "hover-move": "PASS",
+  "product-shown": "PASS",
+  "same-object": "PASS",
+  "font-load": "WARN",
+  "visual-caption": "WARN",
+  "visual-empty": "PASS",
+  "effect-kind": "PASS",
+  "street-number": "PASS",
+  "postcode": "PASS",
+  "coordinates": "PASS",
+  "company-number": "PASS",
+  "phone-number": "PASS",
+  "hero-screen": "FAIL",
+  "section-height": "FAIL",
+  "section-air": "FAIL",
+  "one-section": "FAIL",
+  "one-heading": "PASS",
+  "container-edges": "FAIL",
+  "row-lines": "FAIL",
+  "split-pair": "FAIL",
+  "motion-layer": "WARN",
+  "count-text": "PASS",
+  "loop-cycle": "PASS",
+  "section-tile": "PASS"
+ }
+}

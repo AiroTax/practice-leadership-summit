@@ -26,7 +26,6 @@
     var now = Date.now(), d = Math.max(0, DOORS - now);
     setNum($("#cd-d"), Math.floor(d / 864e5));
     setNum($("#cd-h"), Math.floor(d / 36e5) % 24);
-    setNum($("#cd-m"), Math.floor(d / 6e4) % 60);
     setNum($("#cd-eb"), Math.max(0, Math.ceil((EARLY_END - now) / 864e5)));
   }
   tick(); setInterval(tick, 15000);
@@ -115,6 +114,7 @@
     $$(".pgbtn").forEach(function (b) { b.disabled = (+b.dataset.step < 0 && n === 0) || (+b.dataset.step > 0 && n === 7); });
   }
   if (book) {
+    book.dataset.ready = "1";
     showPage(0);
     $$(".slist button").forEach(function (b) { b.addEventListener("click", function () { showPage(+b.dataset.page); }); });
     $$(".daytabs [data-day]").forEach(function (b) { b.addEventListener("click", function () { showPage(+b.dataset.day === 1 ? 0 : 4); }); });
@@ -139,7 +139,23 @@
     try { localStorage.setItem("pls-theme", root.dataset.theme); } catch (e) {}
     syncTheme();
   });
+  var t2 = $("#themebtn2");
+  if (t2) { t2.addEventListener("click", function () { tbtn.click(); }); }
+  var _sync = syncTheme; syncTheme = function () { _sync(); if (t2) t2.textContent = root.dataset.theme === "dark" ? "Switch to light mode" : "Switch to dark mode"; };
   syncTheme();
+
+  /* ---------- the menu marks the section on screen ---------- */
+  var navLinks = $$('.navlinks a[href^="#"]');
+  if ("IntersectionObserver" in window && navLinks.length) {
+    var hero = $(".hero"); if (hero && !hero.id) hero.id = "hero";
+    var navIO = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        navLinks.forEach(function (a) { if (a.getAttribute("href") === "#" + e.target.id) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    [hero, $("#days"), $("#price"), $("#faq")].forEach(function (el) { if (el) navIO.observe(el); });
+  }
 
   /* ---------- pricing (same ladder as the Airtable Price formula) ---------- */
   var TICKETS = { 1: "Single seat", 2: "Team of 2", 3: "Team of 3", 4: "Team of 4 or more" };

@@ -28,7 +28,7 @@
     <div class="navlinks">
       <a href="#days">The weekend</a><a href="#price">Pricing</a><a href="#faq">Questions</a><button type="button" data-open="prework">Pre-work</button>
       <button type="button" class="themebtn" id="themebtn" aria-label="Switch to dark mode" title="Dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="moon" d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/><g class="sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
-      <button type="button" class="cta" data-open="register">Claim your table</button>
+      <button type="button" class="cta" data-open="register"><span class="full">Claim your table</span><span class="short">Register</span></button>
     </div>
   </div>
 </nav>
@@ -46,13 +46,12 @@
         <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.4 6.8 19.2l1-5.9L3.5 9.2l5.9-.8z"/></svg>Up to 12 AGD PACE CE hours</li>
       </ul>
       <div class="ctas">
-        <button type="button" class="btn primary" data-open="register">Claim your practice’s table</button>
+        <button type="button" class="btn primary" data-open="register">Claim your table</button>
         <a class="btn line" href="#days">See the weekend</a>
       </div>
       <div class="countdown" aria-label="Time until doors open" id="countdown">
         <div><b id="cd-d">—</b><span>days to go</span></div>
         <div><b id="cd-h">—</b><span>hours</span></div>
-        <div><b id="cd-m">—</b><span>minutes</span></div>
         <div class="eb"><b id="cd-eb">—</b><span>days of early-bird price</span></div>
       </div>
     </div>
@@ -237,9 +236,14 @@
         </ol>
       </div>
     </div>
-    <div class="included" id="kit">
-      <h3>Every team takes home</h3>
-      <ul>
+  </div>
+</section>
+
+<section class="faqsec" id="faq">
+  <div class="wrap">
+    <div class="sechead"><h2>What your team takes home, and what owners ask</h2></div>
+    <div class="included" id="kit" aria-label="Every team takes home">
+            <ul>
         <li><b>Practice Snapshot</b><span>Your scored baseline, before you arrive</span></li>
         <li><b>The Plan Book</b><span>Eight pages, bound by Sunday afternoon</span></li>
         <li><b>Positioning poster</b><span>Printed on site for the staff room</span></li>
@@ -248,12 +252,7 @@
         <li><b>Day 30, 60 and 90</b><span>Coach call, peer practice, a letter from your team</span></li>
       </ul>
     </div>
-  </div>
-</section>
 
-<section class="faqsec" id="faq">
-  <div class="wrap">
-    <div class="sechead"><h2>Questions owners ask</h2></div>
     <div class="faq">
       <details><summary>Where exactly is it?</summary><p>A hotel within an hour of Clifton, NJ, confirmed by Nov 12. Free parking is part of our venue terms. A small room block is available for Friday and Saturday nights for teams driving 45 minutes or more.</p></details>
       <details><summary>How do the CE hours work?</summary><p>Up to 12 AGD PACE hours under subject code 550, through a PACE-approved co-sponsor. NJ dentists need 40 hours per two-year cycle and can apply practice-management hours to renewal. Every attendee receives a certificate. Hygienists and assistants: we are confirming how NJ counts these hours for your licence and will tell you before the event.</p></details>
@@ -264,6 +263,10 @@
       <details><summary>Will anyone try to sell to us?</summary><p>Not in the sessions. CE rules keep the educational program free of product promotion. Partners have a separate Solutions Lounge you can visit during breaks if you want to.</p></details>
       <details><summary>What is the WinDSO bonus?</summary><p>WinDSO Empower &amp; Grow 2027 tickets (Mar 3–5, Las Vegas; travel not included) go to qualifying practices while they last: 15 for early-bird teams of three, 20 for full teams after Dec 4, and 10 for referrals.</p></details>
     </div>
+    <div class="closing">
+      <p>35 tables, one per practice, held in the order teams register.</p>
+      <div class="row"><button type="button" class="btn primary" data-open="register">Claim your table</button><button type="button" class="btn line" data-open="prework">Send our pre-work</button></div>
+    </div>
   </div>
 </section>
 </main>
@@ -272,6 +275,7 @@
   <div class="wrap">
     <b>Practice Leadership Summit, Jan 9–10, 2027</b>
     <p>Hosted by Kasper in partnership with Global Academy of Dentistry. Questions: <span id="inbox3"></span></p>
+    <p><button type="button" class="linkbtn" id="themebtn2">Switch to dark mode</button></p>
   </div>
 </footer>
 

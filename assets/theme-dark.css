@@ -1,7 +1,7 @@
 /* Dark mode, switched from the moon button in the menu. Light is the default. */
 html[data-theme="dark"]{
   --bg:#0B1020; --panel:#121A2E; --sunk:#1B2440; --line:#283352;
-  --ink:#EEF1F8; --ink2:#C3CADC; --muted:#8F99B3;
+  --ink:#EEF1F8; --ink2:#C3CADC; --muted:#9AA4BE; --accent-text:#FF7FA6;
   --accent-soft:color-mix(in srgb,var(--accent) 24%,#121A2E); --second-soft:color-mix(in srgb,var(--second) 26%,#121A2E); --ok-soft:#10301F; --ok:#6FD3A6;
   --hero-bg:#0B1020; --floor-bg:#101830; --floor-line:#283352; --floor-ink:#EEF1F8; --floor-muted:#8F99B3;
   --t-open:#2A3961; --t-seat:#3A4A77; --t-num:#EEF1F8;
