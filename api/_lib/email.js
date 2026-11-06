@@ -14,7 +14,27 @@ export const SITE = (process.env.SITE_URL || "https://practice-leadership-summit
 const outbox = globalThis.__summitOutbox || (globalThis.__summitOutbox = []);
 export const getOutbox = () => outbox;
 
-export function emailReady() { return !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM); }
+// Two ways to send: your own mailbox (SMTP_USER + SMTP_PASS, e.g. Google Workspace with an app
+// password) or Resend (RESEND_API_KEY). The mailbox wins when both are set.
+const smtpOn = () => !!(process.env.SMTP_USER && process.env.SMTP_PASS);
+export const sender = () => process.env.EMAIL_FROM || (smtpOn() ? `Practice Leadership Summit <${process.env.SMTP_USER}>` : "");
+export function emailReady() { return smtpOn() || !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM); }
+let transport;
+async function smtpSend({ to, cc, subject, html, text, replyTo }) {
+  if (!transport) {
+    const nodemailer = (await import("nodemailer")).default;
+    const port = Number(process.env.SMTP_PORT) || 465;
+    transport = nodemailer.createTransport({ host: process.env.SMTP_HOST || "smtp.gmail.com", port, secure: port === 465,
+      auth: { user: process.env.SMTP_USER, pass: String(process.env.SMTP_PASS).replace(/\s+/g, "") } });
+  }
+  try {
+    const info = await transport.sendMail({ from: sender(), to, cc: cc.length ? cc : undefined, subject, html, text, replyTo: replyTo || INBOX });
+    return { ok: true, id: info.messageId };
+  } catch (e) {
+    console.error("SMTP error", e.message);
+    return { ok: false, error: /Invalid login|535|Username and Password/i.test(e.message) ? "The mailbox login was refused. Check SMTP_USER and the app password." : e.message };
+  }
+}
 
 export async function sendEmail({ to, cc, subject, html, text, replyTo, tag }) {
   const list = (Array.isArray(to) ? to : [to]).filter(Boolean);
@@ -31,10 +51,11 @@ export async function sendEmail({ to, cc, subject, html, text, replyTo, tag }) {
     }
     return { ok: true, id: msg.id, local: true };
   }
+  if (smtpOn()) return smtpSend({ to: list, cc: ccs, subject, html, text, replyTo });
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: process.env.EMAIL_FROM, to: list, cc: ccs.length ? ccs : undefined, subject, html, text, reply_to: replyTo || INBOX,
+    body: JSON.stringify({ from: sender(), to: list, cc: ccs.length ? ccs : undefined, subject, html, text, reply_to: replyTo || INBOX,
       tags: tag ? [{ name: "type", value: tag.replace(/[^a-zA-Z0-9_-]/g, "_") }] : undefined }),
   });
   const j = await res.json().catch(() => ({}));

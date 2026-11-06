@@ -4,7 +4,7 @@ import { sessionEmail } from "./_lib/auth.js";
 import { backend, listPractices, listPrework, getPractice, getPrework, updatePractice, saveJourneyState, emailLog } from "./_lib/store.js";
 import { JOURNEY, AUDIENCES, GLOBAL_VARS, renderJourney, inAudience, nextDate } from "./_lib/journey.js";
 import { journeyState, sendReport, broadcast, runJourney } from "./_lib/notify.js";
-import { sendEmail, emailReady, getOutbox } from "./_lib/email.js";
+import { sendEmail, emailReady, getOutbox, sender } from "./_lib/email.js";
 
 const fail = (msg, status = 400) => Object.assign(new Error(msg), { status });
 
@@ -87,7 +87,7 @@ async function data(me) {
       reach: practices.filter((p) => inAudience(d.audience, p, pre[p.number])).length, sent: sentBy[d.id] || 0, updatedBy: s.updated_by || "", updatedAt: s.updated_at || "" };
   });
   return {
-    ok: true, me, backend: backend(), emailReady: emailReady(), from: process.env.EMAIL_FROM || "",
+    ok: true, me, backend: backend(), emailReady: emailReady(), from: sender(),
     practices: practices.map((p) => ({ ...p, pw: pre[p.number] || null })),
     journey, vars: (st.vars && st.vars.vars) || (st.e01 && st.e01.vars) || {}, varLabels: GLOBAL_VARS,
     log: log.slice(0, 120).map((l) => ({ at: l.created_at, emailId: l.email_id, to: l.to_addr, subject: l.subject, status: l.status, error: l.error, practiceId: l.practice_id })),
