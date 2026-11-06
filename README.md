@@ -79,6 +79,7 @@ Supabase if `SUPABASE_URL` is set, otherwise Airtable (as before). Nothing chang
 | `ADMIN_EMAILS` | who can sign in to /admin: emails separated by commas, or a whole domain like `@amalandcompany.com` |
 | `ADMIN_SECRET` | any long random text, 32+ characters |
 | `CRON_SECRET` | any long random text; Vercel uses it for the daily email run |
+| `GOOGLE_PLACES_API_KEY` | optional: drafts each report note from the practice’s positive Google reviews |
 | `SITE_URL` | `https://practice-leadership-summit.vercel.app` (or your own domain) |
 
 Redeploy. Then: open `/admin`, sign in with your email, fill in the event details on the Emails tab,

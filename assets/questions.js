@@ -220,7 +220,7 @@ window.PLS_Q = {
    {
     "id": "find",
     "title": "Find your table",
-    "intro": "So your answers land on the right practice. Your registration number is in your confirmation email.",
+    "intro": "Only your registration number is needed. Every other question is optional: skip anything you’d rather not share, and your report covers only what you tell us.",
     "questions": [
      {
       "k": "number",
@@ -240,7 +240,6 @@ window.PLS_Q = {
       "k": "practice",
       "type": "text",
       "label": "Practice name",
-      "req": true,
       "max": 120,
       "w": "half",
       "why": "A second check that we match the right practice.",
@@ -252,7 +251,6 @@ window.PLS_Q = {
       "k": "email",
       "type": "email",
       "label": "Your email",
-      "req": true,
       "max": 120,
       "why": "Where we send your report and book the welcome call.",
       "feeds": [
@@ -263,7 +261,6 @@ window.PLS_Q = {
       "k": "answeredBy",
       "type": "choice",
       "label": "You are the…",
-      "req": true,
       "opts": [
        "Owner dentist",
        "Practice or office manager",
@@ -285,11 +282,13 @@ window.PLS_Q = {
     "questions": [
      {
       "k": "years",
-      "type": "number",
+      "type": "slider",
       "label": "Years open",
       "min": 0,
-      "max": 80,
-      "w": "third",
+      "max": 50,
+      "step": 1,
+      "plus": true,
+      "unit": "years",
       "why": "Startups and established practices are benchmarked separately.",
       "feeds": [
        "profile"
@@ -297,12 +296,12 @@ window.PLS_Q = {
      },
      {
       "k": "locations",
-      "type": "number",
+      "type": "slider",
       "label": "Locations",
       "min": 1,
-      "max": 50,
-      "w": "third",
-      "value": 1,
+      "max": 10,
+      "step": 1,
+      "plus": true,
       "why": "Multi-site practices get a separate operations lens.",
       "feeds": [
        "profile"
@@ -310,12 +309,13 @@ window.PLS_Q = {
      },
      {
       "k": "operatories",
-      "type": "number",
+      "type": "slider",
       "label": "Operatories",
       "hint": "all locations",
       "min": 1,
-      "max": 300,
-      "w": "third",
+      "max": 40,
+      "step": 1,
+      "plus": true,
       "why": "Chair capacity. Production per chair is a core benchmark.",
       "feeds": [
        "profile",
@@ -324,13 +324,13 @@ window.PLS_Q = {
      },
      {
       "k": "dentists",
-      "type": "number",
+      "type": "slider",
       "label": "Dentists",
       "hint": "full-time equivalent",
-      "min": 0,
-      "max": 100,
+      "min": 0.5,
+      "max": 15,
       "step": 0.5,
-      "w": "third",
+      "plus": true,
       "why": "New patients and production are compared per dentist.",
       "feeds": [
        "profile",
@@ -339,13 +339,13 @@ window.PLS_Q = {
      },
      {
       "k": "hygienists",
-      "type": "number",
+      "type": "slider",
       "label": "Hygienists",
       "hint": "full-time equivalent",
       "min": 0,
-      "max": 100,
+      "max": 20,
       "step": 0.5,
-      "w": "third",
+      "plus": true,
       "why": "Hygiene capacity drives recall and steady production.",
       "feeds": [
        "profile",
@@ -354,12 +354,14 @@ window.PLS_Q = {
      },
      {
       "k": "teamSize",
-      "type": "number",
+      "type": "slider",
       "label": "Whole team",
-      "hint": "every role",
+      "hint": "every role, all locations",
       "min": 1,
-      "max": 500,
-      "w": "third",
+      "max": 80,
+      "step": 1,
+      "plus": true,
+      "unit": "people",
       "why": "Team size against production shows staffing efficiency.",
       "feeds": [
        "profile",
@@ -393,11 +395,13 @@ window.PLS_Q = {
     "questions": [
      {
       "k": "newPatients",
-      "type": "number",
+      "type": "slider",
       "label": "New patients a month",
+      "hint": "roughly",
       "min": 0,
-      "max": 5000,
-      "w": "half",
+      "max": 200,
+      "step": 5,
+      "plus": true,
       "why": "The main growth signal, compared with peers per dentist.",
       "feeds": [
        "patients"
@@ -426,7 +430,7 @@ window.PLS_Q = {
       "k": "payer",
       "type": "pct3",
       "label": "Payer mix",
-      "hint": "should add up to about 100%",
+      "hint": "slide each one; should add up to about 100%",
       "parts": [
        {
         "k": "ppo",
@@ -739,7 +743,6 @@ window.PLS_Q = {
       "type": "list3",
       "label": "Your three biggest challenges right now",
       "hint": "a few words each",
-      "req": true,
       "max": 200,
       "why": "The starting list for Day 2, What to fix first.",
       "feeds": [

@@ -5,6 +5,7 @@ import { backend, listPractices, listPrework, getPractice, getPrework, updatePra
 import { JOURNEY, AUDIENCES, GLOBAL_VARS, renderJourney, inAudience, nextDate } from "./_lib/journey.js";
 import { journeyState, sendReport, broadcast, runJourney } from "./_lib/notify.js";
 import { sendEmail, emailReady, getOutbox, sender } from "./_lib/email.js";
+import { reviewsFor, reviewsReady } from "./_lib/reviews.js";
 
 const fail = (msg, status = 400) => Object.assign(new Error(msg), { status });
 
@@ -59,6 +60,10 @@ export default async function handler(req, res) {
         if (!r.ok) throw fail("The test didn’t go: " + r.error, 502);
         return send(res, 200, { ok: true, local: !!r.local });
       }
+      case "reviews": {
+        const p = await getPractice(str(b.id, 80)); if (!p) throw fail("That practice wasn’t found.", 404);
+        return send(res, 200, { ok: true, ...(await reviewsFor(p)) });
+      }
       case "broadcast": return send(res, 200, { ok: true, results: await broadcast(str(b.id, 10)) });
       case "dryRun": return send(res, 200, { ok: true, results: await runJourney({ dry: true, now: b.date ? Date.parse(b.date + "T15:00:00Z") : Date.now() }) });
       case "outbox": return send(res, 200, { ok: true, outbox: getOutbox().slice(0, 30).map((m) => ({ ...m, html: undefined })) });
@@ -87,7 +92,7 @@ async function data(me) {
       reach: practices.filter((p) => inAudience(d.audience, p, pre[p.number])).length, sent: sentBy[d.id] || 0, updatedBy: s.updated_by || "", updatedAt: s.updated_at || "" };
   });
   return {
-    ok: true, me, backend: backend(), emailReady: emailReady(), from: sender(),
+    ok: true, me, backend: backend(), emailReady: emailReady(), from: sender(), reviewsReady: reviewsReady(),
     practices: practices.map((p) => ({ ...p, pw: pre[p.number] || null })),
     journey, vars: (st.vars && st.vars.vars) || (st.e01 && st.e01.vars) || {}, varLabels: GLOBAL_VARS,
     log: log.slice(0, 120).map((l) => ({ at: l.created_at, emailId: l.email_id, to: l.to_addr, subject: l.subject, status: l.status, error: l.error, practiceId: l.practice_id })),

@@ -303,6 +303,9 @@ table.t tr:last-child td{border-bottom:0}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
 .me{font-size:13px;color:var(--muted);white-space:nowrap}
 @media (max-width:760px){.me{display:none}}
+.grev{display:grid;gap:8px;background:var(--sunk);border-radius:12px;padding:12px 14px;font-size:14px}
+.grev blockquote{margin:0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 10px 10px 0}
+.grev cite{display:block;font-style:normal;color:var(--muted);font-size:12.5px;margin-top:4px}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -582,6 +585,32 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     try { var j = await api({a:"update", id:p.id, patch:fields}); return j.practice || true; }
     catch(e){ if (e.code !== "signin") toast(e.message || "Couldn’t save that. Try again in a moment.", null, true); load(); return false; }
   }
+  var gcache = {};
+  function greviewsHtml(j){
+    if (!j) return "";
+    return '<div class="grev"><p><b>'+esc(j.place.name)+'</b> · '+(j.place.rating?j.place.rating.toFixed(1)+' ★ from '+j.place.count+' reviews':'no rating yet')+(j.place.url?' · <a href="'+esc(j.place.url)+'" target="_blank" rel="noopener">Open on Google Maps</a>':'')+'</p>'+
+      (j.themes.length ? '<p>Patients praise: '+esc(j.themes.join(", "))+'</p>' : '<p class="muted">No clear themes in the reviews Google returned.</p>')+
+      j.positives.slice(0,5).map(function(r){ return '<blockquote>“'+esc(r.text.length>260?r.text.slice(0,257)+"…":r.text)+'”<cite>'+esc(r.author)+' · '+r.rating+' ★'+(r.when?' · '+esc(r.when):'')+'</cite></blockquote>' }).join("")+
+      '<p class="muted" style="font-size:12.5px">Reviews from Google. Read the draft and edit it before releasing the report.</p></div>';
+  }
+  async function googleDraft(p, btn){
+    btn.disabled = true; btn.textContent = "Reading reviews…";
+    try {
+      var j = await api({a:"reviews", id:p.id});
+      if (!j.found) { toast("Couldn’t find " + p.name + " on Google. Check the practice name and town.", null, true); }
+      else {
+        gcache[p.id] = j;
+        if (j.draft) {
+          var before = p.reportNote; p.reportNote = j.draft; renderDrawer();
+          var ok = await write(p, {reportNote:j.draft});
+          if (ok) toast("Note drafted from " + j.place.count + " Google reviews. Edit it before releasing.", before ? function(){ p.reportNote = before; write(p, {reportNote:before}); renderDrawer(); toast("Your earlier note is back."); } : null);
+          else p.reportNote = before;
+        } else toast("No positive reviews to draw from yet.");
+        renderDrawer(); return;
+      }
+    } catch(x){ if (x.code !== "signin") toast(x.message, null, true); }
+    btn.disabled = false; btn.textContent = "Draft from Google reviews";
+  }
   async function emailReport(p, btn){
     if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
     try {
@@ -775,7 +804,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
         var link = reportLink(p);
         h += '<div class="rbar"><div><label style="font-size:12.5px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px">Report status</label><div class="seg" role="group" aria-label="Report status">'+["Draft","Ready","Sent"].map(function(o){return '<button type="button" data-rs="'+o+'" aria-pressed="'+(p.reportStatus===o)+'" class="'+(o==="Sent"?"g":"")+'"'+(state.canEdit?"":" disabled")+'>'+o+'</button>'}).join("")+'</div></div>'+
           '<div class="row" style="display:flex;gap:8px;flex-wrap:wrap">'+(p.pw ? '<button class="btn sm primary" type="button" data-emailrep>'+(p.reportStatus==="Sent"?"Email it again":"Email it to the office")+'</button>' : '')+(link && p.reportStatus!=="Draft" ? '<button class="btn sm dark" type="button" data-copylink>Copy office link</button><a class="btn sm" href="'+esc(link)+'" target="_blank" rel="noopener">Open as the office sees it</a>' : '<span class="muted" style="font-size:13px">Set it to Ready to create the office’s private link.</span>')+'<button class="btn sm" type="button" data-copyreport>Copy as text</button></div></div>';
-        h += '<div class="rnote card"><div class="viewhead"><h3>Note from the facilitator</h3><span class="saved" id="d-rsaved">Saved</span></div><textarea id="d-rnote" placeholder="A short personal note at the top of the report: what you noticed, what you’ll cover on the welcome call."'+(state.canEdit?"":" disabled")+'>'+esc(p.reportNote)+'</textarea></div>';
+        h += '<div class="rnote card"><div class="viewhead"><h3>Note from the facilitator</h3><span style="display:flex;gap:8px;align-items:center"><span class="saved" id="d-rsaved">Saved</span>'+(state.meta.reviewsReady?'<button class="btn sm" type="button" data-greviews>Draft from Google reviews</button>':'')+'</span></div>'+greviewsHtml(gcache[p.id])+'<textarea id="d-rnote" placeholder="A short personal note at the top of the report: what you noticed, what you’ll cover on the welcome call."'+(state.canEdit?"":" disabled")+'>'+esc(p.reportNote)+'</textarea></div>';
         h += '<div class="rpwrap">'+window.PLS_REPORT.render(reportData(p))+'</div>';
       }
     }
@@ -789,6 +818,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var c = e.target.closest("[data-copy]"); if (c) copyText(c.dataset.copy, "Email copied.");
     if (e.target.closest("[data-remind]")) copyText(reminder(p), "Reminder copied. Paste it into an email.");
     var er = e.target.closest("[data-emailrep]"); if (er) { emailReport(p, er); return; }
+    var gr = e.target.closest("[data-greviews]"); if (gr) { googleDraft(p, gr); return; }
     if (e.target.closest("[data-copyreport]")) copyText(window.PLS_REPORT.text(reportData(p)), "Report copied as text.");
     if (e.target.closest("[data-copylink]")) copyText(linkEmail(p), "Link copied with a short email. Paste it to " + ((p.people[0]||{}).email || "the owner") + ".");
     if (e.target.closest("[data-day30]")){ if (!state.canEdit) return; var before = p.day30; p.day30 = !before; renderDrawer(); write(p, (function(){var f={}; f[F.day30]=p.day30; return f})()).then(function(ok){ if (ok) toast(p.name+": Day-30 call "+(p.day30?"marked done":"marked not done")); else { p.day30 = before; renderDrawer(); } }); }

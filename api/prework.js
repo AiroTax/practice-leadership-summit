@@ -1,7 +1,8 @@
 // POST /api/prework — saves a practice's pre-work, matched by registration number.
 // Which answers are accepted comes from ./_lib/questions.js; where they're saved, from ./_lib/store.js.
 import { readBody, str, isEmail, rateLimited, send } from "./_lib/airtable.js";
-import { findPracticeByNumber, savePrework } from "./_lib/store.js";
+import { findPracticeByNumber, savePrework, updatePractice } from "./_lib/store.js";
+import { reviewsFor, reviewsReady } from "./_lib/reviews.js";
 import { sendPreworkThanks } from "./_lib/notify.js";
 import { PREWORK, allQuestions } from "./_lib/questions.js";
 
@@ -24,7 +25,7 @@ export function cleanAnswers(b) {
       case "text": case "email": case "textarea": case "url": {
         const s = str(v, q.max || 300); if (s) a[q.k] = s; break;
       }
-      case "number": {
+      case "number": case "slider": {
         const n = num(v, q.min ?? 0, q.max ?? 1e6); if (n !== undefined) a[q.k] = n; break;
       }
       case "choice": case "select": {
@@ -72,8 +73,8 @@ async function handle(req, res) {
   const number = parseInt(String(b.number || "").replace(/[^0-9]/g, ""), 10);
   if (!number) return send(res, 400, { ok: false, error: "Please add your registration number from the confirmation email." });
   b.number = number;
-  if (!str(b.practice) || !isEmail(str(b.email, 120))) return send(res, 400, { ok: false, error: "Please add your practice name and a valid email." });
-  if (!(Array.isArray(b.challenges) && b.challenges.some((x) => str(x)))) return send(res, 400, { ok: false, error: "Please add at least one challenge." });
+  // Everything except the registration number is optional; a mistyped email is simply left out.
+  if (b.email && !isEmail(str(b.email, 120))) b.email = "";
 
   try {
     const match = await findPracticeByNumber(number);
@@ -82,6 +83,11 @@ async function handle(req, res) {
     answers.number = number;
     await savePrework(number, answers);
     await sendPreworkThanks(match, answers).catch((e) => console.error("Pre-work email failed", e));
+    // Start the facilitator's note from what patients praise on Google; the team edits it before release.
+    if (reviewsReady() && !match.reportNote) {
+      await reviewsFor(match).then((r) => r.found && r.draft ? updatePractice(match.id, { reportNote: r.draft }, match) : null)
+        .catch((e) => console.error("Google reviews draft failed", e.message));
+    }
     return send(res, 200, { ok: true });
   } catch (e) {
     return send(res, e.status || 500, { ok: false, error: e.message || "Something went wrong. Please try again." });

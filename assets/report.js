@@ -30,6 +30,7 @@
 
   function str(v) { return v == null ? "" : Array.isArray(v) ? v.join(", ") : String(v); }
   function num(v) { var n = parseFloat(v); return isFinite(n) ? n : 0; }
+  function has(v) { return v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && !v.length); }
   function list(v) { return Array.isArray(v) ? v : v ? String(v).split(/,\s*/) : []; }
   function avg(a) { a = a.filter(function (x) { return x; }); return a.length ? a.reduce(function (s, x) { return s + x; }, 0) / a.length : 0; }
   function money(n) { return "$" + Math.round(n || 0).toLocaleString("en-US"); }
@@ -39,7 +40,7 @@
   function kpis(a) {
     var out = [];
     var np = num(a.newPatients);
-    if (a.newPatients !== undefined && a.newPatients !== "") out.push({
+    if (has(a.newPatients)) out.push({
       name: "New patients a month", yours: np + (num(a.dentists) > 1 ? " (" + Math.round(np / num(a.dentists)) + " per dentist)" : ""),
       bench: "35 a month on average; 86 in the top 10% of practices", src: "hs1",
       tone: np >= 50 ? "good" : np >= 30 ? "ok" : np >= 20 ? "warn" : "bad"
@@ -74,11 +75,11 @@
   /* ---------- scorecard: their numbers against how they rated themselves ---------- */
   function analyse(a) {
     var dent = num(a.dentists), np = num(a.newPatients), ops = num(a.operatories), tools = list(a.tools).length;
-    var npd = dent ? np / dent : 0, npScore = !np ? 0 : npd >= 25 ? 5 : npd >= 15 ? 4 : npd >= 8 ? 3 : 2;
+    var npd = dent ? np / dent : 0, npScore = !has(a.newPatients) || !dent ? 0 : npd >= 25 ? 5 : npd >= 15 ? 4 : npd >= 8 ? 3 : 2;
     var data = {
       Patients: avg([MAPS.reappoint[a.reappoint], npScore]),
       Team: avg([MAPS.turnover[a.turnover], MAPS.meetings[a.meetings]]),
-      Technology: tools ? Math.max(1, Math.round(1 + tools / 9 * 4)) : 0,
+      Technology: has(a.tools) ? Math.max(1, Math.round(1 + tools / 9 * 4)) : 0,
       Finances: avg([MAPS.trend[a.trend], MAPS.overhead[a.overhead], MAPS.caseAccept[a.caseAccept]]),
       "Market position": MAPS.npSource[a.npSource] || 0
     };
@@ -93,7 +94,7 @@
     if (a.change === "Resists quietly" || a.change === "Pushes back openly") flags.push("The team " + a.change.toLowerCase().replace("resists", "resists change").replace("pushes back", "pushes back on change") + ". We’ll work on this in Negotiating change with your team.");
     if (a.trend === "Down") flags.push("Production is down on last year.");
     var pay = [num(a.ppo), num(a.medicaid), num(a.ffs)], payT = pay[0] + pay[1] + pay[2];
-    if (pay[1] >= 40 && a.direction !== "Scale with Medicaid") flags.push("Medicaid is " + pay[1] + "% of patients, but scaling with Medicaid isn’t your chosen direction. Worth deciding on purpose.");
+    if (has(a.medicaid) && has(a.direction) && pay[1] >= 40 && a.direction !== "Scale with Medicaid") flags.push("Medicaid is " + pay[1] + "% of patients, but scaling with Medicaid isn’t your chosen direction. Worth deciding on purpose.");
     Object.keys(data).forEach(function (k) {
       if (data[k] && self[k] && self[k] - data[k] >= 2) flags.push("You rate " + k.toLowerCase() + " " + self[k] + " of 5; your answers point to about " + data[k].toFixed(1) + ".");
       if (data[k] && self[k] && data[k] - self[k] >= 2) good.push("Stronger on " + k.toLowerCase() + " than you think: about " + data[k].toFixed(1) + " against your " + self[k] + ".");
@@ -102,13 +103,15 @@
     if (a.caseAccept === "70% or more") good.push("Treatment acceptance of 70% or more, well above the 46% average.");
     if (a.overhead === "Under 60%") good.push("Overhead under 60% of collections, better than the usual target.");
     if (a.trend === "Up more than 10%") good.push("Production up more than 10% on last year.");
-    if (np >= 35) good.push(np + " new patients a month, " + (np >= 50 ? "well above" : "at or above") + " the 35-a-month average.");
+    if (has(a.newPatients) && np >= 35) good.push(np + " new patients a month, " + (np >= 50 ? "well above" : "at or above") + " the 35-a-month average.");
     var actMid = ACTIVE_MID[a.activePatients]; if (actMid && dent && actMid / dent >= 1500) good.push("A full patient base: about " + (Math.round(actMid / dent / 50) * 50).toLocaleString("en-US") + " active patients per dentist.");
     if (a.turnover === "Nobody") good.push("Nobody left the team in the last year.");
     if (tools >= 6) good.push("Uses " + tools + " of 9 common practice tools.");
     if (a.meetings === "Daily huddle") good.push("A daily huddle is already in place to carry the plan.");
     var prod = PROD_MID[a.production], perChair = prod && ops ? prod / ops : 0;
-    return { data: data, self: self, flags: flags, good: good, pay: pay, payT: payT, perChair: perChair, tools: tools, npd: npd };
+    var keys = ["newPatients", "activePatients", "reappoint", "production", "trend", "overhead", "caseAccept", "turnover", "meetings", "tools", "change", "npSource", "dentists"];
+    var answered = keys.filter(function (k) { return has(a[k]); }).length;
+    return { data: data, self: self, flags: flags, good: good, pay: pay, payT: payT, perChair: perChair, tools: tools, npd: npd, answered: answered, of: keys.length };
   }
 
   function profileLine(a, an) {
@@ -190,20 +193,23 @@
       '<div class="rp-meta"><b>Practice Leadership Summit</b>Jan 9–10, 2027, New Jersey<br>Prepared ' + esc(date) + '<br>Kasper with Global Academy of Dentistry</div></header>';
     if (d.note) h += '<div class="rp-note"><b>From your facilitator</b>' + esc(d.note) + '</div>';
     h += '<section class="rp-two"><div class="rp-sec"><h2>What’s working</h2><ul class="rp-list good">' + (strengths.length ? strengths.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") : '<li>We’ll find your strengths together on the welcome call.</li>') + '</ul></div>' +
-      '<div class="rp-sec"><h2>Where to focus first</h2><ul class="rp-list pri">' + (priorities.length ? priorities.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") : '<li>No warning signs in your answers. Day 1 will test that against your numbers.</li>') + '</ul></div></section>';
+      '<div class="rp-sec"><h2>Where to focus first</h2><ul class="rp-list pri">' + (priorities.length ? priorities.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") : an.answered >= 8 ? '<li>No warning signs in what you shared. Day 1 will test that against your numbers.</li>' : '<li>You shared a few numbers, so we’ll find your focus areas together on the welcome call.</li>') + '</ul></div></section>';
     if (k.length) h += '<section class="rp-sec"><h2>Against industry benchmarks</h2><table class="rp-table"><thead><tr><th>Measure</th><th>Your practice</th><th>Benchmark</th><th>Status</th></tr></thead><tbody>' +
       k.map(function (x) { return '<tr><td>' + esc(x.name) + '</td><td>' + esc(x.yours) + '</td><td>' + esc(x.bench) + sup(x.src, x.src2) + '</td><td><span class="rp-pill ' + x.tone + '">' + TONE_LABEL[x.tone] + '</span></td></tr>'; }).join("") + '</tbody></table></section>';
-    h += '<section class="rp-sec"><h2>Your scorecard</h2>' + Object.keys(an.data).map(function (key) {
+    var areas = Object.keys(an.data).filter(function (key) { return an.data[key] || an.self[key]; });
+    if (areas.length) h += '<section class="rp-sec"><h2>Your scorecard</h2>' + areas.map(function (key) {
       var dv = an.data[key], sv = an.self[key];
       return '<div class="rp-score"><span>' + key + '</span><span class="rp-track">' + (dv ? '<i style="width:' + (dv / 5 * 100) + '%"></i>' : '') + (sv ? '<b style="left:' + (sv / 5 * 100) + '%"></b>' : '') + '</span><span>' + (dv ? dv.toFixed(1) : "–") + ' / ' + (sv || "–") + '</span></div>';
     }).join("") + '<div class="rp-key"><span><i style="background:#0B1A33"></i>From your answers, out of 5</span><span><i style="background:#C22158;border-radius:50%"></i>How your team rated itself</span></div></section>';
-    h += '<section class="rp-two"><div class="rp-sec"><h2>Your practice</h2><p>' + esc(profileLine(a, an)) + '</p>' +
-      (an.payT ? '<div class="rp-payer"><i style="width:' + an.pay[0] + '%;background:#2F5BD3"></i><i style="width:' + an.pay[1] + '%;background:#D99A1E"></i><i style="width:' + an.pay[2] + '%;background:#137A55"></i></div><div class="rp-key"><span><i style="background:#2F5BD3"></i>PPO ' + an.pay[0] + '%</span><span><i style="background:#D99A1E"></i>Medicaid and CHIP ' + an.pay[1] + '%</span><span><i style="background:#137A55"></i>Fee-for-service ' + an.pay[2] + '%</span></div>' : '') + '</div>' +
-      '<div class="rp-sec"><h2>Where you’re heading</h2><p>Three-year direction: <b>' + esc(a.direction || "to decide together") + '</b></p>' +
+    var prof = profileLine(a, an), payParts = [["ppo", "PPO", "#2F5BD3"], ["medicaid", "Medicaid and CHIP", "#D99A1E"], ["ffs", "Fee-for-service", "#137A55"]].filter(function (x) { return has(a[x[0]]); });
+    h += '<section class="rp-two"><div class="rp-sec"><h2>Your practice</h2><p>' + (prof ? esc(prof) : '<span style="color:var(--muted)">Not shared.</span>') + '</p>' +
+      (payParts.length ? (an.payT ? '<div class="rp-payer">' + payParts.map(function (x) { return '<i style="width:' + num(a[x[0]]) + '%;background:' + x[2] + '"></i>'; }).join("") + '</div>' : '') + '<div class="rp-key">' + payParts.map(function (x) { return '<span><i style="background:' + x[2] + '"></i>' + x[1] + ' ' + num(a[x[0]]) + '%</span>'; }).join("") + '</div>' : '') + '</div>' +
+      '<div class="rp-sec"><h2>Where you’re heading</h2>' + (has(a.direction) ? '<p>Three-year direction: <b>' + esc(a.direction) + '</b></p>' : '') +
+      (!has(a.direction) && !list(a.chosenFor).length && !str(a.challenges) ? '<p style="color:var(--muted)">Not shared yet. We’ll talk it through on the welcome call.</p>' : '') +
       (list(a.chosenFor).length ? '<p>Patients choose you for ' + esc(list(a.chosenFor).join(" and ").toLowerCase()) + '.' + (a.compared ? ' You’re compared with ' + esc(a.compared) + '.' : '') + '</p>' : '') +
-      (ch.length ? '<p><b>Your three challenges</b></p><ol class="rp-ol">' + ch.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join("") + '</ol>' : '') + '</div></section>';
+      (ch.length ? '<p><b>' + (ch.length === 1 ? 'Your biggest challenge' : 'Your challenges') + '</b></p><ol class="rp-ol">' + ch.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join("") + '</ol>' : '') + '</div></section>';
     h += '<section class="rp-sec"><h2>Before the weekend</h2><p>We’ll walk through this snapshot on your 20-minute welcome call' + (a.callTime ? ' (' + esc(a.callTime) + ')' : '') + '. On Day 1 your table starts from these numbers' + (a.goodWeekend ? ', aiming at what you told us a good weekend means: “' + esc(a.goodWeekend) + '”' : '') + '.</p></section>';
-    h += '<footer class="rp-foot"><span>Status compares your answers with published benchmarks for US dental practices; your answers were given as ranges, so treat the comparison as a starting point.</span>' +
+    h += '<footer class="rp-foot"><span>Status compares your answers with published benchmarks for US dental practices. It covers only the questions you answered; many answers are ranges or estimates, so treat it as a starting point. Based on ' + an.answered + ' of ' + an.of + ' key questions.</span>' +
       srcKeys.map(function (s, i) { return '<span>' + (i + 1) + '. <a href="' + SOURCES[s].url + '" target="_blank" rel="noopener">' + esc(SOURCES[s].label) + '</a></span>'; }).join("") + '</footer>';
     return h + '</article>';
   }
@@ -213,9 +219,10 @@
     L.push(p.name + ": Practice Snapshot"); L.push("");
     if (d.note) { L.push("From your facilitator: " + d.note); L.push(""); }
     L.push("What’s working:"); (an.good.length ? an.good.slice(0, 4) : ["To find together on the welcome call."]).forEach(function (x) { L.push("- " + x); });
-    L.push(""); L.push("Where to focus first:"); (an.flags.length ? an.flags.slice(0, 4) : ["No warning signs in the answers."]).forEach(function (x) { L.push("- " + x); });
+    L.push(""); L.push("Where to focus first:"); (an.flags.length ? an.flags.slice(0, 4) : [an.answered >= 8 ? "No warning signs in what was shared." : "Too few answers to judge; to discuss on the welcome call."]).forEach(function (x) { L.push("- " + x); });
     L.push(""); L.push("Against industry benchmarks:"); k.forEach(function (x) { L.push("- " + x.name + ": " + x.yours + " (benchmark: " + x.bench + "). " + TONE_LABEL[x.tone] + "."); });
-    L.push(""); L.push("Profile: " + profileLine(a, an));
+    L.push(""); L.push("Profile: " + (profileLine(a, an) || "not shared"));
+    L.push(""); L.push("Questions answered: " + an.answered + " of " + an.of + " key questions.");
     return L.join("\n");
   }
 

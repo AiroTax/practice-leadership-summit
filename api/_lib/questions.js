@@ -3,7 +3,7 @@
 // all built from this file. After editing, run `npm run questions` to refresh
 // assets/questions.js (the browser copy).
 //
-// Question types: text, email, url, tel, number, textarea, choice (tap one), select (drop-down),
+// Question types: text, email, url, tel, number, slider (drag; untouched = not answered, `plus` = the top means “or more”), textarea, choice (tap one), select (drop-down),
 // multi (tap several, `pick` = max), pct3 (three percentages), scores (1–5 per area),
 // list3 (three short lines saved as one numbered list).
 // `f` is the Airtable field ID. `feeds` names the report section(s) the answer is used in.
@@ -92,15 +92,15 @@ export const PREWORK = {
   steps: [
     {
       id: "find", title: "Find your table",
-      intro: "So your answers land on the right practice. Your registration number is in your confirmation email.",
+      intro: "Only your registration number is needed. Every other question is optional: skip anything you’d rather not share, and your report covers only what you tell us.",
       questions: [
         { k: "number", f: "fldr2cS8IAIZ4NYlr", type: "text", label: "Registration number", hint: "e.g. 7 or PLS-007", req: true, max: 12, w: "half", inputmode: "numeric",
           why: "Links your pre-work to your registration.", feeds: ["ops"] },
-        { k: "practice", f: "fldWCLfx5PTn1x2cd", type: "text", label: "Practice name", req: true, max: 120, w: "half",
+        { k: "practice", f: "fldWCLfx5PTn1x2cd", type: "text", label: "Practice name", max: 120, w: "half",
           why: "A second check that we match the right practice.", feeds: ["ops"] },
-        { k: "email", f: "fldxWelk1VyNXyVro", type: "email", label: "Your email", req: true, max: 120,
+        { k: "email", f: "fldxWelk1VyNXyVro", type: "email", label: "Your email", max: 120,
           why: "Where we send your report and book the welcome call.", feeds: ["ops"] },
-        { k: "answeredBy", f: "fldOQrA94VfRak1R3", type: "choice", label: "You are the…", req: true,
+        { k: "answeredBy", f: "fldOQrA94VfRak1R3", type: "choice", label: "You are the…",
           opts: ["Owner dentist", "Practice or office manager", "Associate dentist", "Other team member"],
           why: "Owners and managers often see the practice differently. We note whose view this is.", feeds: ["profile", "selfview"] },
       ],
@@ -109,17 +109,17 @@ export const PREWORK = {
       id: "size", title: "Your practice today",
       intro: "Sizes your practice, so every comparison is like with like.",
       questions: [
-        { k: "years", f: "fldsfbXQBYzRVwYLd", type: "number", label: "Years open", min: 0, max: 80, w: "third",
+        { k: "years", f: "fldsfbXQBYzRVwYLd", type: "slider", label: "Years open", min: 0, max: 50, step: 1, plus: true, unit: "years",
           why: "Startups and established practices are benchmarked separately.", feeds: ["profile"] },
-        { k: "locations", f: "fldWW0doQGHSbDvR5", type: "number", label: "Locations", min: 1, max: 50, w: "third", value: 1,
+        { k: "locations", f: "fldWW0doQGHSbDvR5", type: "slider", label: "Locations", min: 1, max: 10, step: 1, plus: true,
           why: "Multi-site practices get a separate operations lens.", feeds: ["profile"] },
-        { k: "operatories", f: "fldLy54o8Ju1eIqvV", type: "number", label: "Operatories", hint: "all locations", min: 1, max: 300, w: "third",
+        { k: "operatories", f: "fldLy54o8Ju1eIqvV", type: "slider", label: "Operatories", hint: "all locations", min: 1, max: 40, step: 1, plus: true,
           why: "Chair capacity. Production per chair is a core benchmark.", feeds: ["profile", "finances"] },
-        { k: "dentists", f: "fldAwK6Hxn99uqniU", type: "number", label: "Dentists", hint: "full-time equivalent", min: 0, max: 100, step: 0.5, w: "third",
+        { k: "dentists", f: "fldAwK6Hxn99uqniU", type: "slider", label: "Dentists", hint: "full-time equivalent", min: 0.5, max: 15, step: 0.5, plus: true,
           why: "New patients and production are compared per dentist.", feeds: ["profile", "patients"] },
-        { k: "hygienists", f: "fldLxceyRDndju8gr", type: "number", label: "Hygienists", hint: "full-time equivalent", min: 0, max: 100, step: 0.5, w: "third",
+        { k: "hygienists", f: "fldLxceyRDndju8gr", type: "slider", label: "Hygienists", hint: "full-time equivalent", min: 0, max: 20, step: 0.5, plus: true,
           why: "Hygiene capacity drives recall and steady production.", feeds: ["profile", "team"] },
-        { k: "teamSize", f: "fld7wvr9MSjXKMhLc", type: "number", label: "Whole team", hint: "every role", min: 1, max: 500, w: "third",
+        { k: "teamSize", f: "fld7wvr9MSjXKMhLc", type: "slider", label: "Whole team", hint: "every role, all locations", min: 1, max: 80, step: 1, plus: true, unit: "people",
           why: "Team size against production shows staffing efficiency.", feeds: ["profile", "team"] },
         { k: "software", f: "fldpvyoTQ8sUIswbJ", type: "select", label: "Practice management software",
           opts: ["Dentrix", "Dentrix Ascend", "Eaglesoft", "Open Dental", "Curve Dental", "Denticon", "Other"],
@@ -130,12 +130,12 @@ export const PREWORK = {
       id: "patients", title: "Patients",
       intro: "Where growth comes from and whether patients stay. Rough figures are fine.",
       questions: [
-        { k: "newPatients", f: "fld0NwAsiIDOJB9Sa", type: "number", label: "New patients a month", min: 0, max: 5000, w: "half",
+        { k: "newPatients", f: "fld0NwAsiIDOJB9Sa", type: "slider", label: "New patients a month", hint: "roughly", min: 0, max: 200, step: 5, plus: true,
           why: "The main growth signal, compared with peers per dentist.", feeds: ["patients"] },
         { k: "activePatients", f: "fldh95DveDLRWpuda", type: "select", label: "Active patients", hint: "seen in the last 18 months", w: "half",
           opts: ["Under 1,000", "1,000–2,500", "2,500–5,000", "5,000–10,000", "Over 10,000", "Not sure"],
           why: "With new patients a month, shows whether you are growing or replacing losses.", feeds: ["patients"] },
-        { k: "payer", type: "pct3", label: "Payer mix", hint: "should add up to about 100%",
+        { k: "payer", type: "pct3", label: "Payer mix", hint: "slide each one; should add up to about 100%",
           parts: [
             { k: "ppo", f: "fld6UEcrYTBjUX5xL", label: "Insurance (PPO)" },
             { k: "medicaid", f: "fld0klYuIeEQ4NIZ5", label: "Medicaid and CHIP" },
@@ -210,7 +210,7 @@ export const PREWORK = {
         { k: "direction", f: "fldWDY16SxhwqOK6T", type: "choice", label: "Your main direction for the next three years",
           opts: ["Grow this location", "Open another location", "Add a specialty or new service", "Scale with Medicaid", "Fix the basics first", "Prepare to sell or partner"],
           why: "Anchors your areas of focus on Day 1.", feeds: ["direction"] },
-        { k: "challenges", f: "fldGIkAiLyAM4ERG1", type: "list3", label: "Your three biggest challenges right now", hint: "a few words each", req: true, max: 200,
+        { k: "challenges", f: "fldGIkAiLyAM4ERG1", type: "list3", label: "Your three biggest challenges right now", hint: "a few words each", max: 200,
           why: "The starting list for Day 2, What to fix first.", feeds: ["priorities"] },
         { k: "goodWeekend", f: "fld5UUTMRINsH8VDy", type: "textarea", label: "What would make this weekend a success for your team?", max: 1500,
           why: "What we measure the weekend against on your Day-30 call.", feeds: ["plan"] },

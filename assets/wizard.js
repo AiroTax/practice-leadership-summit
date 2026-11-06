@@ -35,6 +35,8 @@
           (q.type === "url" ? ' inputmode="url" autocomplete="url"' : "") + (q.type === "email" ? ' autocomplete="email"' : "");
         return '<div class="q' + w + '" data-q="' + q.k + '"' + sh + ">" + head(q, i) +
           '<input type="' + type + '" id="' + i + '" name="' + q.k + '"' + attrs + ">" + why(q, showWhy) + "</div>";
+      case "slider":
+        return '<div class="q qslider" data-q="' + q.k + '">' + head(q, i) + slider(q.k, i, q.min, q.max, q.step || 1, q.plus, q.unit) + why(q, showWhy) + "</div>";
       case "textarea":
         return '<div class="q" data-q="' + q.k + '">' + head(q, i) + '<textarea id="' + i + '" name="' + q.k + '" maxlength="' + (q.max || 1500) + '" rows="3"></textarea>' + why(q, showWhy) + "</div>";
       case "select":
@@ -52,7 +54,7 @@
       case "pct3":
         return '<fieldset class="q" data-q="' + q.k + '">' + head(q, null, "legend") + '<div class="pct">' + q.parts.map(function (p) {
           var pi = id(p.k);
-          return '<div class="pctin"><label for="' + pi + '">' + esc(p.label) + '</label><span class="sfx"><input type="number" id="' + pi + '" name="' + p.k + '" min="0" max="100" inputmode="numeric"><i>%</i></span></div>';
+          return '<div class="pctin"><label for="' + pi + '">' + esc(p.label) + '</label>' + slider(p.k, pi, 0, 100, 5, false, "%") + '</div>';
         }).join("") + '<p class="pcttotal" aria-live="polite"></p></div>' + why(q, showWhy) + "</fieldset>";
       case "scores":
         return '<fieldset class="q" data-q="' + q.k + '">' + head(q, null, "legend") + '<div class="scores">' + q.parts.map(function (p) {
@@ -86,6 +88,38 @@
     }
     return "";
   }
+
+  // A slider that starts unanswered: nothing is saved until it is moved, and "Skip" clears it again.
+  function slider(k, i, min, max, step, plus, unit) {
+    return '<div class="sl" data-min="' + min + '" data-max="' + max + '" data-plus="' + (plus ? 1 : "") + '" data-unit="' + esc(unit || "") + '">' +
+      '<input type="range" id="' + i + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + (min + Math.round((max - min) / 2 / step) * step) + '" aria-valuetext="Not answered">' +
+      '<output for="' + i + '">Not answered</output><button type="button" class="slskip" hidden>Skip</button>' +
+      '<input type="hidden" name="' + k + '" value=""></div>';
+  }
+  function slText(box, v) {
+    if (v === "") return "Not answered";
+    var u = box.dataset.unit, top = box.dataset.plus && +v >= +box.dataset.max;
+    return v + (top ? "+" : "") + (u === "%" ? "%" : u ? " " + u : "");
+  }
+  function slShow(box) {
+    var r = $("input[type=range]", box), h = $("input[type=hidden]", box), set = h.value !== "";
+    if (set) r.value = h.value;
+    box.classList.toggle("set", set);
+    $("output", box).textContent = slText(box, h.value);
+    r.setAttribute("aria-valuetext", slText(box, h.value));
+    $(".slskip", box).hidden = !set;
+    var pct = (r.value - r.min) / (r.max - r.min) * 100; r.style.setProperty("--fill", (set ? pct : 0) + "%");
+  }
+  function syncSliders(root) { $$(".sl", root).forEach(slShow); }
+  document.addEventListener("input", function (e) {
+    var r = e.target; if (!r.matches || !r.matches(".sl input[type=range]")) return;
+    var box = r.closest(".sl"); $("input[type=hidden]", box).value = r.value; slShow(box);
+  }, true); // capture: update the saved value before the form's own listeners run
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".slskip"); if (!b) return;
+    var box = b.closest(".sl"), h = $("input[type=hidden]", box); h.value = ""; slShow(box);
+    h.dispatchEvent(new Event("input", { bubbles: true }));
+  });
 
   function memberRow(i, prev) {
     var defaults = ["Office manager", "Hygienist", "Dental assistant"], p = prev || {};
@@ -208,7 +242,7 @@
       .catch(function (x) { self.showErr(x.message); })
       .then(function () { self.busy = false; self.next.disabled = false; self.next.textContent = label; self.next.classList.remove("loading"); self.next.removeAttribute("aria-busy"); });
   };
-  Wizard.prototype.reset = function () { this.form.reset(); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
+  Wizard.prototype.reset = function () { this.form.reset(); $$(".sl input[type=hidden]", this.form).forEach(function (h) { h.value = ""; }); syncSliders(this.form); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
   Wizard.prototype.finish = function () { $(".count", this.d).textContent = "Done"; this.form.hidden = true; $(".wiz-foot", this.d).hidden = true; $(".wiz-main", this.d).classList.add("finished"); var dn = $(".wiz-done", this.d); dn.hidden = false; $(".wiz-scroll", this.d).scrollTop = 0; dn.focus(); };
 
   // Posts a form. Retries once on a dropped connection or a reply that isn't ours.
@@ -337,7 +371,7 @@
   }
   function pctTotal(w) {
     var el = $(".pcttotal", w.form); if (!el) return;
-    var parts = $$(".pct input", w.form).map(function (i) { return i.value === "" ? null : +i.value; });
+    var parts = $$(".pct input[type=hidden]", w.form).map(function (i) { return i.value === "" ? null : +i.value; });
     if (parts.every(function (v) { return v === null; })) { el.textContent = ""; return; }
     var t = parts.reduce(function (a, b) { return a + (b || 0); }, 0);
     el.textContent = "Total " + t + "%"; el.className = "pcttotal" + (Math.abs(t - 100) <= 5 ? " ok" : "");
@@ -360,7 +394,7 @@
   function setupPrework() {
     pre = new Wizard($("#dlg-prework"), Q.PREWORK, {
       url: "/api/prework", submitLabel: "Send our pre-work", showWhy: true,
-      setup: function (w) { loadDraft(w); w.onChange({ target: w.form }); },
+      setup: function (w) { loadDraft(w); syncSliders(w.form); w.onChange({ target: w.form }); },
       onChange: function (w) { pctTotal(w); reportProgress(w); saveDraft(w); },
       onStep: function (w) { reportProgress(w); },
       collect: function (w) { return w.values(); },
