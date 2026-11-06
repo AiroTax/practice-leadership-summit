@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       const base = process.env.VERCEL ? SITE : `http://${req.headers.host}`;
       const link = `${base}/api/auth?t=${encodeURIComponent(linkToken(email))}`;
       const r = await sendSignIn(email, link);
-      if (!r.ok) return send(res, 502, { ok: false, error: "We couldn’t send the email just now. Try again in a minute." });
+      if (!r.ok) return send(res, 502, { ok: false, error: "We couldn’t send the email. The email service said: " + (r.error || "no reason given") });
       if (r.local && !process.env.VERCEL) devLink = link;
     }
     // Same answer either way, so the form doesn't reveal who is on the team.
