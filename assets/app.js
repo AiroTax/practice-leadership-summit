@@ -11,6 +11,7 @@
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  window.PLS_INBOX = INBOX;
   var money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
   $("#inbox3").textContent = INBOX;
 
@@ -71,6 +72,7 @@
 
   // price-builder state (team: 1, 2, 3 or 4 = "4 or more")
   var sel = { team: 3, extra: 1, kasper: false };
+  window.PLS_PRICE = price;
   function people(s) { return s.team === 4 ? 3 + Math.max(1, Math.min(6, s.extra || 1)) : s.team; }
 
   function renderBuilder() {
@@ -98,11 +100,11 @@
     var d = dialogs[name]; if (!d) return;
     lastTrigger = trigger || null;
     Object.keys(dialogs).forEach(function (k) { if (k !== name && dialogs[k].open) dialogs[k].close(); });
-    if (name === "register") prepareRegister();
+    if (window.PLS_WIZ) window.PLS_WIZ.open(name, name === "register" ? { team: sel.team, extra: sel.extra, kasper: sel.kasper } : null);
     if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", "");
     document.body.classList.add("modal-open");
-    var first = d.querySelector(".modal-body:not([hidden]) input:not([type=hidden]):not([tabindex='-1']), .modal-body:not([hidden]) select");
-    if (first) setTimeout(function () { first.focus(); }, 30);
+    var first = d.querySelector(".wstep:not([hidden]) input:not([tabindex='-1']), .wstep:not([hidden]) select");
+    if (first) setTimeout(function () { first.focus(); }, 60);
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
   }
   function closeModal(d) {
@@ -127,126 +129,6 @@
     setTimeout(function () { openModal(location.hash.slice(1)); }, 300);
   }
 
-  /* ---------- registration form ---------- */
-  var ROLES = ["Office manager", "Associate dentist", "Hygienist", "Dental assistant", "Treatment coordinator", "Front desk", "Other"];
-  var regForm = $("#regform");
-  var TICKET_TO_TEAM = { "Single seat": 1, "Team of 2": 2, "Team of 3": 3, "Team of 4 or more": 4 };
-
-  function memberRow(i) {
-    var defaults = ["Office manager", "Hygienist", "Dental assistant"];
-    return '<p class="memberhead">Team member ' + (i + 2) + '</p><div class="member">' +
-      '<div class="fld"><label for="m-name-' + i + '">Full name</label><input type="text" id="m-name-' + i + '" data-m="name" maxlength="100"></div>' +
-      '<div class="fld"><label for="m-role-' + i + '">Role</label><select id="m-role-' + i + '" data-m="role">' +
-      ROLES.map(function (r) { return "<option" + (r === defaults[i] ? " selected" : "") + ">" + r + "</option>"; }).join("") + "</select></div>" +
-      '<div class="fld"><label for="m-email-' + i + '">Email</label><input type="email" id="m-email-' + i + '" data-m="email" maxlength="120"></div></div>';
-  }
-  function syncMembers() {
-    var team = TICKET_TO_TEAM[$("#r-ticket").value] || 3;
-    var want = Math.min(3, (team === 4 ? 4 : team) - 1);   // the form collects up to 3 people besides the owner
-    var box = $("#r-members"), have = $$(".member", box).length;
-    for (var i = have; i < want; i++) { var w = document.createElement("div"); w.className = "mwrap"; w.innerHTML = memberRow(i); box.appendChild(w); }
-    $$(".mwrap", box).forEach(function (w, idx) { w.hidden = idx >= want; });
-    $("#r-extra-wrap").hidden = team !== 4;
-  }
-  function regSummary() {
-    var team = TICKET_TO_TEAM[$("#r-ticket").value] || 3;
-    var n = team === 4 ? 3 + Math.max(1, Math.min(6, +$("#r-extra").value || 1)) : team;
-    var p = price(n, $("#r-kasper").checked);
-    $("#reg-sum-ticket").textContent = $("#r-ticket").value + " · " + n + (n === 1 ? " person" : " people");
-    $("#reg-sum-price").textContent = money(p.total);
-    $("#reg-sum-bonus").textContent = p.bonus;
-  }
-  function prepareRegister() {
-    $("#reg-done").hidden = true; regForm.hidden = false;
-    $("#r-ticket").value = TICKETS[sel.team];
-    $("#r-extra").value = sel.extra || 1;
-    $("#r-kasper").checked = sel.kasper;
-    syncMembers(); regSummary();
-  }
-  $("#r-ticket").addEventListener("change", function () { syncMembers(); regSummary(); });
-  $("#r-extra").addEventListener("input", regSummary);
-  $("#r-kasper").addEventListener("change", regSummary);
-  $("#r-heard").addEventListener("change", function () { $("#r-ref-wrap").hidden = this.value.indexOf("referral") < 0; });
-
-  function showErr(el, msg) { el.textContent = msg; el.hidden = !msg; if (msg) el.scrollIntoView({ block: "nearest" }); }
-  function busy(btn, on, label) { btn.disabled = on; if (on) { btn.dataset.label = btn.textContent; btn.textContent = label; } else if (btn.dataset.label) btn.textContent = btn.dataset.label; }
-  // Posts a form. Retries once if the connection drops or the server answers with something
-  // that isn't our JSON (a gateway or network hiccup); our own validation errors are shown as-is.
-  function post(url, body, retried) {
-    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), cache: "no-store" })
-      .then(function (r) {
-        return r.text().then(function (t) {
-          var j = null; try { j = JSON.parse(t); } catch (e) {}
-          if (j && j.ok) return j;
-          if (j && j.error) throw Object.assign(new Error(j.error), { final: true });
-          throw new Error("The server answered with code " + r.status + ".");
-        });
-      }, function () { throw new Error("We couldn't reach the server. Check your internet connection."); })
-      .catch(function (x) {
-        if (x.final) throw x;
-        if (!retried) return new Promise(function (ok) { setTimeout(ok, 1200); }).then(function () { return post(url, body, true); });
-        throw new Error(x.message + " Your details are still in the form, so please try again, or email " + INBOX + ".");
-      });
-  }
-
-  regForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var f = regForm.elements, err = $("#reg-err"), missing = [];
-    if (!f.practice.value.trim()) missing.push("practice name");
-    if (!f.town.value.trim()) missing.push("town");
-    if (!f.type.value) missing.push("practice type");
-    if (!f.ownerName.value.trim()) missing.push("owner’s name");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.ownerEmail.value.trim())) missing.push("a valid owner email");
-    if (!f.terms.checked) missing.push("acceptance of the terms");
-    if (missing.length) return showErr(err, "Please add " + missing.join(", ") + ".");
-    showErr(err, "");
-    var members = $$("#r-members .mwrap").filter(function (w) { return !w.hidden; }).map(function (w) {
-      return { name: $("[data-m=name]", w).value.trim(), role: $("[data-m=role]", w).value, email: $("[data-m=email]", w).value.trim() };
-    }).filter(function (m) { return m.name; });
-    var body = {
-      practice: f.practice.value.trim(), town: f.town.value.trim(), type: f.type.value, ticket: f.ticket.value,
-      extra: f.ticket.value === "Team of 4 or more" ? Math.max(1, +f.extra.value || 1) : 0, kasper: f.kasper.checked,
-      ownerName: f.ownerName.value.trim(), ownerEmail: f.ownerEmail.value.trim(), ownerPhone: f.ownerPhone.value.trim(),
-      members: members, heard: f.heard.value, referredBy: f.referredBy.value.trim(), diet: f.diet.value.trim(), access: f.access.value.trim(),
-      photo: f.photo.checked, kasperUpdates: f.kasperUpdates.checked, gadUpdates: f.gadUpdates.checked, partnerIntros: f.partnerIntros.checked,
-      terms: f.terms.checked, website: f.pls_hp.value
-    };
-    var btn = $("#reg-submit"); busy(btn, true, "Saving…");
-    post("/api/register", body).then(function (j) {
-      $("#reg-ref").textContent = j.reference || ("#" + j.number);
-      $("#reg-email").textContent = body.ownerEmail;
-      regForm.hidden = true; $("#reg-done").hidden = false; $("#reg-done").focus();
-      $("#p-num").value = j.number || ""; $("#p-practice").value = body.practice; $("#p-email").value = body.ownerEmail;
-      regForm.reset(); loadStats();
-    }).catch(function (x) { showErr(err, x.message); })
-      .then(function () { busy(btn, false); });
-  });
-  regForm.addEventListener("input", function () { showErr($("#reg-err"), ""); });
-  $("#reg-to-prework").addEventListener("click", function () { openModal("prework", lastTrigger); });
-
-  /* ---------- pre-work form ---------- */
-  var preForm = $("#preform");
-  preForm.addEventListener("input", function () { showErr($("#pw-err"), ""); });
-  dialogs.prework.addEventListener("close", function () { $("#pw-done").hidden = true; preForm.hidden = false; });
-  preForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var f = preForm.elements, err = $("#pw-err");
-    var num = parseInt(String(f.number.value).replace(/[^0-9]/g, ""), 10);
-    if (!num) return showErr(err, "Please add your registration number from the confirmation email.");
-    if (!f.practice.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim()) || !f.challenges.value.trim())
-      return showErr(err, "Please add your practice name, a valid email and your top three challenges.");
-    showErr(err, "");
-    var nOrNull = function (v) { return v === "" ? null : +v; };
-    var body = {
-      number: num, practice: f.practice.value.trim(), email: f.email.value.trim(),
-      years: nOrNull(f.years.value), locations: nOrNull(f.locations.value), teamSize: nOrNull(f.teamSize.value), newPatients: nOrNull(f.newPatients.value),
-      payerMix: f.payerMix.value.trim(), production: f.production.value, technology: f.technology.value.trim(), compared: f.compared.value.trim(),
-      challenges: f.challenges.value.trim(), goodWeekend: f.goodWeekend.value.trim(), callTime: f.callTime.value, website: f.pls_hp.value
-    };
-    var btn = $("#pw-submit"); busy(btn, true, "Sending…");
-    post("/api/prework", body).then(function () {
-      preForm.hidden = true; $("#pw-done").hidden = false; $("#pw-done").focus(); preForm.reset();
-    }).catch(function (x) { showErr(err, x.message); })
-      .then(function () { busy(btn, false); });
-  });
+  /* ---------- forms (assets/wizard.js) ---------- */
+  window.PLS_ON_REGISTERED = loadStats;
 })();

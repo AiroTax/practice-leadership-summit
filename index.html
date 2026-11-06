@@ -17,7 +17,7 @@
 <body>
 <nav class="nav" aria-label="Summit">
   <div class="wrap">
-    <div class="brandline">Kasper <span class="x">×</span> Global Academy of Dentistry</div>
+    <div class="brandline">Kasper <span class="amp" aria-label="in partnership with">×</span> Global Academy of Dentistry</div>
     <div class="navlinks">
       <a href="#days">The two days</a><a href="#kit">Take-home</a><a href="#price">Pricing</a><a href="#faq">FAQ</a><button type="button" data-open="prework">Pre-work</button>
       <button type="button" class="cta" data-open="register">Claim your table</button>
@@ -177,43 +177,21 @@
     <div class="sechead">
       <p class="eyebrow">Register</p>
       <h2>Claim your practice’s table.</h2>
-      <p class="lede">Five minutes on our registration form. Your table is held the moment you submit. We confirm by email straight away and send the invoice within two business days. No card needed today.</p>
+      <p class="lede">Four short steps, about three minutes. Your table is held the moment you finish, and we invoice afterwards. No card today.</p>
     </div>
-    <div class="pricer">
-      <div class="panel">
-        <h3>Have these ready</h3>
-        <ul class="needs">
-          <li>Practice name, town and type</li>
-          <li>Name, role and email for each person coming</li>
-          <li>Any dietary or accessibility needs</li>
-          <li>Who referred you, if another practice did</li>
-        </ul>
-        <ol class="flow">
-          <li><b>Submit the form</b><span>Your table is held instantly.</span></li>
-          <li><b>Confirmation email</b><span>With your registration number.</span></li>
-          <li><b>Invoice</b><span>Within two business days.</span></li>
-          <li><b>Pre-work</b><span>20 minutes, due Dec 11.</span></li>
-        </ol>
-      </div>
-      <div class="panel regcta">
-        <span class="eyebrow">Your selection</span>
+    <div class="regrow">
+      <ol class="path">
+        <li><b>Register</b><span>Four steps. Table held instantly, confirmation by email.</span></li>
+        <li><b>Invoice</b><span>Within two business days.</span></li>
+        <li id="prework"><b>Pre-work</b><span>About 15 minutes of mostly taps, due Dec 11. It becomes your Practice Report.</span></li>
+        <li><b>Welcome call</b><span>20 minutes in mid-December to walk through your report.</span></li>
+      </ol>
+      <div class="regcta">
         <p class="sel" id="regsel">Team of 3 · $3,400</p>
         <p class="fine" id="regsel2">Change it in the price builder above.</p>
-        <button type="button" class="btn primary big" data-open="register">Register now</button>
-        <p class="fine">The form opens right here, with your team size already filled in.</p>
+        <div class="row"><button type="button" class="btn primary big" data-open="register">Register now</button><button type="button" class="btn line" data-open="prework">Already registered? Send pre-work</button></div>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="band" id="prework" style="background:var(--panel)">
-  <div class="wrap">
-    <div class="sechead">
-      <p class="eyebrow">Pre-work · registered practices</p>
-      <h2>Twenty minutes now, so Day 1 starts from your numbers.</h2>
-      <p class="lede">Due Dec 11, or five days after you register. Rough figures are fine. Our facilitators turn it into your Practice Snapshot before your welcome call. You’ll need the registration number from your confirmation email.</p>
-    </div>
-    <div class="row"><button type="button" class="btn primary big" data-open="prework">Send our pre-work</button><span class="fine">Have your registration number ready.</span></div>
   </div>
 </section>
 
@@ -240,100 +218,67 @@
 </footer>
 
 
-<dialog class="modal" id="dlg-register" aria-labelledby="reg-title">
-  <div class="modal-head">
-    <div><p class="eyebrow">Register · Jan 9–10, 2027</p><h2 id="reg-title">Claim your practice’s table</h2></div>
-    <button type="button" class="x" data-close aria-label="Close">×</button>
-  </div>
-  <form id="regform" class="modal-body" novalidate>
-    <div class="summary" aria-live="polite"><span id="reg-sum-ticket">Team of 3</span><b id="reg-sum-price">$3,400</b><span id="reg-sum-bonus"></span></div>
-    <fieldset>
-      <legend>Your practice</legend>
-      <div class="formgrid">
-        <div class="fld"><label for="r-practice">Practice name</label><input type="text" id="r-practice" name="practice" autocomplete="organization" maxlength="120" required></div>
-        <div class="fld"><label for="r-town">Town</label><input type="text" id="r-town" name="town" placeholder="e.g. Clifton" maxlength="80" required></div>
-        <div class="fld"><label for="r-type">Practice type</label><select id="r-type" name="type" required><option value="">Choose…</option><option>Startup (under 5 years)</option><option>Established, one location</option><option>Multi-site</option></select></div>
-        <div class="fld"><label for="r-ticket">Who is coming?</label><select id="r-ticket" name="ticket" required><option>Team of 3</option><option>Team of 2</option><option>Single seat</option><option>Team of 4 or more</option></select></div>
-        <div class="fld" id="r-extra-wrap" hidden><label for="r-extra">People beyond three</label><input type="number" id="r-extra" name="extra" min="1" max="6" value="1"></div>
-        <label class="check full"><input type="checkbox" id="r-kasper" name="kasper"> <span>We’re a current Kasper customer <span class="fine">(20% off a standard team of three)</span></span></label>
-      </div>
-    </fieldset>
-    <fieldset>
-      <legend>Your team</legend>
-      <p class="fine">Owner first. Role decides your lanyard colour and who sits where in role play.</p>
-      <div class="formgrid">
-        <div class="fld"><label for="r-oname">Owner’s full name</label><input type="text" id="r-oname" name="ownerName" autocomplete="name" maxlength="100" required></div>
-        <div class="fld"><label for="r-oemail">Owner’s email</label><input type="email" id="r-oemail" name="ownerEmail" autocomplete="email" maxlength="120" required></div>
-        <div class="fld"><label for="r-ophone">Owner’s phone</label><input type="tel" id="r-ophone" name="ownerPhone" autocomplete="tel" maxlength="40"></div>
-      </div>
-      <div id="r-members"></div>
-    </fieldset>
-    <fieldset>
-      <legend>So we can look after you</legend>
-      <div class="formgrid">
-        <div class="fld"><label for="r-heard">How did you hear about the summit?</label><select id="r-heard" name="heard"><option>Kasper</option><option>Global Academy of Dentistry</option><option>Another practice (referral)</option><option>Greater New York Dental Meeting</option><option>Other</option></select></div>
-        <div class="fld" id="r-ref-wrap" hidden><label for="r-ref">Which practice referred you?</label><input type="text" id="r-ref" name="referredBy" maxlength="120"></div>
-        <div class="fld"><label for="r-diet">Dietary needs <span class="hint">halal, kosher, vegetarian, gluten-free, allergies</span></label><input type="text" id="r-diet" name="diet" maxlength="200"></div>
-        <div class="fld"><label for="r-access">Accessibility needs</label><input type="text" id="r-access" name="access" maxlength="200"></div>
-      </div>
-    </fieldset>
-    <fieldset>
-      <legend>Your choices</legend>
-      <label class="check"><input type="checkbox" name="photo" checked> <span>A team photo for our Plan Book is fine</span></label>
-      <label class="check"><input type="checkbox" name="kasperUpdates"> <span>Kasper may send us updates</span></label>
-      <label class="check"><input type="checkbox" name="gadUpdates"> <span>Global Academy of Dentistry may send us updates</span></label>
-      <label class="check"><input type="checkbox" name="partnerIntros"> <span>Introduce us to summit partners whose solutions match our plan</span></label>
-      <label class="check"><input type="checkbox" id="r-terms" name="terms" required> <span>We accept the cancellation and weather terms: full refund to Dec 4, 50% to Dec 18, then credit; free name changes; if snow makes travel unsafe we move to Jan 23–24 or refund in full.</span></label>
-    </fieldset>
-    <div class="hp" aria-hidden="true"><label for="r-website">Leave this empty</label><input type="text" id="r-website" name="pls_hp" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore></div>
-    <p class="err" id="reg-err" role="alert" hidden></p>
-    <div class="modal-foot"><button type="button" class="btn line" data-close>Cancel</button><button class="btn primary" type="submit" id="reg-submit">Claim our table</button></div>
-  </form>
-  <div class="modal-body done" id="reg-done" hidden tabindex="-1">
-    <div class="tick" aria-hidden="true">✓</div>
-    <h3>Your table is held.</h3>
-    <p class="refbig" id="reg-ref">PLS-000</p>
-    <p>We’ve emailed a confirmation to <b id="reg-email"></b>. Your invoice follows within two business days.</p>
-    <p class="fine">Next: 20 minutes of pre-work so Day 1 starts from your numbers. Due Dec 11.</p>
-    <div class="modal-foot"><button type="button" class="btn line" data-close>Done</button><button type="button" class="btn primary" id="reg-to-prework">Do our pre-work now</button></div>
-  </div>
-</dialog>
-
-<dialog class="modal" id="dlg-prework" aria-labelledby="pw-title">
-  <div class="modal-head">
-    <div><p class="eyebrow">Pre-work · registered practices</p><h2 id="pw-title">Twenty minutes, so Day 1 starts from your numbers</h2></div>
-    <button type="button" class="x" data-close aria-label="Close">×</button>
-  </div>
-  <form id="preform" class="modal-body" novalidate>
-    <p class="fine">Rough figures are fine. Our facilitators turn this into your Practice Snapshot before your welcome call.</p>
-    <div class="formgrid">
-      <div class="fld"><label for="p-num">Registration number <span class="hint">from your confirmation email, e.g. 7 or PLS-007</span></label><input type="text" id="p-num" name="number" inputmode="numeric" maxlength="12" required></div>
-      <div class="fld"><label for="p-practice">Practice name</label><input type="text" id="p-practice" name="practice" maxlength="120" required></div>
-      <div class="fld full"><label for="p-email">Your email</label><input type="email" id="p-email" name="email" maxlength="120" required></div>
-      <div class="fld"><label for="p-years">Years open</label><input type="number" id="p-years" name="years" min="0" max="80"></div>
-      <div class="fld"><label for="p-locs">Locations</label><input type="number" id="p-locs" name="locations" min="1" max="50" value="1"></div>
-      <div class="fld"><label for="p-team">Team size (all roles)</label><input type="number" id="p-team" name="teamSize" min="1" max="500"></div>
-      <div class="fld"><label for="p-np">New patients per month</label><input type="number" id="p-np" name="newPatients" min="0" max="5000"></div>
-      <div class="fld"><label for="p-payer">Payer mix <span class="hint">e.g. 50% PPO, 30% Medicaid, 20% fee-for-service</span></label><input type="text" id="p-payer" name="payerMix" maxlength="200"></div>
-      <div class="fld"><label for="p-prod">Monthly production, roughly</label><select id="p-prod" name="production"><option value="">Choose…</option><option>Under $100k</option><option>$100k–$200k</option><option>$200k–$400k</option><option>$400k–$800k</option><option>Over $800k</option></select></div>
-      <div class="fld full"><label for="p-tech">Your main technology <span class="hint">practice management, imaging, communication, payments</span></label><input type="text" id="p-tech" name="technology" maxlength="300"></div>
-      <div class="fld full"><label for="p-comp">Who do patients compare you with nearby?</label><input type="text" id="p-comp" name="compared" maxlength="300"></div>
-      <div class="fld full"><label for="p-ch">Your top three challenges right now</label><textarea id="p-ch" name="challenges" maxlength="3000" required></textarea></div>
-      <div class="fld full"><label for="p-good">What would make this weekend a success for your team?</label><textarea id="p-good" name="goodWeekend" maxlength="3000"></textarea></div>
-      <div class="fld full"><label for="p-slot">Best time for your 20-minute welcome call</label><select id="p-slot" name="callTime"><option>Dec 14–18, mornings</option><option>Dec 14–18, afternoons</option><option>Dec 14–18, evenings</option><option>Jan 4–6 (late registrants)</option></select></div>
+<dialog class="wiz" id="dlg-register" aria-labelledby="reg-label">
+  <aside class="wiz-rail">
+    <p class="railhead" id="reg-label">Claim your table</p>
+    <div class="tcard" aria-live="polite">
+      <svg viewBox="0 0 120 120" aria-hidden="true"></svg>
+      <p class="tname empty">Your practice</p>
+      <p class="tticket"></p>
+      <p class="tprice"></p>
+      <p class="tbonus"></p>
     </div>
-    <div class="hp" aria-hidden="true"><label for="p-website">Leave this empty</label><input type="text" id="p-website" name="pls_hp" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore></div>
-    <p class="err" id="pw-err" role="alert" hidden></p>
-    <div class="modal-foot"><button type="button" class="btn line" data-close>Cancel</button><button class="btn primary" type="submit" id="pw-submit">Send our pre-work</button></div>
-  </form>
-  <div class="modal-body done" id="pw-done" hidden tabindex="-1">
-    <div class="tick" aria-hidden="true">✓</div>
-    <h3>Pre-work received. Thank you.</h3>
-    <p>Your Practice Snapshot arrives before your welcome call in December.</p>
-    <div class="modal-foot"><button type="button" class="btn primary" data-close>Done</button></div>
+    <ol class="steps" aria-label="Steps"></ol>
+  </aside>
+  <div class="wiz-main">
+    <header class="wiz-top">
+      <div><span class="count"></span><span class="nowtitle"></span><span class="mini"></span></div>
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+      <div class="bar" aria-hidden="true"><i></i></div>
+    </header>
+    <div class="wiz-scroll">
+      <form class="wiz-body" id="regform" novalidate></form>
+      <div class="wiz-done" hidden tabindex="-1">
+        <div class="tick" aria-hidden="true">✓</div>
+        <h3>Your table is held.</h3>
+        <p class="refbig" id="reg-ref">PLS-000</p>
+        <p>We’ve emailed a confirmation to <b id="reg-email"></b>. Your invoice follows within two business days.</p>
+        <p class="fine">Next: about 15 minutes of pre-work, due Dec 11. It becomes your Practice Report.</p>
+        <div class="row"><button type="button" class="btn line" data-close>Done</button><button type="button" class="btn primary" data-open="prework">Start our pre-work</button></div>
+      </div>
+    </div>
+    <footer class="wiz-foot"><button type="button" class="btn line back">Back</button><button type="button" class="btn primary next">Continue</button></footer>
   </div>
 </dialog>
 
+<dialog class="wiz" id="dlg-prework" aria-labelledby="pw-label">
+  <aside class="wiz-rail">
+    <p class="railhead" id="pw-label">Pre-work</p>
+    <p class="railnote">Each answer fills a part of your Practice Report.</p>
+    <ul class="report" aria-label="Your report so far"></ul>
+    <ol class="steps" aria-label="Steps"></ol>
+  </aside>
+  <div class="wiz-main">
+    <header class="wiz-top">
+      <div><span class="count"></span><span class="nowtitle"></span><span class="mini">Saved on this device as you go</span></div>
+      <button type="button" class="close" data-close aria-label="Close">×</button>
+      <div class="bar" aria-hidden="true"><i></i></div>
+    </header>
+    <div class="wiz-scroll">
+      <form class="wiz-body" id="preform" novalidate></form>
+      <div class="wiz-done" hidden tabindex="-1">
+        <div class="tick" aria-hidden="true">✓</div>
+        <h3>Pre-work received. Thank you.</h3>
+        <p>Our facilitators turn it into your Practice Report and walk you through it on your welcome call.</p>
+        <div class="row"><button type="button" class="btn primary" data-close>Done</button></div>
+      </div>
+    </div>
+    <footer class="wiz-foot"><button type="button" class="btn line back">Back</button><button type="button" class="btn primary next">Continue</button></footer>
+  </div>
+</dialog>
+
+<script src="/assets/questions.js" defer></script>
+<script src="/assets/wizard.js" defer></script>
 <script src="/assets/app.js" defer></script>
 </body>
 </html>

@@ -17,7 +17,7 @@ export const P = {
   ],
   heard: "fldN31vIvQxzANY0n", referredBy: "fld3iw5ix49qcn2BM", diet: "fldr4DH7Al9mLhW4G", access: "fldPZ8gBSBzToRCcD",
   photo: "fld1Qhf5BJyX3nc5U", kasperUpdates: "fldG0EVPu4TEQ95mv", gadUpdates: "fldELUyW2Pq53zTGu", partnerIntros: "fld2uhU7JcaJe01QC",
-  terms: "fldnxRo2WJYgtRhfl",
+  terms: "fldnxRo2WJYgtRhfl", website: "fldQFOdZqMn0nkVpX", invoiceEmail: "fldiolIO15zYFo9kN", hotel: "fld69foj3pc9Yo3H3",
 };
 export const W = {
   practice: "fldWCLfx5PTn1x2cd", number: "fldr2cS8IAIZ4NYlr", email: "fldxWelk1VyNXyVro", years: "fldsfbXQBYzRVwYLd",

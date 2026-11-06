@@ -4,6 +4,7 @@ import { P, TABLES, createRecord, getRecord, readBody, str, isEmail, rateLimited
 const TYPES = ["Startup (under 5 years)", "Established, one location", "Multi-site"];
 const TICKETS = ["Team of 3", "Team of 2", "Single seat", "Team of 4 or more"];
 const ROLES = ["Office manager", "Associate dentist", "Hygienist", "Dental assistant", "Treatment coordinator", "Front desk", "Other"];
+const HOTEL = ["No room needed", "Friday night", "Saturday night", "Friday and Saturday"];
 const HEARD = ["Kasper", "Global Academy of Dentistry", "Another practice (referral)", "Greater New York Dental Meeting", "Other"];
 
 export default async function handler(req, res) {
@@ -14,7 +15,7 @@ export default async function handler(req, res) {
 async function handle(req, res) {
   if (req.method !== "POST") return send(res, 405, { ok: false, error: "Use POST." });
   const b = readBody(req);
-  if (str(b.website)) return send(res, 200, { ok: true, number: 0, reference: "" }); // honeypot: quietly ignore bots
+  if (str(b.hp)) return send(res, 200, { ok: true, number: 0, reference: "" }); // honeypot: quietly ignore bots
   if (rateLimited(req)) return send(res, 429, { ok: false, error: "Too many attempts. Please wait a few minutes and try again." });
 
   const practice = str(b.practice, 120), town = str(b.town, 80), ownerName = str(b.ownerName, 100), ownerEmail = str(b.ownerEmail, 120);
@@ -36,7 +37,12 @@ async function handle(req, res) {
     [P.diet]: str(b.diet), [P.access]: str(b.access),
     [P.photo]: b.photo === true, [P.kasperUpdates]: b.kasperUpdates === true, [P.gadUpdates]: b.gadUpdates === true,
     [P.partnerIntros]: b.partnerIntros === true, [P.terms]: true,
+    [P.hotel]: HOTEL.includes(b.hotel) ? b.hotel : "",
   };
+  const site = str(b.website, 200);
+  if (site) fields[P.website] = /^https?:\/\//i.test(site) ? site : "https://" + site;
+  const invoiceEmail = str(b.invoiceEmail, 120);
+  if (isEmail(invoiceEmail)) fields[P.invoiceEmail] = invoiceEmail;
   if (ticket === "Team of 4 or more") fields[P.extra] = Math.max(1, Math.min(6, parseInt(b.extra, 10) || 1));
   (Array.isArray(b.members) ? b.members : []).slice(0, 3).forEach((m, i) => {
     const name = str(m && m.name, 100);

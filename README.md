@@ -68,3 +68,7 @@ npm run dev         # real Airtable — copy .env.example to .env and add AIRTAB
 ## Hosting elsewhere
 
 The `api/` handlers use the standard Node `(req, res)` signature that Vercel runs as-is. On Netlify, Cloudflare or your own server, wrap each handler in that platform's function format, or run `dev-server.js` behind any Node host (set `PORT`).
+
+## Questions
+
+Every question on the registration and pre-work forms lives in `api/_lib/questions.js`, with why we ask it and which part of the Practice Report it feeds. The website's step-by-step pop-ups (`assets/wizard.js`) and the server checks are built from that file. After changing a question, run `npm run questions` to refresh `assets/questions.js`, then commit both. New answers need a matching Airtable field: put its field ID in `f`.
