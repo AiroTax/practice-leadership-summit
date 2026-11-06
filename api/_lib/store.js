@@ -19,7 +19,8 @@ const QUESTIONS = allQuestions(PREWORK);
 
 export function backend() {
   if (process.env.STORE_MOCK === "1" || process.env.AIRTABLE_MOCK === "1") return "mock";
-  if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) return "supabase";
+  const k = process.env.SUPABASE_SERVICE_KEY || "";
+  if (process.env.SUPABASE_URL && k && !k.startsWith("sb_publishable_")) return "supabase"; // the public key can't read the tables
   return "airtable";
 }
 const err = (msg, status = 502) => Object.assign(new Error(msg), { status });
@@ -39,12 +40,16 @@ export function newKey() {
 /* ======================================================================================
    Supabase (PostgREST over fetch, service key, server side only)
    ====================================================================================== */
+// New Supabase secret keys (sb_secret_…) go in the apikey header only; older service_role keys are JWTs and go in both.
+function sbAuth() {
+  const key = process.env.SUPABASE_SERVICE_KEY;
+  return key.startsWith("sb_") ? { apikey: key } : { apikey: key, Authorization: `Bearer ${key}` };
+}
 async function sb(path, init = {}) {
   const url = process.env.SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/" + path;
-  const key = process.env.SUPABASE_SERVICE_KEY;
   const res = await fetch(url, {
     ...init,
-    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", Prefer: "return=representation", ...(init.headers || {}) },
+    headers: { ...sbAuth(), "Content-Type": "application/json", Prefer: "return=representation", ...(init.headers || {}) },
   });
   const text = await res.text();
   const json = text ? JSON.parse(text) : null;
@@ -90,7 +95,7 @@ const SUPA = {
   async listPractices() { return (await sb("practices?order=created_at.desc&limit=1000")).map(fromRow); },
   async countPractices() {
     const res = await fetch(process.env.SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/practices?select=id", {
-      method: "HEAD", headers: { apikey: process.env.SUPABASE_SERVICE_KEY, Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`, Prefer: "count=exact" } });
+      method: "HEAD", headers: { ...sbAuth(), Prefer: "count=exact" } });
     return Number((res.headers.get("content-range") || "*/0").split("/")[1]) || 0;
   },
   async updatePractice(id, patch) {
