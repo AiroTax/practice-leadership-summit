@@ -1,0 +1,14 @@
+/* Dark mode, switched from the moon button in the menu. Light is the default. */
+html[data-theme="dark"]{
+  --bg:#0B1020; --panel:#121A2E; --sunk:#1B2440; --line:#283352;
+  --ink:#EEF1F8; --ink2:#C3CADC; --muted:#8F99B3;
+  --accent-soft:color-mix(in srgb,var(--accent) 24%,#121A2E); --second-soft:color-mix(in srgb,var(--second) 26%,#121A2E); --ok-soft:#10301F; --ok:#6FD3A6;
+  --hero-bg:#0B1020; --floor-bg:#101830; --floor-line:#283352; --floor-ink:#EEF1F8; --floor-muted:#8F99B3;
+  --t-open:#2A3961; --t-seat:#3A4A77; --t-num:#EEF1F8;
+  --nav-bg:rgba(11,16,32,.86);
+  --hero:#060A16; --hero-line:#1F2A47;
+  color-scheme:dark;
+}
+html[data-theme="dark"] .daytabs button[aria-selected="true"]{box-shadow:none}
+html[data-theme="dark"] .floortip,html[data-theme="dark"] .floortip::after{background:#FFFFFF;color:#0B1A33}
+html[data-theme="dark"] .pg{box-shadow:0 26px 50px -22px rgba(0,0,0,.7)}

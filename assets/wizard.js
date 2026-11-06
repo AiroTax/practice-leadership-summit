@@ -116,7 +116,7 @@
     this.back.addEventListener("click", function () { self.go(self.i - 1); });
     $(".steps", dialog).addEventListener("click", function (e) { var b = e.target.closest("[data-go]"); if (b && +b.dataset.go < self.i) self.go(+b.dataset.go); });
     this.form.addEventListener("submit", function (e) { e.preventDefault(); self.forward(); });
-    this.form.addEventListener("input", function (e) { self.showErr(""); self.onChange(e); });
+    this.form.addEventListener("input", function (e) { self.showErr(""); var q = e.target.closest && e.target.closest(".q.bad"); if (q) q.classList.remove("bad"); self.onChange(e); });
     this.form.addEventListener("change", function (e) { self.onChange(e); });
     this.form.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && e.target.tagName === "INPUT" && e.target.type !== "checkbox" && e.target.type !== "radio") { e.preventDefault(); self.forward(); }
@@ -135,7 +135,7 @@
     $$(".steps li", this.d).forEach(function (li, k) { li.className = k < n ? "done" : k === n ? "now" : ""; if (k === n) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current"); });
     $(".count", this.d).textContent = "Step " + (n + 1) + " of " + total;
     $(".nowtitle", this.d).textContent = this.def.steps[n].title;
-    $(".bar i", this.d).style.width = ((n + 1) / total * 100) + "%";
+    $(".bar i", this.d).style.setProperty("--prog", (n + 1) / total);
     this.back.hidden = n === 0;
     this.next.textContent = n === total - 1 ? this.o.submitLabel : "Continue";
     this.showErr("");
@@ -143,7 +143,7 @@
     if (!quiet) { var h = $("h3", steps[n]); setTimeout(function () { h.focus({ preventScroll: true }); }, 20); }
     if (this.o.onStep) this.o.onStep(this, n);
   };
-  Wizard.prototype.showErr = function (m) { this.err.textContent = m; this.err.hidden = !m; };
+  Wizard.prototype.showErr = function (m) { var e = this.err; e.hidden = true; e.textContent = m; if (m) { void e.offsetWidth; e.hidden = false; } };
   Wizard.prototype.val = function (k) {
     var els = $$('[name="' + k + '"]', this.form);
     if (!els.length) return undefined;
@@ -171,20 +171,29 @@
     if (this.o.onChange) this.o.onChange(this, e);
   };
   Wizard.prototype.check = function () {
-    var self = this, step = this.def.steps[this.i], missing = [];
+    var self = this, step = this.def.steps[this.i], missing = [], bad = [];
+    $$(".q.bad", this.form).forEach(function (q) { q.classList.remove("bad"); });
     step.questions.forEach(function (q) {
       var el = $('[data-q="' + q.k + '"]', self.form);
       if (el && el.hidden) return;
-      if (q.type === "email" && self.val(q.k) && !EMAIL.test(self.val(q.k))) missing.push("a valid " + q.label.toLowerCase());
+      var miss = function (m) { missing.push(m); if (el) bad.push(el); };
+      if (q.type === "email" && self.val(q.k) && !EMAIL.test(self.val(q.k))) miss("a valid " + q.label.toLowerCase());
       if (!q.req) return;
       var v = self.val(q.k);
-      if (q.type === "list3") { if (!v.some(Boolean)) missing.push("at least one challenge"); return; }
-      if (q.type === "email") { if (!EMAIL.test(v || "")) missing.push(q.label.toLowerCase()); return; }
+      if (q.type === "list3") { if (!v.some(Boolean)) miss("at least one challenge"); return; }
+      if (q.type === "email") { if (!EMAIL.test(v || "")) miss(q.label.toLowerCase()); return; }
       if (["seats", "owner", "members", "consents"].indexOf(q.type) >= 0) return;
-      if (!v || (Array.isArray(v) && !v.length)) missing.push(q.label.replace(/\?$/, "").toLowerCase());
+      if (!v || (Array.isArray(v) && !v.length)) miss(q.label.replace(/\?$/, "").toLowerCase());
     });
+    this.markBad = bad;
     if (this.o.check) missing = missing.concat(this.o.check(this, step.id));
-    if (missing.length) { this.showErr("Please add " + missing.join(", ") + "."); return false; }
+    if (missing.length) {
+      this.showErr("Please add " + missing.join(", ") + ".");
+      (this.markBad || []).forEach(function (el) { el.classList.add("bad"); });
+      var first = this.markBad && this.markBad[0] && $("input:not([type=hidden]),select,textarea", this.markBad[0]);
+      if (first) { first.focus({ preventScroll: true }); this.markBad[0].scrollIntoView({ block: "center", behavior: "smooth" }); }
+      return false;
+    }
     return true;
   };
   Wizard.prototype.forward = function () {
@@ -194,10 +203,10 @@
   };
   Wizard.prototype.submit = function () {
     var self = this, body = this.o.collect(this);
-    this.busy = true; this.next.disabled = true; var label = this.next.textContent; this.next.textContent = "Saving…";
+    this.busy = true; this.next.disabled = true; var label = this.next.textContent; this.next.textContent = "Saving…"; this.next.classList.add("loading"); this.next.setAttribute("aria-busy", "true");
     post(this.o.url, body).then(function (j) { self.o.done(self, j, body); })
       .catch(function (x) { self.showErr(x.message); })
-      .then(function () { self.busy = false; self.next.disabled = false; self.next.textContent = label; });
+      .then(function () { self.busy = false; self.next.disabled = false; self.next.textContent = label; self.next.classList.remove("loading"); self.next.removeAttribute("aria-busy"); });
   };
   Wizard.prototype.reset = function () { this.form.reset(); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
   Wizard.prototype.finish = function () { $(".count", this.d).textContent = "Done"; this.form.hidden = true; $(".wiz-foot", this.d).hidden = true; $(".wiz-main", this.d).classList.add("finished"); var dn = $(".wiz-done", this.d); dn.hidden = false; $(".wiz-scroll", this.d).scrollTop = 0; dn.focus(); };
@@ -239,18 +248,27 @@
   }
   function drawTable(w) {
     var n = seatCount(w), named = [w.val("ownerName")].concat(members(w).map(function (m) { return m.name; }));
-    var shown = Math.min(n, 8), svg = '<circle cx="60" cy="60" r="30" class="tb"/>';
-    for (var k = 0; k < shown; k++) {
-      var a = (k / shown) * 2 * Math.PI - Math.PI / 2;
-      svg += '<circle cx="' + (60 + Math.cos(a) * 46).toFixed(1) + '" cy="' + (60 + Math.sin(a) * 46).toFixed(1) + '" r="9" class="' + (named[k] ? "on" : "") + '"/>';
+    var shown = Math.min(n, 8), box = $(".tcard svg", w.d);
+    if (box.dataset.n !== String(shown)) {
+      var svg = '<circle cx="60" cy="60" r="30" class="tb"/>';
+      for (var k = 0; k < shown; k++) {
+        var a = (k / shown) * 2 * Math.PI - Math.PI / 2;
+        svg += '<circle class="seat" cx="' + (60 + Math.cos(a) * 46).toFixed(1) + '" cy="' + (60 + Math.sin(a) * 46).toFixed(1) + '" r="9"/>';
+      }
+      box.innerHTML = svg; box.dataset.n = shown;
     }
-    $(".tcard svg", w.d).innerHTML = svg;
+    $$(".seat", box).forEach(function (c, k) {
+      var on = !!named[k];
+      if (on && !c.classList.contains("on")) { c.classList.remove("pop"); void c.getBoundingClientRect(); c.classList.add("pop"); }
+      c.classList.toggle("on", on);
+    });
     var name = w.val("practice");
     $(".tname", w.d).textContent = name || "Your practice";
     $(".tname", w.d).classList.toggle("empty", !name);
     var p = window.PLS_PRICE(n, w.val("kasper") === true), tk = TICKETS[+w.val("seats") || 3];
     $(".tticket", w.d).textContent = tk + " · " + n + (n === 1 ? " person" : " people");
-    $(".tprice", w.d).textContent = money(p.total);
+    var tp = $(".tprice", w.d), was = tp.textContent; tp.textContent = money(p.total);
+    if (was && was !== tp.textContent) { tp.classList.remove("bump"); void tp.offsetWidth; tp.classList.add("bump"); }
     $(".tbonus", w.d).textContent = p.bonus || "";
     $(".mini", w.d).textContent = (name ? name + " · " : "") + tk + " · " + money(p.total);
     return p;

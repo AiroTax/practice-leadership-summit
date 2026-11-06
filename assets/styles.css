@@ -1,7 +1,7 @@
 [hidden]{display:none!important}
 /* Practice Leadership Summit. Four screens: hero with a claimable floor plan, the weekend as a Plan Book,
    price and register, questions. Registration and pre-work open as step-by-step pop-ups (wizard.css).
-   Colours and type come from tokens; looks.css sets them per design option and for dark mode. */
+   Colours and type come from tokens; theme-dark.css swaps them for dark mode; motion.css holds every animation. */
 :root{
   --bg:#F5F7FB; --panel:#FFFFFF; --sunk:#EBEEF5; --line:#D9DEE9;
   --ink:#0B1A33; --ink2:#3A4560; --muted:#5F6A84;
@@ -304,11 +304,4 @@ footer .wrap{display:grid;gap:8px}
 footer b{color:var(--ink);font-family:var(--display);font-size:18px}
 #inbox3{font-weight:700;color:var(--ink)}
 
-/* design option picker (shown with ?look= or ?options) */
-.lookpick{display:none}
-[data-options="1"] .lookpick{position:fixed;left:16px;bottom:16px;z-index:30;display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--panel);padding:6px 6px 6px 14px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.3);font-size:13.5px}
-.lookpick button{border:0;background:transparent;color:inherit;font:600 13.5px var(--body);padding:7px 12px;border-radius:999px;cursor:pointer;opacity:.75}
-.lookpick button:hover{opacity:1}
-.lookpick button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);opacity:1}
-@media (max-width:520px){[data-options="1"] .lookpick{left:8px;right:8px;bottom:8px;justify-content:center}.lookpick span{display:none}}
 body.modal-open{overflow:hidden}

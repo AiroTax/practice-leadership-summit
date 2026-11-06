@@ -1,0 +1,141 @@
+/* Motion. One language for the whole site: ease-out, 160ms for controls, 240ms for state changes,
+   up to 420ms for things arriving. Only transform and opacity move. Reduced motion turns it all off. */
+:root{
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+  --t-fast:160ms; --t-mid:240ms; --t-slow:420ms;
+}
+
+/* Presses: everything clickable gives a little under the finger */
+.btn,.navlinks .cta,.seg button,.slist button,.pgbtn,.daytabs button,.themebtn,.close,.tile span,.sdots span{transition:transform var(--t-fast) var(--ease-out),background-color var(--t-fast),border-color var(--t-fast),color var(--t-fast),box-shadow var(--t-fast),filter var(--t-fast)}
+.btn:active,.navlinks .cta:active,.seg button:active,.pgbtn:active:not(:disabled),.themebtn:active,.close:active{transform:scale(.97)}
+.slist button:active{transform:scale(.99)}
+.tile:active span{transform:scale(.98)}
+.sdots label:active span{transform:scale(.92)}
+.btn:hover,.navlinks .cta:hover,.seg button:hover{transform:none}
+@media (hover:hover){.btn.primary:hover,.navlinks .cta:hover{filter:brightness(1.07)}}
+
+/* Hero: one arrival on load, a short stagger of the copy; the floor's seats already pop in */
+@keyframes rise-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.hero-copy > *{animation:rise-in var(--t-slow) var(--ease-out) both}
+.hero-copy > :nth-child(2){animation-delay:60ms}.hero-copy > :nth-child(3){animation-delay:120ms}
+.hero-copy > :nth-child(4){animation-delay:180ms}.hero-copy > :nth-child(5){animation-delay:240ms}.hero-copy > :nth-child(6){animation-delay:300ms}
+.floor{animation:rise-in 600ms var(--ease-out) 120ms both}
+
+/* Countdown digits roll when they change */
+@keyframes roll{from{opacity:0;transform:translateY(-40%)}to{opacity:1;transform:none}}
+.countdown b.rolled{animation:roll var(--t-mid) var(--ease-out)}
+
+/* Floor plan: the tooltip grows from its table, a chosen table pulses before the form opens */
+.floortip{opacity:0;transform:translate(-50%,-100%) scale(.94);transform-origin:50% 100%;transition:opacity var(--t-fast) var(--ease-out),transform var(--t-fast) var(--ease-out)}
+.floortip.show{opacity:1;transform:translate(-50%,-100%) scale(1)}
+@keyframes picked{40%{transform:scale(1.25)}100%{transform:scale(1.12)}}
+#floorplan .tbl.picked .top{animation:picked 220ms var(--ease-out) both;fill:var(--accent)}
+
+/* Day switch: the white pill slides between Saturday and Sunday */
+.daytabs{position:relative;isolation:isolate}
+.daytabs .pill{position:absolute;z-index:-1;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);border-radius:11px;background:var(--panel);box-shadow:0 1px 3px rgba(11,26,51,.12);transition:transform var(--t-mid) var(--ease-out)}
+.daytabs[data-day="2"] .pill{transform:translateX(calc(100% + 4px))}
+.daytabs button[aria-selected="true"]{background:transparent!important;box-shadow:none!important}
+.slist button::after{transition:transform var(--t-fast) var(--ease-out),border-color var(--t-fast)}
+@media (hover:hover){.slist button:hover{transform:none}.slist button:hover::after{transform:translateX(3px) rotate(45deg)}}
+.slist li{animation:rise-in var(--t-mid) var(--ease-out) both}
+.slist li:nth-child(4n+2){animation-delay:30ms}.slist li:nth-child(4n+3){animation-delay:60ms}.slist li:nth-child(4n){animation-delay:90ms}
+.sdetail.swap{animation:rise-in var(--t-mid) var(--ease-out)}
+#pgcount.swap{animation:roll var(--t-mid) var(--ease-out)}
+.tabs i{transition:background-color var(--t-mid) var(--ease-out),transform var(--t-mid) var(--ease-out)}
+.tabs i.on{transform:translateX(2px)}
+
+/* Price: the total counts (app.js); the selected team size gets a quick confirmation */
+.seg button[aria-pressed="true"]{animation:confirm var(--t-mid) var(--ease-out)}
+@keyframes confirm{50%{transform:scale(1.03)}}
+.lines div{animation:rise-in var(--t-mid) var(--ease-out) both}
+.bonus{transition:background-color var(--t-mid),color var(--t-mid)}
+
+/* Questions: the answer settles in as it opens; the plus turns into a cross */
+.faq details[open] p{animation:rise-in var(--t-mid) var(--ease-out)}
+.faq summary::after{transition:transform var(--t-mid) var(--ease-out)}
+
+/* Theme: crossfade between light and dark where the browser supports it */
+::view-transition-old(root),::view-transition-new(root){animation-duration:280ms;animation-timing-function:var(--ease-out)}
+.themebtn svg{transition:transform var(--t-mid) var(--ease-out)}
+.themebtn:hover svg{transform:rotate(-15deg)}
+
+/* ---------- the pop-ups ---------- */
+/* open: rise and settle from slightly smaller; close: the reverse, quicker */
+@keyframes dlg-in{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes dlg-out{to{opacity:0;transform:translateY(8px) scale(.98)}}
+@keyframes fade-in{from{opacity:0}}
+@keyframes fade-out{to{opacity:0}}
+.wiz[open]{animation:dlg-in 280ms var(--ease-out)}
+.wiz[open]::backdrop{animation:fade-in 280ms var(--ease-out)}
+.wiz.closing{animation:dlg-out 180ms var(--ease-in-out) forwards}
+.wiz.closing::backdrop{animation:fade-out 180ms var(--ease-in-out) forwards}
+@media (max-width:760px){
+  @keyframes sheet-in{from{transform:translateY(24px);opacity:0}}
+  @keyframes sheet-out{to{transform:translateY(24px);opacity:0}}
+  .wiz[open]{animation:sheet-in 300ms var(--ease-out)}
+  .wiz.closing{animation:sheet-out 200ms var(--ease-in-out) forwards}
+}
+
+/* steps slide in the direction of travel */
+@keyframes infwd{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes inbwd{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+.wstep.fwd{animation:infwd var(--t-mid) var(--ease-out)}
+.wstep.bwd{animation:inbwd var(--t-mid) var(--ease-out)}
+
+/* progress bar grows with transform, not width */
+.bar i{width:100%!important;transform-origin:left;transform:scaleX(var(--prog,.25));transition:transform var(--t-slow) var(--ease-out)}
+
+/* rail: finished steps get their tick with a small pop */
+@keyframes tick-pop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.steps li.done button::before{animation:tick-pop var(--t-mid) var(--ease-out)}
+.steps li.now button::before{animation:tick-pop var(--t-mid) var(--ease-out)}
+
+/* table card: a seat fills when that person's name is typed */
+@keyframes seat-fill{0%{transform:scale(.7)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.tcard circle{transform-box:fill-box;transform-origin:center}
+.tcard circle.pop{animation:seat-fill 320ms var(--ease-out)}
+.tname{transition:color var(--t-mid)}
+.tprice.bump,.rprice.bump{animation:confirm var(--t-mid) var(--ease-out)}
+
+/* choices: the radio dot and checkbox square scale in */
+.tile span::before{transition:transform var(--t-fast) var(--ease-out),background-color var(--t-fast),border-color var(--t-fast),box-shadow var(--t-fast)}
+.tile input:checked + span::before{animation:dot-in var(--t-mid) var(--ease-out)}
+@keyframes dot-in{0%{transform:scale(.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.sdots input:checked + span{animation:dot-in var(--t-mid) var(--ease-out)}
+.tile input:disabled + span{transition:opacity var(--t-mid)}
+.pcttotal{transition:color var(--t-mid)}
+.pcttotal.ok{animation:confirm var(--t-mid) var(--ease-out)}
+
+/* missing answers: the field outlines, the message nudges once */
+@keyframes nudge{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+.wiz .err:not([hidden]){animation:nudge 300ms var(--ease-out)}
+.q.bad input:not([type=radio]):not([type=checkbox]),.q.bad select{border-color:var(--accent)!important;box-shadow:0 0 0 3px var(--accent-soft)}
+.q.bad .tile span,.q.bad .sdots span{border-color:var(--accent)}
+.q.bad > .qlabel{color:var(--accent)}
+
+/* saving: a small spinner in the button instead of a frozen label */
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn.loading{position:relative;color:transparent!important;pointer-events:none}
+.btn.loading::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin 700ms linear infinite}
+
+/* success: the tick draws itself, the reference number arrives */
+.wiz-done:not([hidden]) > *{animation:rise-in var(--t-slow) var(--ease-out) both}
+.wiz-done:not([hidden]) > :nth-child(2){animation-delay:80ms}.wiz-done:not([hidden]) > :nth-child(3){animation-delay:140ms}
+.wiz-done:not([hidden]) > :nth-child(4){animation-delay:200ms}.wiz-done:not([hidden]) > :nth-child(5){animation-delay:240ms}.wiz-done:not([hidden]) > :nth-child(6){animation-delay:280ms}
+.wiz-done .tick svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.wiz-done .tick path{stroke-dasharray:30;stroke-dashoffset:30}
+.wiz-done:not([hidden]) .tick path{animation:draw 420ms var(--ease-out) 200ms forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* pre-work rail: report sections fill smoothly */
+@property --p{syntax:"<number>";inherits:false;initial-value:0}
+.report i{transition:--p var(--t-slow) var(--ease-out),box-shadow var(--t-mid)}
+.report li{transition:color var(--t-mid)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after,::backdrop{animation:none!important;transition:none!important}
+  .wiz-done .tick path{stroke-dashoffset:0}
+  .floortip.show{opacity:1}
+}

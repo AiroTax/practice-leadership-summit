@@ -14,16 +14,22 @@
   window.PLS_INBOX = INBOX;
   var money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
   $("#inbox3").textContent = INBOX;
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- countdown ---------- */
+  function setNum(el, v) {
+    v = String(v); if (el.textContent === v) return;
+    var first = el.textContent === "—"; el.textContent = v;
+    if (!first) { el.classList.remove("rolled"); void el.offsetWidth; el.classList.add("rolled"); }
+  }
   function tick() {
     var now = Date.now(), d = Math.max(0, DOORS - now);
-    $("#cd-d").textContent = Math.floor(d / 864e5);
-    $("#cd-h").textContent = Math.floor(d / 36e5) % 24;
-    $("#cd-m").textContent = Math.floor(d / 6e4) % 60;
-    $("#cd-eb").textContent = Math.max(0, Math.ceil((EARLY_END - now) / 864e5));
+    setNum($("#cd-d"), Math.floor(d / 864e5));
+    setNum($("#cd-h"), Math.floor(d / 36e5) % 24);
+    setNum($("#cd-m"), Math.floor(d / 6e4) % 60);
+    setNum($("#cd-eb"), Math.max(0, Math.ceil((EARLY_END - now) / 864e5)));
   }
-  tick(); setInterval(tick, 30000);
+  tick(); setInterval(tick, 15000);
 
   /* ---------- live floor plan ---------- */
   function drawFloor(claimed) {
@@ -45,16 +51,20 @@
   }
   var tip = $("#floortip");
   function showTip(g) {
-    if (!g) { tip.hidden = true; return; }
+    if (!g) { tip.classList.remove("show"); return; }
     var box = $(".floor").getBoundingClientRect(), gb = g.getBoundingClientRect();
     tip.innerHTML = "<b>Table " + g.dataset.n + "</b>" + (g.classList.contains("taken") ? "Claimed" : "Open · click to claim it");
-    tip.style.left = (gb.left - box.left + gb.width / 2) + "px"; tip.style.top = (gb.top - box.top - 6) + "px"; tip.hidden = false;
+    tip.style.left = (gb.left - box.left + gb.width / 2) + "px"; tip.style.top = (gb.top - box.top - 6) + "px"; tip.hidden = false; tip.classList.add("show");
   }
   $("#floorplan").addEventListener("mouseover", function (e) { showTip(e.target.closest(".tbl")); });
   $("#floorplan").addEventListener("mouseleave", function () { showTip(null); });
   $("#floorplan").addEventListener("focusin", function (e) { showTip(e.target.closest(".tbl")); });
   $("#floorplan").addEventListener("focusout", function () { showTip(null); });
-  function claim(g) { if (g && !g.classList.contains("taken")) openModal("register", g); }
+  function claim(g) {
+    if (!g || g.classList.contains("taken")) return;
+    g.classList.add("picked"); showTip(null);
+    setTimeout(function () { g.classList.remove("picked"); openModal("register", g); }, reduce ? 0 : 180);
+  }
   $("#floorplan").addEventListener("click", function (e) { claim(e.target.closest(".tbl")); });
   $("#floorplan").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); claim(e.target.closest(".tbl")); } });
   drawFloor(0);
@@ -84,6 +94,8 @@
     2: "Breakfast from 8:00. Lunch at 12:30, mixed by practice type. We close at 5:00 with your plan signed."
   };
   var book = $(".book"), cur = -1;
+  function swap(el) { if (!el || cur < 0) return; el.classList.remove("swap"); void el.offsetWidth; el.classList.add("swap"); }
+  if ($(".daytabs")) $(".daytabs").insertAdjacentHTML("afterbegin", '<span class="pill" aria-hidden="true"></span>');
   function showPage(n) {
     if (!book) return;
     n = Math.max(0, Math.min(7, n));
@@ -94,8 +106,10 @@
     $$(".tabs i", book).forEach(function (t, k) { t.classList.toggle("on", k <= n); });
     var day = n < 4 ? 1 : 2;
     $$(".daytabs [data-day]").forEach(function (b) { b.setAttribute("aria-selected", +b.dataset.day === day); });
+    $(".daytabs").dataset.day = day;
     $$(".slist li").forEach(function (li) { li.hidden = +li.dataset.day !== day; });
     $$(".slist button").forEach(function (b) { var on = +b.dataset.page === n; b.classList.toggle("now", on); if (on) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    swap($(".sdetail")); swap($("#pgcount"));
     $("#sdesc").textContent = SESS[n][0]; $("#swho").textContent = SESS[n][1]; $("#sday").textContent = DAYNOTE[day];
     $("#pgcount").textContent = "Page " + (n + 1) + " of 8";
     $$(".pgbtn").forEach(function (b) { b.disabled = (+b.dataset.step < 0 && n === 0) || (+b.dataset.step > 0 && n === 7); });
@@ -116,23 +130,16 @@
     book.addEventListener("click", function (e) { var r = book.getBoundingClientRect(); showPage(cur + (e.clientX > r.left + r.width / 2 ? 1 : -1)); });
   }
 
-  /* ---------- light by default, dark on request; design options ---------- */
+  /* ---------- light by default, dark on request ---------- */
   var root = document.documentElement, tbtn = $("#themebtn");
   function syncTheme() { var dark = root.dataset.theme === "dark"; tbtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode"); tbtn.title = dark ? "Light mode" : "Dark mode"; }
   tbtn.addEventListener("click", function () {
-    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    var flip = function () { root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark"; };
+    if (document.startViewTransition && !reduce) document.startViewTransition(flip); else flip();
     try { localStorage.setItem("pls-theme", root.dataset.theme); } catch (e) {}
     syncTheme();
   });
   syncTheme();
-  function syncLook() { $$(".lookpick [data-look]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.look === root.dataset.look); }); }
-  $$(".lookpick [data-look]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      root.dataset.look = b.dataset.look; syncLook();
-      try { localStorage.setItem("pls-look", b.dataset.look); history.replaceState(null, "", "?look=" + b.dataset.look + location.hash); } catch (e) {}
-    });
-  });
-  syncLook();
 
   /* ---------- pricing (same ladder as the Airtable Price formula) ---------- */
   var TICKETS = { 1: "Single seat", 2: "Team of 2", 3: "Team of 3", 4: "Team of 4 or more" };
@@ -151,7 +158,6 @@
   // price-builder state (team: 1, 2, 3 or 4 = "4 or more")
   var sel = { team: 3, extra: 1, kasper: false };
   window.PLS_PRICE = price;
-  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   function tween(el, to) {
     var from = +el.dataset.v || to; el.dataset.v = to;
     if (reduce || from === to) { el.textContent = money(to); return; }
@@ -192,7 +198,10 @@
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
   }
   function closeModal(d) {
-    if (d.open) d.close();
+    if (!d.open || d.classList.contains("closing")) return;
+    if (reduce) { d.close(); return; }
+    d.classList.add("closing");
+    setTimeout(function () { d.classList.remove("closing"); d.close(); }, 180);
   }
   Object.keys(dialogs).forEach(function (k) {
     var d = dialogs[k];
@@ -201,6 +210,7 @@
       try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
       if (lastTrigger && document.contains(lastTrigger)) lastTrigger.focus();
     });
+    d.addEventListener("cancel", function (e) { e.preventDefault(); closeModal(d); });   // Escape closes with the same motion
     d.addEventListener("click", function (e) {           // click on the backdrop closes
       if (e.target === d) closeModal(d);
       if (e.target.closest("[data-close]")) closeModal(d);
