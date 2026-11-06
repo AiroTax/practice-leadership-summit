@@ -1,0 +1,84 @@
+/* Design options. A (Summit) is the default in styles.css. B and C change colour, type and the hero's
+   composition; the markup is shared. Dark mode works with every look. */
+
+/* B · Clinic: teal on a cool mint-grey, a serif display, the hero centred over a wide floor plan */
+html[data-look="b"]{
+  --bg:#F1F6F5; --panel:#FFFFFF; --sunk:#E4EEEC; --line:#D0DFDC;
+  --ink:#0E2A2D; --ink2:#34504F; --muted:#5A7270;
+  --accent:#0C8573; --accent-ink:#FFFFFF; --accent-soft-l:#D8EFEA;
+  --second:#C98A0B; --second-soft-l:#FBEFD3;
+  --hero-bg:#F1F6F5; --floor-bg:#FFFFFF; --floor-line:#D0DFDC; --floor-ink:#0E2A2D; --floor-muted:#5A7270;
+  --t-open:#CFE3DF; --t-seat:#E2EEEB; --t-num:#0E2A2D; --t-taken:#E0A21B; --t-taken-seat:#F6D998; --t-coach:#0C8573;
+  --nav-bg:rgba(241,246,245,.88);
+  --display:"Newsreader",Georgia,serif; --body:"Public Sans","Segoe UI",sans-serif;
+  --h-weight:600; --h-track:-.02em;
+  --page-ink:#0E2A2D; --hero:#0E2A2D; --hero-line:#25474A; --hero-muted:#A7C2BF;
+}
+html[data-look="b"] .hero-grid{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:26px}
+html[data-look="b"] .hero-copy{display:grid;justify-items:center;max-width:860px}
+html[data-look="b"] .hero h1{font-size:clamp(40px,4.6vw,66px);line-height:1.04}
+html[data-look="b"] .hero-copy{max-width:1100px}
+html[data-look="b"] .hero{padding-block:28px 40px!important}
+html[data-look="b"] .hero .sub{margin-inline:auto}
+html[data-look="b"] .facts{grid-auto-flow:column;gap:24px;justify-content:center}
+html[data-look="b"] .ctas{justify-content:center}
+html[data-look="b"] .countdown{display:none}
+html[data-look="b"] .floor{width:min(520px,100%);padding:14px 16px;box-shadow:0 30px 60px -36px rgba(14,42,45,.35)}
+html[data-look="b"] .floor-top{justify-content:center;gap:16px}
+html[data-look="b"] .legend{justify-content:center}
+html[data-look="b"] .hero{min-height:0}
+html[data-look="b"] .slist b,html[data-look="b"] .faq summary,html[data-look="b"] .included li b{font-weight:600}
+html[data-look="b"] .slist .t,html[data-look="b"] .ladder td.n,html[data-look="b"] .lines span:last-child{font-family:var(--body);font-weight:600}
+@media (max-width:760px){html[data-look="b"] .facts{grid-auto-flow:row;justify-items:center}}
+
+/* C · Studio: white and graphite with signal orange and blue, a tight grotesk, a headline across the
+   full width with the floor plan beside the details */
+html[data-look="c"]{
+  --bg:#FFFFFF; --panel:#F4F5F8; --sunk:#E9EBF0; --line:#DCDFE7;
+  --ink:#16181F; --ink2:#3B3F4C; --muted:#646978;
+  --accent:#EE5A24; --accent-ink:#FFFFFF; --accent-soft-l:#FDE5DB;
+  --second:#1F6FEB; --second-soft-l:#E0EBFD;
+  --hero-bg:#FFFFFF; --floor-bg:#16181F; --floor-line:#2C303B; --floor-ink:#F4F5F8; --floor-muted:#A4A9B6;
+  --t-open:#2E323E; --t-seat:#41465A; --t-num:#F4F5F8; --t-taken:#EE5A24; --t-taken-seat:#F7A882; --t-coach:#5B9BFF;
+  --nav-bg:rgba(255,255,255,.88);
+  --display:"Familjen Grotesk","Segoe UI",sans-serif; --body:"Hanken Grotesk","Segoe UI",sans-serif;
+  --h-weight:700; --h-track:-.035em; --r-sm:10px;
+  --page-ink:#16181F; --hero:#16181F; --hero-line:#2C303B; --hero-muted:#A4A9B6;
+}
+html[data-look="c"] .hero-copy{display:contents}
+html[data-look="c"] .hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);column-gap:48px;row-gap:0;align-items:start}
+html[data-look="c"] .hero .eyebrow{grid-column:1/-1}
+html[data-look="c"] .hero h1{grid-column:1/-1;font-size:clamp(52px,8.4vw,128px);line-height:.9;margin:10px 0 34px}
+html[data-look="c"] .hero .sub,html[data-look="c"] .facts,html[data-look="c"] .ctas,html[data-look="c"] .countdown{grid-column:1}
+html[data-look="c"] .hero .sub{margin-top:0}
+html[data-look="c"] .floor{grid-column:2;grid-row:3 / span 5;border-radius:18px}
+html[data-look="c"] .weekend,html[data-look="c"] .faqsec{background:var(--bg)}
+html[data-look="c"] .price{background:var(--panel)}
+html[data-look="c"] .panel{background:var(--bg)}
+html[data-look="c"] .slist button{border-radius:10px}
+html[data-look="c"] .slist button.now{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+html[data-look="c"] .slist button.now .t{color:#FF9A6E}
+html[data-look="c"] .slist button.now::after{border-color:var(--bg)}
+html[data-look="c"] .countdown b{font-size:38px}
+@media (max-width:960px){
+  html[data-look="c"] .hero-grid{grid-template-columns:minmax(0,1fr)}
+  html[data-look="c"] .floor{grid-column:1;grid-row:auto;margin-top:28px}
+  html[data-look="c"] .hero h1{margin-bottom:20px}
+}
+
+/* dark mode, any look */
+html[data-theme="dark"]{
+  --bg:#0B1020; --panel:#121A2E; --sunk:#1B2440; --line:#283352;
+  --ink:#EEF1F8; --ink2:#C3CADC; --muted:#8F99B3;
+  --accent-soft:color-mix(in srgb,var(--accent) 24%,#121A2E); --second-soft:color-mix(in srgb,var(--second) 26%,#121A2E); --ok-soft:#10301F; --ok:#6FD3A6;
+  --hero-bg:#0B1020; --floor-bg:#101830; --floor-line:#283352; --floor-ink:#EEF1F8; --floor-muted:#8F99B3;
+  --t-open:#2A3961; --t-seat:#3A4A77; --t-num:#EEF1F8;
+  --nav-bg:rgba(11,16,32,.86);
+  --hero:#060A16; --hero-line:#1F2A47;
+  color-scheme:dark;
+}
+html[data-theme="dark"][data-look="c"]{--bg:#0E0F14; --panel:#16181F; --sunk:#20232C; --line:#2E323D; --hero-bg:#0E0F14; --floor-bg:#16181F}
+html[data-theme="dark"][data-look="b"]{--bg:#0B1716; --panel:#11211F; --sunk:#183028; --line:#24413C; --hero-bg:#0B1716; --floor-bg:#11211F; --floor-line:#24413C; --t-open:#24423C; --t-seat:#2F5750}
+html[data-theme="dark"] .daytabs button[aria-selected="true"]{box-shadow:none}
+html[data-theme="dark"] .floortip,html[data-theme="dark"] .floortip::after{background:#FFFFFF;color:#0B1A33}
+html[data-theme="dark"] .pg{box-shadow:0 26px 50px -22px rgba(0,0,0,.7)}

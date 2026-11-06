@@ -68,24 +68,71 @@
   function navH() { var n = $(".nav"); if (n) document.documentElement.style.setProperty("--navh", n.offsetHeight + "px"); }
   navH(); window.addEventListener("resize", navH);
 
-  /* ---------- the weekend: Plan Book turns its page as each session scrolls into view ---------- */
-  var book = $(".book"), sessions = $$(".sess");
+  /* ---------- the weekend: one screen, the Plan Book turns to the chosen session's page ---------- */
+  var SESS = [
+    ["Opening keynote, then an honest baseline. Your team scores itself on patients, team, technology, finances and market, against its own pre-work.", "Keynote speaker and facilitators. 1.5 CE hours."],
+    ["Who you serve, what you’re known for and why patients choose you. You write the position your practice will own, then test it on the next table.", "Facilitators. 1.5 CE hours."],
+    ["The three or four strategic bets that carry your positioning: scaling with Medicaid, investing in technology, adding a specialty, opening a second location.", "Facilitators. 1.5 CE hours."],
+    ["Adaptive leadership for practice leaders: tell technical problems from adaptive ones, read how your team reacts to change, and practise the conversations that move people.", "Omar Awad, Harvard Kennedy School negotiation faculty. 1.5 CE hours."],
+    ["Second keynote, then each practice measures the distance between today and its positioning, area by area, and names the real problems in the way.", "Keynote speaker and facilitators. 1.5 CE hours."],
+    ["Priorities set with the whole team: impact against effort, dependencies and sequence. Expert clinics on technology, patient engagement, payments and insurance.", "Facilitators and expert tables. 1.5 CE hours."],
+    ["What the plan takes over six months: people to hire or develop, skills to learn, technology and capital, and what to build, buy or partner for.", "Facilitators and expert tables. 1.5 CE hours."],
+    ["Your team turns the weekend into one signed plan with owners, milestones and measures. Accountability partners are assigned and your Day-30 call is booked before you leave.", "Facilitators. 1.5 CE hours."]
+  ];
+  var DAYNOTE = {
+    1: "Breakfast from 8:00. Lunch at 12:30, with practices mixed by type. Reception at 5:30 with every practice’s positioning poster on the wall.",
+    2: "Breakfast from 8:00. Lunch at 12:30, mixed by practice type. We close at 5:00 with your plan signed."
+  };
+  var book = $(".book"), cur = -1;
   function showPage(n) {
-    if (!book || book.dataset.page === String(n)) return;
-    book.dataset.page = n;
-    $$(".pg", book).forEach(function (pg) { var k = +pg.dataset.n; pg.classList.toggle("on", k === n); pg.classList.toggle("past", k < n); });
+    if (!book) return;
+    n = Math.max(0, Math.min(7, n));
+    if (n === cur) return;
+    var dir = n > cur ? "fwd" : "back";
+    cur = n; book.dataset.page = n; book.dataset.dir = dir;
+    $$(".pg", book).forEach(function (pg) { var k = +pg.dataset.n; pg.classList.toggle("on", k === n); pg.classList.toggle("past", k < n); pg.classList.toggle("next", k > n); });
     $$(".tabs i", book).forEach(function (t, k) { t.classList.toggle("on", k <= n); });
-    sessions.forEach(function (el) { el.classList.toggle("now", +el.dataset.page === n); });
+    var day = n < 4 ? 1 : 2;
+    $$(".daytabs [data-day]").forEach(function (b) { b.setAttribute("aria-selected", +b.dataset.day === day); });
+    $$(".slist li").forEach(function (li) { li.hidden = +li.dataset.day !== day; });
+    $$(".slist button").forEach(function (b) { var on = +b.dataset.page === n; b.classList.toggle("now", on); if (on) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    $("#sdesc").textContent = SESS[n][0]; $("#swho").textContent = SESS[n][1]; $("#sday").textContent = DAYNOTE[day];
+    $("#pgcount").textContent = "Page " + (n + 1) + " of 8";
+    $$(".pgbtn").forEach(function (b) { b.disabled = (+b.dataset.step < 0 && n === 0) || (+b.dataset.step > 0 && n === 7); });
   }
   if (book) {
-    book.dataset.page = "-1"; showPage(0);
-    if ("IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { if (e.isIntersecting) showPage(+e.target.dataset.page); });
-      }, { rootMargin: "-42% 0px -52% 0px" });
-      sessions.forEach(function (el) { io.observe(el); });
-    }
+    showPage(0);
+    $$(".slist button").forEach(function (b) { b.addEventListener("click", function () { showPage(+b.dataset.page); }); });
+    $$(".daytabs [data-day]").forEach(function (b) { b.addEventListener("click", function () { showPage(+b.dataset.day === 1 ? 0 : 4); }); });
+    $$(".pgbtn").forEach(function (b) { b.addEventListener("click", function () { showPage(cur + +b.dataset.step); }); });
+    $(".weekend").addEventListener("keydown", function (e) {
+      if (e.target.matches("input,textarea,select")) return;
+      if (e.key === "ArrowRight") { showPage(cur + 1); e.preventDefault(); }
+      if (e.key === "ArrowLeft") { showPage(cur - 1); e.preventDefault(); }
+    });
+    var x0 = null;
+    book.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    book.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) showPage(cur + (dx < 0 ? 1 : -1)); x0 = null; });
+    book.addEventListener("click", function (e) { var r = book.getBoundingClientRect(); showPage(cur + (e.clientX > r.left + r.width / 2 ? 1 : -1)); });
   }
+
+  /* ---------- light by default, dark on request; design options ---------- */
+  var root = document.documentElement, tbtn = $("#themebtn");
+  function syncTheme() { var dark = root.dataset.theme === "dark"; tbtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode"); tbtn.title = dark ? "Light mode" : "Dark mode"; }
+  tbtn.addEventListener("click", function () {
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    try { localStorage.setItem("pls-theme", root.dataset.theme); } catch (e) {}
+    syncTheme();
+  });
+  syncTheme();
+  function syncLook() { $$(".lookpick [data-look]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.look === root.dataset.look); }); }
+  $$(".lookpick [data-look]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      root.dataset.look = b.dataset.look; syncLook();
+      try { localStorage.setItem("pls-look", b.dataset.look); history.replaceState(null, "", "?look=" + b.dataset.look + location.hash); } catch (e) {}
+    });
+  });
+  syncLook();
 
   /* ---------- pricing (same ladder as the Airtable Price formula) ---------- */
   var TICKETS = { 1: "Single seat", 2: "Team of 2", 3: "Team of 3", 4: "Team of 4 or more" };
@@ -118,14 +165,12 @@
     var n = people(sel), p = price(n, sel.kasper);
     $$("#teamseg button").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.n === sel.team); });
     $("#extrawrap").hidden = sel.team !== 4;
-    $("#pricetag").textContent = p.early ? "Early bird · ends Dec 4" : "Standard price";
+    $("#pricetag").textContent = p.early ? "Early-bird price until Dec 4" : "Standard price";
     tween($("#ptotal"), p.total);
-    $("#pper").textContent = money(p.total / n) + " per person · " + n + (n === 1 ? " person" : " people");
+    $("#pper").textContent = money(p.total / n) + " per person, " + n + (n === 1 ? " person" : " people");
     $("#plines").innerHTML = p.lines.map(function (l) { return "<div><span>" + l[0] + "</span><span>" + money(l[1]) + "</span></div>"; }).join("");
     var b = $("#pbonus"); b.className = p.bonus ? "bonus" : "bonus none";
     b.textContent = p.bonus || "Add a third person to qualify for a WinDSO ticket";
-    $("#regsel").textContent = TICKETS[sel.team] + " · " + money(p.total);
-    $("#regsel2").textContent = (p.bonus ? p.bonus + ". " : "") + "Change it in the price builder above.";
   }
   $$("#teamseg button").forEach(function (btn) { btn.addEventListener("click", function () { sel.team = +btn.dataset.n; renderBuilder(); }); });
   $("#extra").addEventListener("input", function () { sel.extra = +this.value || 1; renderBuilder(); });

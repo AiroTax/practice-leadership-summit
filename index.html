@@ -1,87 +1,106 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-look="a" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Practice Leadership Summit 2027 · Kasper × Global Academy of Dentistry</title>
 <meta name="description" content="A two-day working weekend for dental practice teams. Jan 9–10, 2027, North Jersey. Up to 12 AGD PACE CE hours. Hosted by Kasper in partnership with Global Academy of Dentistry.">
 <meta property="og:title" content="Practice Leadership Summit 2027">
-<meta property="og:description" content="35 tables. One plan per practice. Jan 9–10, 2027 · North Jersey · up to 12 AGD PACE CE hours.">
+<meta property="og:description" content="35 tables. One plan per practice. Jan 9–10, 2027, North Jersey. Up to 12 AGD PACE CE hours.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#0B1A33">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B1A33'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23E8336F'/%3E%3C/svg%3E">
+<script>
+  // Look and theme before first paint: light by default; ?look=a|b|c shows a design option.
+  (function () {
+    var d = document.documentElement, q = new URLSearchParams(location.search), look = q.get("look"), theme;
+    try { look = look || localStorage.getItem("pls-look"); theme = localStorage.getItem("pls-theme"); if (q.get("look")) localStorage.setItem("pls-look", q.get("look")); } catch (e) {}
+    if (/^[abc]$/.test(look || "")) d.dataset.look = look;
+    if (theme === "dark") d.dataset.theme = "dark";
+    if (q.has("look") || q.has("options")) d.dataset.options = "1";
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;600;700&family=Familjen+Grotesk:wght@500;600;700&family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/styles.css">
+<link rel="stylesheet" href="/assets/wizard.css">
+<link rel="stylesheet" href="/assets/looks.css">
 </head>
 <body>
 <nav class="nav" aria-label="Summit">
   <div class="wrap">
-    <div class="brandline">Kasper <span class="amp" aria-label="in partnership with">×</span> Global Academy of Dentistry</div>
+    <a class="brandline" href="#top">Kasper <span class="amp" aria-label="in partnership with">×</span> Global Academy of Dentistry</a>
     <div class="navlinks">
-      <a href="#days">The weekend</a><a href="#kit">Take-home</a><a href="#price">Pricing</a><a href="#faq">FAQ</a><button type="button" data-open="prework">Pre-work</button>
+      <a href="#days">The weekend</a><a href="#price">Pricing</a><a href="#faq">Questions</a><button type="button" data-open="prework">Pre-work</button>
+      <button type="button" class="themebtn" id="themebtn" aria-label="Switch to dark mode" title="Dark mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="moon" d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/><g class="sun"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></g></svg></button>
       <button type="button" class="cta" data-open="register">Claim your table</button>
     </div>
   </div>
 </nav>
 
-<header class="hero">
+<main id="top">
+<section class="hero">
   <div class="wrap hero-grid">
-    <div>
+    <div class="hero-copy">
       <p class="eyebrow">Practice Leadership Summit, New Jersey</p>
-      <h1 style="margin-top:16px">35 tables.<br>One plan <em>per practice.</em></h1>
-      <p class="sub">A two-day working weekend for dental practice teams. Day 1 sets your positioning and areas of focus. Day 2 turns them into a transformation plan your team signs and runs.</p>
-      <div class="facts">
-        <span class="fact">Sat Jan 9 – Sun Jan 10, 2027</span>
-        <span class="fact">North Jersey · drive-in</span>
-        <span class="fact">Up to 12 AGD PACE hours</span>
-      </div>
+      <h1>35 tables. One plan per practice.</h1>
+      <p class="sub">A two-day working weekend for dental practice teams. Day 1 sets your positioning and areas of focus. Day 2 turns them into a 90-day plan your team signs and runs.</p>
+      <ul class="facts">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Sat Jan 9 – Sun Jan 10, 2027</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>North Jersey, a drive-in venue</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.4 6.8 19.2l1-5.9L3.5 9.2l5.9-.8z"/></svg>Up to 12 AGD PACE CE hours</li>
+      </ul>
       <div class="ctas">
         <button type="button" class="btn primary" data-open="register">Claim your practice’s table</button>
-        <a class="btn ghost" href="#days">See the weekend</a>
+        <a class="btn line" href="#days">See the weekend</a>
       </div>
       <div class="countdown" aria-label="Time until doors open" id="countdown">
-        <div><b id="cd-d">—</b><span>days</span></div>
+        <div><b id="cd-d">—</b><span>days to go</span></div>
         <div><b id="cd-h">—</b><span>hours</span></div>
         <div><b id="cd-m">—</b><span>minutes</span></div>
-        <div><b id="cd-eb">—</b><span>days of early bird</span></div>
+        <div class="eb"><b id="cd-eb">—</b><span>days of early-bird price</span></div>
       </div>
     </div>
     <div class="floor" aria-label="Floor plan of the 35 practice tables">
       <div class="floor-top"><b id="tables-left">35 of 35 tables open</b><span>Pick a table to claim it</span></div>
-      <div class="stage">STAGE · KEYNOTES · FACILITATION</div>
+      <div class="stage">Stage, keynotes and facilitation</div>
       <svg id="floorplan" viewBox="0 0 700 430" aria-label="Floor plan: 35 round tables in five rows"></svg>
       <div class="floortip" id="floortip" hidden></div>
-      <div class="legend"><span><i style="background:#FF5C8F"></i>Claimed</span><span><i style="background:#2E4372"></i>Open</span><span><i style="background:#A99BFF"></i>Coach zone (1 per 6 tables)</span></div>
+      <div class="legend"><span><i class="lg-claimed"></i>Claimed</span><span><i class="lg-open"></i>Open</span><span><i class="lg-coach"></i>Coach for every six tables</span></div>
     </div>
   </div>
-</header>
+</section>
 
-<section class="band weekend" id="days">
+<section class="weekend" id="days">
   <div class="wrap">
-    <div class="sechead">
-      <h2>Eight sessions. Eight pages of your plan.</h2>
-      <p class="lede">Every 90-minute session ends with one page in your team’s Plan Book. Scroll through the weekend to watch a sample book fill in. Doors open at 8:00 with breakfast, and we close at 5:00 both days.</p>
-    </div>
-    <div class="wk">
-      <ol class="sessions">
-        <li class="brk" data-day="1"><span class="d">Saturday, Jan 9</span><p>Breakfast from 8:00. Your table is set with your Practice Snapshot.</p></li>
-        <li class="sess" data-page="0"><div class="t">9:00</div><div><h3>Where you are today</h3><p>Opening keynote, then an honest baseline. Your team scores itself on patients, team, technology, finances and market, against its own pre-work.</p><p class="who">Keynote speaker and facilitators · 1.5 CE hours</p></div></li>
-        <li class="sess" data-page="1"><div class="t">11:00</div><div><h3>Your unique positioning</h3><p>Who you serve, what you’re known for and why patients choose you. You write the position your practice will own, then test it on the next table.</p><p class="who">Facilitators · 1.5 CE hours</p></div></li>
-        <li class="brk"><p>Lunch at 12:30. Practices mix by type: startup, established, multi-site.</p></li>
-        <li class="sess" data-page="2"><div class="t">1:30</div><div><h3>Areas of focus</h3><p>The three or four strategic bets that carry your positioning: scaling with Medicaid, investing in technology, adding a specialty, opening a second location.</p><p class="who">Facilitators · 1.5 CE hours</p></div></li>
-        <li class="sess" data-page="3"><div class="t">3:30</div><div><h3>Negotiating change with your team</h3><p>Adaptive leadership for practice leaders: tell technical problems from adaptive ones, read how your team reacts to change, and practise the conversations that move people.</p><p class="who">Omar Awad, Harvard Kennedy School negotiation faculty · 1.5 CE hours</p></div></li>
-        <li class="brk"><p>Reception at 5:30, with every practice’s positioning poster on the wall.</p></li>
-        <li class="brk" data-day="2"><span class="d">Sunday, Jan 10</span><p>Breakfast from 8:00.</p></li>
-        <li class="sess" data-page="4"><div class="t">9:00</div><div><h3>Mind the gap</h3><p>Second keynote, then each practice measures the distance between today and its positioning, area by area, and names the real problems in the way.</p><p class="who">Keynote speaker and facilitators · 1.5 CE hours</p></div></li>
-        <li class="sess" data-page="5"><div class="t">11:00</div><div><h3>What to fix first</h3><p>Priorities set with the whole team: impact against effort, dependencies and sequence. Expert clinics on technology, patient engagement, payments and insurance.</p><p class="who">Facilitators and expert tables · 1.5 CE hours</p></div></li>
-        <li class="brk"><p>Lunch at 12:30, mixed by practice type.</p></li>
-        <li class="sess" data-page="6"><div class="t">1:30</div><div><h3>Resources, learning and investment</h3><p>What the plan takes over six months: people to hire or develop, skills to learn, technology and capital, and what to build, buy or partner for.</p><p class="who">Facilitators and expert tables · 1.5 CE hours</p></div></li>
-        <li class="sess" data-page="7"><div class="t">3:30</div><div><h3>Your 90-day plan</h3><p>Your team turns the weekend into one signed plan with owners, milestones and measures. Accountability partners are assigned and your Day-30 call is booked before you leave.</p><p class="who">Facilitators · 1.5 CE hours</p></div></li>
-      </ol>
-
-      <div class="bookwrap" aria-hidden="true">
-        <div class="book" data-page="0">
+<div class="wk">
+      <div class="agenda">
+        <div class="wkhead">
+          <h2>Eight sessions. Eight pages of your plan.</h2>
+          <p class="lede">Each 90-minute session ends with one page in your team’s Plan Book. Pick a session to turn to its page.</p>
+        </div>
+        <div class="daytabs" role="tablist" aria-label="Choose a day">
+          <button role="tab" type="button" data-day="1" aria-selected="true">Saturday, Jan 9<small>Strategy</small></button>
+          <button role="tab" type="button" data-day="2" aria-selected="false">Sunday, Jan 10<small>Operations</small></button>
+        </div>
+        <ol class="slist" aria-label="Sessions">
+          <li data-day="1"><button type="button" data-page="0"><span class="t">9:00</span><b>Where you are today</b></button></li>
+          <li data-day="1"><button type="button" data-page="1"><span class="t">11:00</span><b>Your unique positioning</b></button></li>
+          <li data-day="1"><button type="button" data-page="2"><span class="t">1:30</span><b>Areas of focus</b></button></li>
+          <li data-day="1"><button type="button" data-page="3"><span class="t">3:30</span><b>Negotiating change with your team</b></button></li>
+          <li data-day="2" hidden><button type="button" data-page="4"><span class="t">9:00</span><b>Mind the gap</b></button></li>
+          <li data-day="2" hidden><button type="button" data-page="5"><span class="t">11:00</span><b>What to fix first</b></button></li>
+          <li data-day="2" hidden><button type="button" data-page="6"><span class="t">1:30</span><b>Resources, learning and investment</b></button></li>
+          <li data-day="2" hidden><button type="button" data-page="7"><span class="t">3:30</span><b>Your 90-day plan</b></button></li>
+        </ol>
+        <div class="sdetail" aria-live="polite">
+          <p class="sdesc" id="sdesc"></p>
+          <p class="swho" id="swho"></p>
+        </div>
+        <p class="sday" id="sday">Breakfast from 8:00. Lunch at 12:30, with practices mixed by type. Reception at 5:30 with every practice’s positioning poster on the wall.</p>
+      </div>
+      <div class="bookwrap">
+<div class="book" data-page="0" aria-live="polite">
           <div class="spine"></div>
           <div class="tabs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="pages">
@@ -173,47 +192,22 @@
             </article>
 
           </div>
-          <p class="bookfoot">Sample Plan Book for a fictional practice</p>
+                  </div>
+        <div class="bookctl">
+          <button type="button" class="pgbtn" data-step="-1" aria-label="Previous page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <span id="pgcount">Page 1 of 8</span>
+          <button type="button" class="pgbtn" data-step="1" aria-label="Next page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="band" id="kit">
-  <div class="wrap">
-    <div class="sechead">
-      <h2>Tools you’ll use on Monday, not swag for a drawer.</h2>
-    </div>
-    <div class="kit">
-      <div class="item"><span class="tag">Before you arrive</span><h3>Practice Snapshot</h3><p>A two-page scored baseline built from your pre-work, walked through on a 20-minute welcome call in December.</p></div>
-      <div class="item"><span class="tag">At your table</span><h3>The 90-Day Plan Book</h3><p>One page per session, bound into your plan by Sunday afternoon, with your team photo inside.</p></div>
-      <div class="item"><span class="tag">Saturday</span><h3>Positioning poster</h3><p>Your positioning statement, printed on site, for the staff room wall.</p></div>
-      <div class="item"><span class="tag">Sunday</span><h3>A signed plan</h3><p>Owners, dates and measures for the first 90 days, read aloud and signed by your team.</p></div>
-      <div class="item"><span class="tag">For every attendee</span><h3>Up to 12 CE hours</h3><p>AGD PACE, subject code 550. NJ dentists can apply practice-management hours to renewal; all 12 count toward Fellowship and Mastership.</p></div>
-      <div class="item"><span class="tag">After the weekend</span><h3>30 · 60 · 90</h3><p>A Day-30 coach call, a peer practice to check in with, and a letter from your team to your future practice, mailed back on Day 90.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="band" style="background:var(--panel)">
-  <div class="wrap">
-    <div class="sechead">
-      <h2>Who’s in the room with you</h2>
-    </div>
-    <div class="people">
-      <div class="person"><h3>Omar Awad</h3><p class="role">Harvard Kennedy School negotiation faculty · Negotiating change with your team</p></div>
-      <div class="person"><h3>Kasper facilitators</h3><p class="role">Lead facilitation and table coaching · one coach for every six tables</p></div>
-      <div class="person tbc"><h3>Two keynote speakers</h3><p class="role">Announced late November</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="band priceband" id="price">
+<section class="price" id="price">
   <div class="wrap">
     <div class="sechead">
       <h2>Priced per team, because the plan needs more than the doctor.</h2>
-      <p class="lede">Build your team below. We invoice after you register; no card needed today.</p>
+      <p class="lede">Choose your team. We invoice after you register, so there’s no card to enter today.</p>
     </div>
     <div class="pricer">
       <div class="panel">
@@ -226,70 +220,72 @@
           </div>
         </div>
         <div class="fld" id="extrawrap" hidden><label for="extra">People beyond three</label><input type="number" id="extra" min="1" max="6" value="1"></div>
-        <label class="check"><input type="checkbox" id="kasper"> <span>We’re a current Kasper customer <span class="fine">(20% off a standard team of three)</span></span></label>
+        <label class="check"><input type="checkbox" id="kasper"> <span>We’re a current Kasper customer <span class="fine">20% off a standard team of three</span></span></label>
         <table class="ladder" aria-label="Published ticket prices">
-          <tr><th>Ticket</th><th class="n">Early bird<br>to Dec 4</th><th class="n">From Dec 5</th></tr>
+          <tr><th>Ticket</th><th class="n">Early bird to Dec 4</th><th class="n">From Dec 5</th></tr>
           <tr><td>Team of 3</td><td class="n">$3,400</td><td class="n">$3,800</td></tr>
           <tr><td>Team of 2</td><td class="n">$2,700</td><td class="n">$3,100</td></tr>
           <tr><td>Single seat</td><td class="n">$2,100</td><td class="n">$2,500</td></tr>
           <tr><td>Each person beyond 3</td><td class="n">$600</td><td class="n">$600</td></tr>
         </table>
       </div>
-      <div class="panel" aria-live="polite">
-        <div class="total"><span class="eyebrow" id="pricetag">Early bird</span><span class="big" id="ptotal">$3,400</span><span class="per" id="pper">$1,133 per person · 3 people</span></div>
+      <div class="panel totalpanel" aria-live="polite">
+        <div class="total"><span class="tag" id="pricetag">Early bird</span><span class="big" id="ptotal">$3,400</span><span class="per" id="pper">$1,133 per person, 3 people</span></div>
         <div class="lines" id="plines"></div>
         <div class="bonus" id="pbonus"></div>
-        <button type="button" class="btn primary" data-open="register" id="pgo">Register this team</button>
-        <p class="fine">WinDSO Empower &amp; Grow 2027 tickets (Mar 3–5, Las Vegas; travel not included) go to qualifying practices while they last: 15 for early-bird teams of three, 20 for full teams after Dec 4, 10 for referrals.</p>
+        <div class="row"><button type="button" class="btn primary" data-open="register" id="pgo">Register this team</button><button type="button" class="btn line" data-open="prework">Send our pre-work</button></div>
+        <ol class="path">
+          <li><b>Register</b> in four short steps</li>
+          <li><b>Invoice</b> within two business days</li>
+          <li id="prework"><b>Pre-work</b> about 15 minutes, by Dec 11</li>
+          <li><b>Welcome call</b> in mid-December</li>
+        </ol>
       </div>
+    </div>
+    <div class="included" id="kit">
+      <h3>Every team takes home</h3>
+      <ul>
+        <li><b>Practice Snapshot</b><span>Your scored baseline, before you arrive</span></li>
+        <li><b>The Plan Book</b><span>Eight pages, bound by Sunday afternoon</span></li>
+        <li><b>Positioning poster</b><span>Printed on site for the staff room</span></li>
+        <li><b>A signed 90-day plan</b><span>Owners, dates and measures</span></li>
+        <li><b>Up to 12 CE hours</b><span>AGD PACE, subject code 550</span></li>
+        <li><b>Day 30, 60 and 90</b><span>Coach call, peer practice, a letter from your team</span></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<section class="band" id="register">
-  <div class="wrap">
-    <div class="sechead">
-      <h2>Claim your practice’s table.</h2>
-      <p class="lede">Four short steps, about three minutes. Your table is held the moment you finish, and we invoice afterwards. No card today.</p>
-    </div>
-    <div class="regrow">
-      <ol class="path">
-        <li><b>Register</b><span>Four steps. Table held instantly, confirmation by email.</span></li>
-        <li><b>Invoice</b><span>Within two business days.</span></li>
-        <li id="prework"><b>Pre-work</b><span>About 15 minutes of mostly taps, due Dec 11. It becomes your Practice Report.</span></li>
-        <li><b>Welcome call</b><span>20 minutes in mid-December to walk through your report.</span></li>
-      </ol>
-      <div class="regcta">
-        <p class="sel" id="regsel">Team of 3 · $3,400</p>
-        <p class="fine" id="regsel2">Change it in the price builder above.</p>
-        <div class="row"><button type="button" class="btn primary big" data-open="register">Register now</button><button type="button" class="btn line" data-open="prework">Already registered? Send pre-work</button></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="band" id="faq">
+<section class="faqsec" id="faq">
   <div class="wrap">
     <div class="sechead"><h2>Questions owners ask</h2></div>
     <div class="faq">
       <details><summary>Where exactly is it?</summary><p>A hotel within an hour of Clifton, NJ, confirmed by Nov 12. Free parking is part of our venue terms. A small room block is available for Friday and Saturday nights for teams driving 45 minutes or more.</p></details>
       <details><summary>How do the CE hours work?</summary><p>Up to 12 AGD PACE hours under subject code 550, through a PACE-approved co-sponsor. NJ dentists need 40 hours per two-year cycle and can apply practice-management hours to renewal. Every attendee receives a certificate. Hygienists and assistants: we are confirming how NJ counts these hours for your licence and will tell you before the event.</p></details>
       <details><summary>Who should we bring?</summary><p>The owner plus the two people who will run the plan with you, often your office manager and a clinical lead. Teams of three get the best price and qualify for the full-team WinDSO bonus.</p></details>
+      <details><summary>Who is teaching?</summary><p>Omar Awad, Harvard Kennedy School negotiation faculty, leads Negotiating change with your team. Kasper facilitators run every session, with one coach for every six tables. Two keynote speakers will be announced in late November.</p></details>
       <details><summary>What if it snows?</summary><p>If a storm makes travel unsafe, we decide by Thursday Jan 7 and move the summit to Jan 23–24 at the same venue. Your registration moves with it, or you can take a full refund.</p></details>
       <details><summary>Cancellations and substitutions</summary><p>Full refund until Dec 4, 50% until Dec 18, then a credit toward a future summit. You can swap a team member’s name at any time at no cost.</p></details>
       <details><summary>Will anyone try to sell to us?</summary><p>Not in the sessions. CE rules keep the educational program free of product promotion. Partners have a separate Solutions Lounge you can visit during breaks if you want to.</p></details>
+      <details><summary>What is the WinDSO bonus?</summary><p>WinDSO Empower &amp; Grow 2027 tickets (Mar 3–5, Las Vegas; travel not included) go to qualifying practices while they last: 15 for early-bird teams of three, 20 for full teams after Dec 4, and 10 for referrals.</p></details>
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="wrap">
-    <b>Practice Leadership Summit · Jan 9–10, 2027</b>
-    <p>Hosted by Kasper in partnership with Global Academy of Dentistry.</p>
-    <p>Questions: <span class="inbox" style="border-color:var(--hero-line);background:transparent;color:var(--hero-ink)" id="inbox3"></span></p>
+    <b>Practice Leadership Summit, Jan 9–10, 2027</b>
+    <p>Hosted by Kasper in partnership with Global Academy of Dentistry. Questions: <span id="inbox3"></span></p>
   </div>
 </footer>
 
+<div class="lookpick" role="group" aria-label="Design options">
+  <span>Design option</span>
+  <button type="button" data-look="a">A: Summit</button>
+  <button type="button" data-look="b">B: Clinic</button>
+  <button type="button" data-look="c">C: Studio</button>
+</div>
 
 <dialog class="wiz" id="dlg-register" aria-labelledby="reg-label">
   <aside class="wiz-rail">
