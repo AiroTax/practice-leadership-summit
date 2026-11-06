@@ -170,9 +170,23 @@
 
   function showErr(el, msg) { el.textContent = msg; el.hidden = !msg; if (msg) el.scrollIntoView({ block: "nearest" }); }
   function busy(btn, on, label) { btn.disabled = on; if (on) { btn.dataset.label = btn.textContent; btn.textContent = label; } else if (btn.dataset.label) btn.textContent = btn.dataset.label; }
-  function post(url, body) {
-    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.ok) throw new Error(j.error || "Something went wrong. Please try again."); return j; }); });
+  // Posts a form. Retries once if the connection drops or the server answers with something
+  // that isn't our JSON (a gateway or network hiccup); our own validation errors are shown as-is.
+  function post(url, body, retried) {
+    return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), cache: "no-store" })
+      .then(function (r) {
+        return r.text().then(function (t) {
+          var j = null; try { j = JSON.parse(t); } catch (e) {}
+          if (j && j.ok) return j;
+          if (j && j.error) throw Object.assign(new Error(j.error), { final: true });
+          throw new Error("The server answered with code " + r.status + ".");
+        });
+      }, function () { throw new Error("We couldn't reach the server. Check your internet connection."); })
+      .catch(function (x) {
+        if (x.final) throw x;
+        if (!retried) return new Promise(function (ok) { setTimeout(ok, 1200); }).then(function () { return post(url, body, true); });
+        throw new Error(x.message + " Your details are still in the form, so please try again, or email " + INBOX + ".");
+      });
   }
 
   regForm.addEventListener("submit", function (e) {
@@ -195,7 +209,7 @@
       ownerName: f.ownerName.value.trim(), ownerEmail: f.ownerEmail.value.trim(), ownerPhone: f.ownerPhone.value.trim(),
       members: members, heard: f.heard.value, referredBy: f.referredBy.value.trim(), diet: f.diet.value.trim(), access: f.access.value.trim(),
       photo: f.photo.checked, kasperUpdates: f.kasperUpdates.checked, gadUpdates: f.gadUpdates.checked, partnerIntros: f.partnerIntros.checked,
-      terms: f.terms.checked, website: f.website.value
+      terms: f.terms.checked, website: f.pls_hp.value
     };
     var btn = $("#reg-submit"); busy(btn, true, "Saving…");
     post("/api/register", body).then(function (j) {
@@ -227,7 +241,7 @@
       number: num, practice: f.practice.value.trim(), email: f.email.value.trim(),
       years: nOrNull(f.years.value), locations: nOrNull(f.locations.value), teamSize: nOrNull(f.teamSize.value), newPatients: nOrNull(f.newPatients.value),
       payerMix: f.payerMix.value.trim(), production: f.production.value, technology: f.technology.value.trim(), compared: f.compared.value.trim(),
-      challenges: f.challenges.value.trim(), goodWeekend: f.goodWeekend.value.trim(), callTime: f.callTime.value, website: f.website.value
+      challenges: f.challenges.value.trim(), goodWeekend: f.goodWeekend.value.trim(), callTime: f.callTime.value, website: f.pls_hp.value
     };
     var btn = $("#pw-submit"); busy(btn, true, "Sending…");
     post("/api/prework", body).then(function () {

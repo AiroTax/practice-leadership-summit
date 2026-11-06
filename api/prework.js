@@ -6,6 +6,11 @@ const CALL = ["Dec 14–18, mornings", "Dec 14–18, afternoons", "Dec 14–18, 
 const num = (v, max) => { const n = Number(v); return Number.isFinite(n) && n >= 0 && n <= max ? Math.round(n) : undefined; };
 
 export default async function handler(req, res) {
+  try { return await handle(req, res); }
+  catch (e) { console.error("Unexpected error", e); return send(res, 500, { ok: false, error: "Something went wrong on our side. Please try again in a minute." }); }
+}
+
+async function handle(req, res) {
   if (req.method !== "POST") return send(res, 405, { ok: false, error: "Use POST." });
   const b = readBody(req);
   if (str(b.website)) return send(res, 200, { ok: true });
