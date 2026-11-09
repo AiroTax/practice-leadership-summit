@@ -378,6 +378,21 @@ dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;backgrou
 .tpeek{all:unset;cursor:pointer;display:block;padding:0 16px 14px 35px;font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;box-sizing:border-box}
 .tpeek:hover{color:var(--ink)}
 .task.open .tbody{animation:rowin .24s var(--ease)}
+.srcs .donut{display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;align-items:center}
+.srcs .dwrap{display:block}
+.dwrap{position:relative;width:150px;height:150px}
+.dwrap svg{width:100%;height:100%;transform:rotate(0deg)}
+.dwrap circle{transition:stroke-dasharray .5s var(--ease)}
+.srcs .dmid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:0 26px}
+.dmid b{font:800 26px var(--display);line-height:1}
+.dmid span{font-size:11.5px;color:var(--muted);line-height:1.25;margin-top:3px}
+.dleg{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:14px}
+.dleg li{display:grid;grid-template-columns:12px minmax(0,1fr) auto 34px;gap:8px;align-items:center}
+.dleg i{width:12px;height:12px;border-radius:4px}
+.dleg span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dleg b{font-variant-numeric:tabular-nums}
+.dleg em{font-style:normal;color:var(--muted);font-size:12.5px;text-align:right}
+@media (max-width:480px){.srcs .donut{grid-template-columns:1fr;justify-items:center}.dleg{width:100%}}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -465,7 +480,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     <div id="t-tasks" class="tasks"></div>
     <div class="grid2">
       <div class="card"><h2>Latest activity</h2><ul class="feed" id="t-feed"></ul></div>
-      <div class="card"><h2>Where practices heard about us</h2><div class="srcs" id="t-src"></div></div>
+      <div class="card"><h2>Where practices heard about us <button class="info" type="button" data-tip="From the “How did you hear about the summit?” question at registration. The middle shows the biggest source; the number on the right is how many practices." aria-label="What is this?">i</button></h2><div class="srcs" id="t-src"></div></div>
     </div>
   </section>
 
@@ -877,7 +892,15 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     $("#t-feed").innerHTML = ev.length ? ev.slice(0,7).map(function(e){return '<li class="'+e.c+'"><span>'+e.h+'</span><time>'+ago(e.t)+'</time></li>'}).join("") : '<li class="muted" style="grid-template-columns:1fr">Registrations and pre-work will show here as they arrive.</li>';
     var src = {}; ps.forEach(function(p){ var k = p.heard || "Not given"; src[k] = (src[k]||0)+1 });
     var keys = Object.keys(src).sort(function(a,b){return src[b]-src[a]});
-    $("#t-src").innerHTML = keys.length ? keys.map(function(k){return '<div><span>'+esc(k)+'</span><b class="num">'+src[k]+'</b></div>'}).join("") : '<p class="muted">Fills in as registrations arrive.</p>';
+    // Donut of where practices heard about us, with each share as a percentage
+    var COLS = ["#D92E66","#2F5BD3","#137A55","#D99A1E","#7A4FD6","#5F6A84"], tot = keys.reduce(function(a,k){return a+src[k]},0);
+    if (!keys.length) $("#t-src").innerHTML = '<p class="muted">Fills in as registrations arrive.</p>';
+    else {
+      var r = 15.9155, off = 25, arcs = keys.map(function(k,i){ var pct = src[k]/tot*100, a = '<circle cx="21" cy="21" r="'+r+'" fill="none" stroke="'+COLS[i%COLS.length]+'" stroke-width="6" stroke-dasharray="'+Math.max(0,pct-(keys.length>1?.6:0))+' '+(100-pct+(keys.length>1?.6:0))+'" stroke-dashoffset="'+off+'"><title>'+esc(k)+': '+Math.round(pct)+'%</title></circle>'; off -= pct; return a; }).join("");
+      var top = keys[0], topPct = Math.round(src[top]/tot*100);
+      $("#t-src").innerHTML = '<div class="donut"><div class="dwrap"><svg viewBox="0 0 42 42" role="img" aria-label="Where practices heard about us"><circle cx="21" cy="21" r="'+r+'" fill="none" stroke="var(--sunk)" stroke-width="6"/>'+arcs+'</svg><div class="dmid"><b>'+topPct+'%</b><span>'+esc(top)+'</span></div></div>'+
+        '<ul class="dleg">'+keys.map(function(k,i){ var pct = Math.round(src[k]/tot*100); return '<li><i style="background:'+COLS[i%COLS.length]+'"></i><span>'+esc(k)+'</span><b>'+pct+'%</b><em>'+src[k]+'</em></li>' }).join("")+'</ul></div>';
+    }
   }
   $("#t-openall").addEventListener("click", function(){
     var anyClosed = TASKS.some(function(t){ return state.practices.some(t.test) && !openTasks[t.id] });
