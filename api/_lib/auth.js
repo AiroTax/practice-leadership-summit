@@ -10,7 +10,9 @@ const secret = () => {
   if (!process.env.VERCEL) return "local-development-secret-not-for-production";
   throw Object.assign(new Error("The console isn’t set up yet (ADMIN_SECRET is missing)."), { status: 503 });
 };
-export const admins = () => (process.env.ADMIN_EMAILS || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+// Anyone with an @amalandcompany.com email can sign in, plus anyone listed in ADMIN_EMAILS.
+export const DEFAULT_DOMAIN = "@amalandcompany.com";
+export const admins = () => [DEFAULT_DOMAIN, ...(process.env.ADMIN_EMAILS || "").split(",")].map((s) => s.trim().toLowerCase()).filter(Boolean);
 // An entry that starts with "@" lets in everyone at that domain, e.g. "@amalandcompany.com".
 export const isAdmin = (email) => {
   const e = String(email || "").trim().toLowerCase();

@@ -167,3 +167,5 @@
 #dlg-prework .steps li:not(.now) button:hover{background:rgba(255,255,255,.06);color:var(--hero-ink)}
 @media (max-width:760px){.catbar{padding:8px 16px}}
 @media (prefers-reduced-motion:reduce){.catind{transition:none}#dlg-prework .wstep.fwd,#dlg-prework .wstep.bwd{animation:none}}
+
+.check .hint{display:block;font-size:13.5px;color:var(--muted);margin-top:2px}

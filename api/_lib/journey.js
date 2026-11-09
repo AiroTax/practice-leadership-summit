@@ -112,7 +112,7 @@ Thank you for your pre-work. The Practice Snapshot for {{practice}} is ready: yo
 
 The link is private to your practice, and you can save it as a PDF from the page.
 
-Your 20-minute welcome call comes next. You asked for {{call_time}}; we’ll confirm the exact time. Bring the people coming with you if you can.
+Your 20-minute welcome call comes next ({{call_time}}); we’ll confirm the exact time. Bring the people coming with you if you can.
 
 ${SIGN}` },
 
@@ -244,7 +244,7 @@ export function practiceVars(p, pw) {
     team_names: names.join(", ") + (extra ? ` and ${extra} more` : ""),
     site_link: SITE, inbox: INBOX, prework_link: `${SITE}/?n=${p.number}#prework`,
     report_link: p.reportKey ? `${SITE}/report?k=${p.reportKey}` : "",
-    call_time: (pw && pw.answers && pw.answers.callTime ? pw.answers.callTime.toLowerCase() : "a time that suits you"),
+    call_time: (pw && pw.answers && pw.answers.callTime ? "you asked for " + pw.answers.callTime : "at a time that suits your team"),
   };
 }
 
@@ -253,7 +253,7 @@ export function practiceVars(p, pw) {
 export const SAMPLE_VARS = {
   venue_name: "The Grand Hotel", venue_address: "123 Main Street, Clifton, NJ", weather_decision: "going ahead as planned",
   survey_link: SITE + "/#feedback", review_link: SITE + "/#day90", report_link: SITE + "/report?k=sample-report-link",
-  call_time: "Dec 14–18, mornings", first_name: "Dr. Patel", practice: "Riverside Family Dental", table_no: "7", ref: "PLS-007",
+  call_time: "you asked for Dec 14–18, mornings", first_name: "Dr. Patel", practice: "Riverside Family Dental", table_no: "7", ref: "PLS-007",
   ticket: "Team of 3", price: "$3,400", team_names: "Dr. Maya Patel, Jordan Lee, Sam Ortiz", site_link: SITE, inbox: INBOX, prework_link: SITE + "/?n=7#prework",
 };
 

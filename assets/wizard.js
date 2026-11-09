@@ -239,8 +239,8 @@
       .catch(function (x) { self.showErr(x.message); })
       .then(function () { self.busy = false; self.next.disabled = false; self.next.textContent = label; self.next.classList.remove("loading"); self.next.removeAttribute("aria-busy"); });
   };
-  Wizard.prototype.reset = function () { this.form.reset(); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
-  Wizard.prototype.finish = function () { $(".count", this.d).textContent = "Done"; this.form.hidden = true; $(".wiz-foot", this.d).hidden = true; $(".wiz-main", this.d).classList.add("finished"); var dn = $(".wiz-done", this.d); dn.hidden = false; $(".wiz-scroll", this.d).scrollTop = 0; dn.focus(); };
+  Wizard.prototype.reset = function () { if (this.cat) this.cat.hidden = false; this.form.reset(); $(".wiz-main", this.d).classList.remove("finished"); $(".wiz-done", this.d).hidden = true; this.form.hidden = false; $(".wiz-foot", this.d).hidden = false; this.go(0, true); this.onChange({ target: this.form }); };
+  Wizard.prototype.finish = function () { $(".count", this.d).textContent = "Done"; $(".nowtitle", this.d).textContent = this.o.doneTitle || "All done"; if (this.cat) this.cat.hidden = true; this.form.hidden = true; $(".wiz-foot", this.d).hidden = true; $(".wiz-main", this.d).classList.add("finished"); var dn = $(".wiz-done", this.d); dn.hidden = false; $(".wiz-scroll", this.d).scrollTop = 0; dn.focus(); };
 
   // Posts a form. Retries once on a dropped connection or a reply that isn't ours.
   function post(url, body, retried) {
@@ -315,7 +315,7 @@
   var reg = null, pre = null;
   function setupRegister() {
     reg = new Wizard($("#dlg-register"), Q.REGISTRATION, {
-      url: "/api/register", submitLabel: "Claim our table", showWhy: false,
+      url: "/api/register", submitLabel: "Claim our table", showWhy: false, doneTitle: "Table held",
       setup: function (w) { $('[name="seats"][value="3"]', w.form).checked = true; syncMembers(w); drawTable(w); },
       onChange: function (w, e) { if (e.target && (e.target.name === "seats" || e.target.name === "extra")) syncMembers(w); drawTable(w); },
       onStep: function (w, n) { if (w.def.steps[n].id === "confirm") recap(w); },
@@ -390,7 +390,7 @@
   }
   function setupPrework() {
     pre = new Wizard($("#dlg-prework"), Q.PREWORK, {
-      url: "/api/prework", submitLabel: "Send our pre-work", showWhy: true, freeNav: true,
+      url: "/api/prework", submitLabel: "Send our pre-work", showWhy: true, freeNav: true, doneTitle: "Pre-work sent",
       setup: function (w) { loadDraft(w); w.onChange({ target: w.form }); },
       onChange: function (w) { pctTotal(w); reportProgress(w); saveDraft(w); },
       onStep: function (w) { reportProgress(w); },

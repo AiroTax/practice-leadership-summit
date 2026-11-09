@@ -62,13 +62,13 @@ export async function sendPreworkThanks(p, answers) {
   return deliver("prework-thanks", p, buildPreworkThanks(p, answers), to, []);
 }
 export function buildPreworkThanks(p, answers) {
-  const body = markup(`Hi ${answers.answeredBy === "Owner" || !answers.email ? firstName(p.owner.name) : "there"},
+  const body = markup(`Hi ${answers.answeredBy === "Owner dentist" || !answers.email ? firstName(p.owner.name) : "there"},
 
 Thank you. We have the pre-work for **${p.name}**, and it’s the starting point for your Practice Snapshot.
 
 1. We read your answers and set them against published benchmarks for US dental practices.
 2. Your Snapshot arrives by email in mid-December, with a private link.
-3. We book your 20-minute welcome call${answers.callTime ? ` (you asked for ${answers.callTime.toLowerCase()})` : ""} to walk through it with your team.
+3. We book your 20-minute welcome call${answers.callTime ? ` (you asked for ${answers.callTime})` : ""} to walk through it with your team.
 
 Need to change an answer? Reply to this email and tell us what to update.
 

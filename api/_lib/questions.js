@@ -1,5 +1,5 @@
 // Every question the summit asks, in one place: what we ask, why, and which part of the
-// Practice Report it feeds. The website forms, the server checks and the question map are
+// Practice Snapshot it feeds. The website forms, the server checks and the question map are
 // all built from this file. After editing, run `npm run questions` to refresh
 // assets/questions.js (the browser copy).
 //
