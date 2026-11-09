@@ -364,6 +364,12 @@ dialog.vid::backdrop{background:rgba(11,26,51,.78);backdrop-filter:blur(4px)}
 dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#0B1A33}
 .vclose{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.9);color:#0B1A33;font-size:24px;cursor:pointer}
 @media (max-width:560px){.tourcard{flex-direction:column;align-items:stretch}.tourplay{width:100%}}
+.dlmenu{position:relative}
+.dlpop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:340px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
+.dlpop button{all:unset;cursor:pointer;display:grid;gap:2px;padding:10px 12px;border-radius:10px}
+.dlpop button:hover,.dlpop button:focus-visible{background:var(--sunk)}
+.dlpop b{font-size:14.5px}
+.dlpop span{font-size:12.5px;color:var(--muted)}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -458,7 +464,13 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   <!-- PRACTICES -->
   <section class="view" id="v-practices" hidden>
     <div class="viewhead"><div><h1>Practices <button class="info" type="button" data-tip="Each practice moves through 7 steps: registered, invoice sent, paid, pre-work in, report sent, welcome call done, checked in. The ring shows how many are complete, and “Next” is the step to do now." aria-label="What is this?">i</button></h1><p class="muted">Every registration from the website lands here within 30 seconds. Click one to open it.</p></div>
-      <button class="btn" type="button" id="p-export">Download all as CSV</button></div>
+      <div class="dlmenu"><button class="btn" type="button" id="p-dl" aria-expanded="false" aria-haspopup="true">Download CSV ▾</button>
+        <div class="dlpop" id="p-dlpop" hidden>
+          <button type="button" data-dl="people"><b>Everyone registered</b><span>One row per person: name, role, email, practice, table, check-in</span></button>
+          <button type="button" data-dl="registrations"><b>Registration form answers</b><span>One row per practice: every answer from the registration form, plus status</span></button>
+          <button type="button" data-dl="prework"><b>Pre-work form answers</b><span>One row per practice that sent pre-work: every answer</span></button>
+          <button type="button" data-dl="summary"><b>Practice summary</b><span>The short list: ticket, total, invoice, pre-work, call, report</span></button>
+        </div></div></div>
     <div class="filters" id="p-filters"></div>
     <div class="plist" id="p-list"></div>
   </section>
@@ -476,7 +488,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   <section class="view" id="v-prep" hidden>
     <div class="viewhead"><div><h1>Event prep <button class="info" type="button" data-tip="Everything the venue and caterer need, built from the registration forms. Copy the badge list into a spreadsheet to print badges and table cards." aria-label="What is this?">i</button></h1><p class="muted">Badges, catering, rooms and lunch groups, from what practices told us when they registered.</p></div></div>
     <div class="big3" id="e-big"></div>
-    <div class="card"><div class="viewhead"><h2>Badges and tables <button class="info" type="button" data-tip="One row per named person. The table number is the practice’s registration number." aria-label="What is this?">i</button></h2><button class="btn sm" id="e-copybadges" type="button">Copy as spreadsheet rows</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Table</th><th>Name</th><th>Role</th><th>Practice</th><th>Email</th></tr></thead><tbody id="e-badges"></tbody></table></div></div>
+    <div class="card"><div class="viewhead"><h2>Badges and tables <button class="info" type="button" data-tip="One row per named person. The table number is the practice’s registration number." aria-label="What is this?">i</button></h2><button class="btn sm" id="e-copybadges" type="button">Copy as spreadsheet rows</button><button class="btn sm" id="e-dlpeople" type="button">Download CSV</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Table</th><th>Name</th><th>Role</th><th>Practice</th><th>Email</th></tr></thead><tbody id="e-badges"></tbody></table></div></div>
     <div class="grid2">
       <div class="card"><h2>Dietary needs</h2><ul class="list" id="e-diet"></ul></div>
       <div class="card"><h2>Accessibility</h2><ul class="list" id="e-access"></ul></div>
@@ -1144,12 +1156,63 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     } catch(e){ if (e.code !== "signin") toast(e.message, null, true); }
   });
 
-  $("#p-export").addEventListener("click", function(){
-    var rows = [["Ref","Practice","Town","Type","Ticket","People","Total","Owner","Owner email","Phone","Invoice to","Invoice","Pre-work","Welcome call","Report","Registered"]];
-    state.practices.forEach(function(p){ var o = p.people[0] || {}; rows.push([p.ref,p.name,p.town,p.type,p.ticket,p.count,p.total,o.name||"",o.email||"",p.phone,p.invoiceEmail||o.email||"",p.invoice,p.pw?"Yes":"No",p.call,p.reportStatus,p.createdAt?new Date(p.createdAt).toISOString().slice(0,10):""]) });
-    var csv = rows.map(function(r){ return r.map(function(v){ v = String(v==null?"":v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v }).join(",") }).join("\n");
-    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download = "summit-practices.csv"; a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href) }, 1000);
+  // CSV downloads (they open in Excel, Numbers or Google Sheets)
+  function csvDownload(name, rows){
+    var csv = "﻿" + rows.map(function(r){ return r.map(function(v){ v = Array.isArray(v) ? v.join("; ") : String(v==null?"":v); return /[",\n;]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v }).join(",") }).join("\r\n");
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(a.href) }, 1000);
+  }
+  var day = function(t){ return t ? new Date(t).toISOString().slice(0,10) : "" };
+  var yn = function(b){ return b ? "Yes" : "No" };
+  var DL = {
+    people: function(){
+      var rows = [["Table","Ref","Practice","Town","Name","Role","Email","Is owner","Ticket","Invoice","Checked in","Dietary needs (practice)","Accessibility (practice)","Registered"]];
+      state.practices.slice().sort(function(a,b){return a.num-b.num}).forEach(function(p){
+        p.people.forEach(function(m){ rows.push([p.num,p.ref,p.name,p.town,m.name,m.role,m.email,yn(m.slot===0),p.ticket,p.invoice,yn(m.checkedIn),p.diet,p.access,day(p.createdAt)]); });
+        for (var k = p.people.length; k < p.count; k++) rows.push([p.num,p.ref,p.name,p.town,"(name to come)","","","No",p.ticket,p.invoice,"No",p.diet,p.access,day(p.createdAt)]);
+      });
+      return ["summit-people.csv", rows];
+    },
+    registrations: function(){
+      var rows = [["Ref","Table","Registered","Practice","Town","Website","Practice type","Ticket","People","Total","Kasper customer","Owner","Owner email","Owner phone","Invoice email",
+        "Team member 2","Role 2","Email 2","Team member 3","Role 3","Email 3","Team member 4","Role 4","Email 4",
+        "Hotel","Dietary needs","Accessibility","Heard via","Referred by","Team photo","Kasper updates","GAD updates","Partner introductions","Invoice","Welcome call","WinDSO","Report","Notes"]];
+      state.practices.slice().sort(function(a,b){return a.num-b.num}).forEach(function(p){
+        var o = p.people[0] || {}, m = p.people.slice(1), mm = function(i,k){ return (m[i]||{})[k] || "" };
+        rows.push([p.ref,p.num,day(p.createdAt),p.name,p.town,p.website,p.type,p.ticket,p.count,p.total,yn(p.kasper),o.name||"",o.email||"",p.phone,p.invoiceEmail,
+          mm(0,"name"),mm(0,"role"),mm(0,"email"),mm(1,"name"),mm(1,"role"),mm(1,"email"),mm(2,"name"),mm(2,"role"),mm(2,"email"),
+          p.hotel,p.diet,p.access,p.heard,p.refby,yn(p.consents.photo),yn(p.consents.kasper),yn(p.consents.gad),yn(p.consents.intros),p.invoice,p.call,p.windso,p.reportStatus,p.notes]);
+      });
+      return ["summit-registration-answers.csv", rows];
+    },
+    prework: function(){
+      var cols = [];
+      PWQ.forEach(function(sec){ sec.q.forEach(function(q){ if (["number","practice"].indexOf(q.k) >= 0) return;
+        if (q.parts) q.parts.forEach(function(pp){ cols.push([pp.k, q.l + ": " + pp.l + (q.type === "score" || /score/i.test(q.l) ? "" : " (%)")]); });
+        if (q.k !== "scores") cols.push([q.k, q.l]); }); });
+      var rows = [["Ref","Table","Practice","Sent on"].concat(cols.map(function(c){return c[1]}))];
+      state.practices.filter(function(p){return p.pw}).sort(function(a,b){return a.num-b.num}).forEach(function(p){
+        rows.push([p.ref,p.num,p.name,day(p.pwAt)].concat(cols.map(function(c){ var v = p.pw[c[0]]; return v==null ? "" : v })));
+      });
+      return ["summit-prework-answers.csv", rows];
+    },
+    summary: function(){
+      var rows = [["Ref","Practice","Town","Type","Ticket","People","Total","Owner","Owner email","Phone","Invoice to","Invoice","Pre-work","Welcome call","Report","Progress","Registered"]];
+      state.practices.forEach(function(p){ var o = p.people[0] || {}; rows.push([p.ref,p.name,p.town,p.type,p.ticket,p.count,p.total,o.name||"",o.email||"",p.phone,p.invoiceEmail||o.email||"",p.invoice,p.pw?"Yes":"No",p.call,p.reportStatus,progress(p).pct+"%",day(p.createdAt)]) });
+      return ["summit-practices.csv", rows];
+    }
+  };
+  $("#e-dlpeople").addEventListener("click", function(){ if (!state.practices.length) { toast("No registrations yet.", null, true); return; } var o = DL.people(); csvDownload(o[0], o[1]); toast("Downloaded " + o[0] + "."); });
+  var dlpop = $("#p-dlpop"), dlbtn = $("#p-dl");
+  dlbtn.addEventListener("click", function(e){ e.stopPropagation(); dlpop.hidden = !dlpop.hidden; dlbtn.setAttribute("aria-expanded", String(!dlpop.hidden)); });
+  document.addEventListener("click", function(e){ if (!dlpop.hidden && !e.target.closest(".dlmenu")) { dlpop.hidden = true; dlbtn.setAttribute("aria-expanded","false"); } });
+  dlpop.addEventListener("click", function(e){
+    var b = e.target.closest("[data-dl]"); if (!b) return;
+    if (!state.practices.length) { toast("No registrations yet, so there’s nothing to download.", null, true); return; }
+    var out = DL[b.dataset.dl](); if (out[1].length < 2) { toast("Nothing to download yet: no practice has sent pre-work.", null, true); return; }
+    csvDownload(out[0], out[1]); dlpop.hidden = true; dlbtn.setAttribute("aria-expanded","false");
+    toast("Downloaded " + out[0] + " (" + (out[1].length - 1) + " rows).");
   });
+
 
   /* ---------- check-in ---------- */
   function renderCheckin(){
