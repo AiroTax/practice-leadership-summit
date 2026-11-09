@@ -24,7 +24,13 @@
   .state p{color:#3A4560}
   @keyframes in{from{opacity:0;transform:translateY(8px)}}
   #report{animation:in .42s cubic-bezier(.23,1,.32,1)}
-  @media print{.bar{display:none}body{background:#fff}main{padding:0}}
+  .next{max-width:860px;margin:24px auto 0;background:#fff;border-radius:14px;padding:22px 24px;display:grid;gap:10px;box-shadow:0 20px 40px -30px rgba(11,26,51,.35)}
+  .next h2{font:800 22px "Bricolage Grotesque",sans-serif;margin:0}
+  .next p{margin:0;color:#3A4560}
+  .next .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn.primary{background:#D92E66;border-color:#D92E66;color:#fff;text-decoration:none}
+  a.btn{text-decoration:none;display:inline-block}
+  @media print{.next{display:none}.bar{display:none}body{background:#fff}main{padding:0}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -32,8 +38,13 @@
 <div class="bar"><div class="in"><a class="brand" href="/">Kasper <span>×</span> Global Academy of Dentistry</a><button class="btn" type="button" id="print" hidden>Save as PDF</button></div></div>
 <main>
   <div class="state" id="loading"><h1>Opening your Practice Snapshot…</h1></div>
-  <div class="state" id="error" hidden><h1>We couldn’t open this report</h1><p id="errmsg"></p><p>Questions: Programs@amalandcompany.com</p></div>
+  <div class="state" id="error" hidden><h1>We couldn’t open this report</h1><p id="errmsg"></p><p><a class="btn primary" href="mailto:Programs@amalandcompany.com">Email us for a new link</a></p></div>
   <div id="report" hidden></div>
+  <div class="next" id="next" hidden>
+    <h2>What happens next</h2>
+    <p>We walk through this snapshot with your team on your 20-minute welcome call. Questions before then, or something to correct? Write to us and we’ll update it.</p>
+    <div class="row"><a class="btn primary" id="ask" href="mailto:Programs@amalandcompany.com">Email your facilitator</a><button class="btn" type="button" id="print2">Save as PDF</button><a class="btn" href="/">Summit website</a></div>
+  </div>
 </main>
 <script src="/assets/report.js"></script>
 <script>
@@ -49,9 +60,11 @@
       document.title = d.practice.name + " · Practice Snapshot";
       if (!d.hasPrework) return fail("Your snapshot is built from your pre-work, which we haven’t received yet. Send it from the summit website using your registration number.");
       var el = document.getElementById("report"); el.innerHTML = window.PLS_REPORT.render(d);
-      document.getElementById("loading").hidden = true; el.hidden = false; document.getElementById("print").hidden = false;
+      document.getElementById("loading").hidden = true; el.hidden = false; document.getElementById("print").hidden = false; document.getElementById("next").hidden = false;
+      document.getElementById("ask").href = "mailto:Programs@amalandcompany.com?subject=" + encodeURIComponent("Practice Snapshot: " + d.practice.name);
     }, function () { fail("Check your internet connection and try again."); });
   document.getElementById("print").addEventListener("click", function () { window.print(); });
+  document.getElementById("print2").addEventListener("click", function () { window.print(); });
 })();
 </script>
 </body>

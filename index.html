@@ -52,7 +52,7 @@
       <div class="countdown" aria-label="Time until doors open" id="countdown">
         <div><b id="cd-d">—</b><span>days to go</span></div>
         <div><b id="cd-h">—</b><span>hours</span></div>
-        <div class="eb"><b id="cd-eb">—</b><span>days of early-bird price</span></div>
+        <div class="eb"><b id="cd-eb">—</b><span>days of early-bird price <button class="info" type="button" data-tip="Register by Dec 4 to pay the early-bird price, about $400 less per ticket than from Dec 5." aria-label="What does this mean?">i</button></span></div>
       </div>
     </div>
     <div class="floor" aria-label="Floor plan of the 35 practice tables">
@@ -60,7 +60,7 @@
       <div class="stage">Stage, keynotes and facilitation</div>
       <svg id="floorplan" viewBox="0 0 700 430" aria-label="Floor plan: 35 round tables in five rows"></svg>
       <div class="floortip" id="floortip" hidden></div>
-      <div class="legend"><span><i class="lg-claimed"></i>Claimed</span><span><i class="lg-open"></i>Open</span><span><i class="lg-coach"></i>Coach for every six tables</span></div>
+      <div class="legend"><span><i class="lg-claimed"></i>Claimed</span><span><i class="lg-open"></i>Open</span><span><i class="lg-coach"></i>Coach for every six tables <button class="info" type="button" data-tip="Each facilitator looks after six tables all weekend, so every team gets hands-on help with its plan." aria-label="What does this mean?">i</button></span></div>
     </div>
   </div>
 </section>
@@ -91,6 +91,7 @@
           <p class="sdesc" id="sdesc"></p>
           <p class="swho" id="swho"></p>
         </div>
+        <div class="ctaline"><button type="button" class="btn primary" data-open="register">Claim your table</button><span class="fine">Eight pages, one plan your team signs on Sunday.</span></div>
         <p class="sday" id="sday">Breakfast from 8:00. Lunch at 12:30, with practices mixed by type. Reception at 5:30 with every practice’s positioning poster on the wall.</p>
       </div>
       <div class="bookwrap">
@@ -213,9 +214,9 @@
           </div>
         </div>
         <div class="fld" id="extrawrap" hidden><label for="extra">People beyond three</label><input type="number" id="extra" min="1" max="6" value="1"></div>
-        <label class="check"><input type="checkbox" id="kasper"> <span>We’re a current Kasper customer <span class="fine">20% off a standard team of three</span></span></label>
+        <label class="check"><input type="checkbox" id="kasper"> <span>We’re a current Kasper customer <button class="info" type="button" data-tip="Practices that already use Kasper pay $3,040 for a team of three, 20% off the standard $3,800. We check this when we send your invoice." aria-label="What does this mean?">i</button> <span class="fine">20% off a standard team of three</span></span></label>
         <table class="ladder" aria-label="Published ticket prices">
-          <tr><th>Ticket</th><th class="n">Early bird to Dec 4</th><th class="n">From Dec 5</th></tr>
+          <tr><th>Ticket</th><th class="n">Early bird to Dec 4 <button class="info" type="button" data-tip="Prices are per team, not per person. The price is set on the day you register; you pay after your invoice arrives." aria-label="What does this mean?">i</button></th><th class="n">From Dec 5</th></tr>
           <tr><td>Team of 3</td><td class="n">$3,400</td><td class="n">$3,800</td></tr>
           <tr><td>Team of 2</td><td class="n">$2,700</td><td class="n">$3,100</td></tr>
           <tr><td>Single seat</td><td class="n">$2,100</td><td class="n">$2,500</td></tr>
@@ -225,7 +226,7 @@
       <div class="panel totalpanel" aria-live="polite">
         <div class="total"><span class="tag" id="pricetag">Early bird</span><span class="big" id="ptotal">$3,400</span><span class="per" id="pper">$1,133 per person, 3 people</span></div>
         <div class="lines" id="plines"></div>
-        <div class="bonus" id="pbonus"></div>
+        <div class="bonusrow"><div class="bonus" id="pbonus"></div><button class="info" type="button" data-tip="WinDSO Empower & Grow 2027 tickets (Mar 3–5, Las Vegas; travel not included) go to teams of three or more while they last. We confirm yours after payment." aria-label="What does this mean?">i</button></div>
         <div class="row"><button type="button" class="btn primary" data-open="register" id="pgo">Register this team</button><button type="button" class="btn line" data-open="prework">Send our pre-work</button></div>
         <ol class="path">
           <li><b>Register</b> in four short steps</li>

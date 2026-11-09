@@ -339,3 +339,14 @@ li#prework,.path li{text-wrap:pretty}
   .total .big{font-size:44px}
   .closing{padding:20px}
 }
+
+/* "i" explanations */
+.info{all:unset;box-sizing:border-box;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;opacity:.6;font:italic 700 11px/1 Georgia,serif;cursor:pointer;vertical-align:middle;margin-left:4px;transition:opacity .16s}
+.info:hover,.info[aria-expanded="true"]{opacity:1;color:var(--accent-text)}
+.info:focus-visible{outline:2px solid var(--accent);outline-offset:2px;opacity:1}
+.tipbox{position:fixed;z-index:200;max-width:300px;background:var(--ink);color:var(--bg);font:14.5px/1.5 var(--body);padding:10px 13px;border-radius:12px;box-shadow:0 18px 40px -16px rgba(11,26,51,.5);animation:tipin .18s cubic-bezier(.23,1,.32,1)}
+@keyframes tipin{from{opacity:0;transform:translateY(-4px)}}
+.bonusrow{display:flex;align-items:center;gap:6px}
+.bonusrow .bonus{flex:1}
+.ctaline{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
+@media (prefers-reduced-motion:reduce){.tipbox{animation:none}}

@@ -239,6 +239,25 @@
     setTimeout(function () { openModal(location.hash.slice(1)); }, 300);
   }
 
+  /* ---------- "i" explanations: tap to open, tap anywhere else to close ---------- */
+  var tipEl = null, tipBtn = null;
+  function hideTip() { if (tipEl) { tipEl.remove(); tipEl = null; } if (tipBtn) { tipBtn.setAttribute("aria-expanded", "false"); tipBtn = null; } }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-tip]");
+    if (!b) { if (tipEl && !e.target.closest(".tipbox")) hideTip(); return; }
+    e.preventDefault(); e.stopPropagation();
+    if (tipBtn === b) { hideTip(); return; }
+    hideTip(); tipBtn = b; b.setAttribute("aria-expanded", "true");
+    tipEl = document.createElement("div"); tipEl.className = "tipbox"; tipEl.setAttribute("role", "tooltip"); tipEl.textContent = b.dataset.tip;
+    (b.closest("dialog") || document.body).appendChild(tipEl);
+    var r = b.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    var left = Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width / 2 - w / 2)), top = r.bottom + 8;
+    if (top + h > innerHeight - 12) top = r.top - h - 8;
+    tipEl.style.left = left + "px"; tipEl.style.top = top + "px"; tipY = scrollY;
+  }, true);
+  addEventListener("keydown", function (e) { if (e.key === "Escape" && tipEl) { hideTip(); } });
+  var tipY = 0; addEventListener("scroll", function () { if (tipEl && Math.abs(scrollY - tipY) > 60) hideTip(); }, true);
+
   /* ---------- forms (assets/wizard.js) ---------- */
   window.PLS_ON_REGISTERED = loadStats;
 })();

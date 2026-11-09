@@ -16,10 +16,12 @@
   /* ---------- rendering one question ---------- */
   var uid = 0;
   function id(k) { uid++; return "w-" + k + "-" + uid; }
+  var inlineWhy = false; // set per form: pre-work shows "why" under each question, registration shows an "i"
   function head(q, forId, tag) {
     var t = tag || "label";
     return "<" + t + (forId && t === "label" ? ' for="' + forId + '"' : "") + ' class="qlabel">' + esc(q.label) +
-      (q.hint ? ' <span class="hint">' + esc(q.hint) + "</span>" : "") + (q.req ? ' <span class="req" aria-hidden="true">required</span>' : "") + "</" + t + ">";
+      (q.hint ? ' <span class="hint">' + esc(q.hint) + "</span>" : "") + (q.req ? ' <span class="req" aria-hidden="true">required</span>' : "") +
+      (!inlineWhy && q.why ? ' <button class="info" type="button" data-tip="' + esc("Why we ask: " + q.why) + '" aria-label="Why we ask">i</button>' : "") + "</" + t + ">";
   }
   function why(q, show) { return show && q.why ? '<p class="why">' + esc(q.why) + "</p>" : ""; }
 
@@ -103,6 +105,7 @@
     this.qs = [];
     var self = this;
     def.steps.forEach(function (s) { s.questions.forEach(function (q) { self.qs.push(q); }); });
+    inlineWhy = !!opts.showWhy;
     this.form.innerHTML = def.steps.map(function (s, n) {
       return '<section class="wstep" data-step="' + n + '"' + (n ? " hidden" : "") + ' aria-labelledby="' + def.id + "-h" + n + '">' +
         '<h3 id="' + def.id + "-h" + n + '" tabindex="-1">' + esc(s.title) + '</h3><p class="intro">' + esc(s.intro) + "</p>" +

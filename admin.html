@@ -152,7 +152,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);bo
 .chip b{font:600 11.5px var(--mono);margin-left:4px;opacity:.7}
 .filters input{flex:1 1 220px;max-width:340px}
 .plist{display:grid;gap:8px}
-.prow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:minmax(0,1.6fr) 90px minmax(0,1.5fr) 100px;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;transition:border-color .16s,transform .16s var(--ease),box-shadow .16s}
+.prow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:minmax(0,1.5fr) 90px minmax(0,1.6fr) 100px;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;transition:border-color .16s,transform .16s var(--ease),box-shadow .16s}
 .prow:hover{border-color:var(--line2);box-shadow:0 6px 20px -14px rgba(11,26,51,.4)}
 .prow:active{transform:scale(.995)}
 .prow .nm b{font-family:var(--display);font-size:17px;font-weight:600;display:block}
@@ -168,7 +168,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);bo
 .journey span.next{background:repeating-linear-gradient(90deg,var(--warn) 0 4px,transparent 4px 7px)}
 .jlabel{font-size:12.5px;color:var(--muted);margin-top:6px;display:block}
 .prow .amt{font:600 14px var(--mono);text-align:right}
-@media (max-width:760px){.prow{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}.prow .jcol{grid-column:1/-1}.prow .seats{justify-self:end}.prow .amt{display:none}}
+@media (max-width:760px){.prow{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}.prow .prog{grid-column:1/-1}.prow .ppl{justify-self:end;text-align:right}.prow .amt{display:none}}
 
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(6,11,25,.45);z-index:40;opacity:0;transition:opacity .24s var(--ease)}
@@ -321,6 +321,35 @@ table.t tr:last-child td{border-bottom:0}
 .btn.locked{background:var(--sunk);border-color:var(--line);color:var(--muted);font-weight:600}
 .btn.locked::before{content:"";width:10px;height:10px;border:2px solid currentColor;border-radius:3px 3px 2px 2px;opacity:.7}
 @media (max-width:760px){.emails .email{grid-template-columns:minmax(0,1fr)}.emails .email .acts{justify-content:flex-start}}
+.info{all:unset;box-sizing:border-box;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line2);color:var(--muted);font:700 11px/1 Georgia,serif;font-style:italic;cursor:pointer;vertical-align:middle;margin-left:4px;transition:border-color .16s,color .16s}
+.info:hover,.info[aria-expanded="true"]{border-color:var(--blue);color:var(--blue)}
+.info:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1 .info{width:22px;height:22px;font-size:13px;margin-left:8px}
+.tipbox{position:fixed;z-index:80;max-width:300px;background:var(--ink);color:var(--panel);font:14px/1.5 var(--body);padding:10px 13px;border-radius:12px;box-shadow:var(--shadow);animation:tipin .18s var(--ease)}
+@keyframes tipin{from{opacity:0;transform:translateY(-4px)}}
+.ppl{font-size:13.5px;color:var(--muted);display:grid}
+.ppl b{font:600 18px var(--display);color:var(--ink)}
+.ppl small{font-size:12px;color:var(--ok);font-weight:700}
+.prog{display:flex;align-items:center;gap:12px;min-width:0}
+.ringwrap{position:relative;display:inline-grid;place-items:center;flex:none}
+.ringwrap b{position:absolute;font:700 11.5px var(--mono);color:var(--ink)}
+.ring{transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:3.6}
+.ring .rbg{stroke:var(--sunk)}
+.ring .rfg{stroke:var(--ok);stroke-linecap:round;transition:stroke-dasharray .4s var(--ease)}
+.ptext{display:grid;min-width:0}
+.ptext b{font-size:14px}
+.ptext span{font-size:13px;color:var(--accent);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dprog{display:flex;gap:14px;align-items:center;margin:0 0 12px}
+.dprog .ringwrap b{font-size:13px}
+.dprog > div > b{font-size:14.5px}
+.steplist{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.steplist li{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.steplist li.ok{background:var(--ok-soft);color:var(--ok)}
+.steplist li.ok::before{content:"✓ "}
+.steplist li.now{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.dnext{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.ctabar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent-soft);border-radius:14px;padding:12px 16px;font-weight:700}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -393,16 +422,16 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
         <div style="display:grid;gap:14px">
           <div><div class="big" id="t-tables">0<small> of 35 tables</small></div><p class="muted" id="t-next" style="margin-top:6px"></p></div>
           <div class="stats">
-            <div class="stat"><b id="t-people">0</b><span>people coming</span></div>
-            <div class="stat"><b id="t-booked">$0</b><span id="t-paid">$0 paid</span></div>
-            <div class="stat"><b id="t-pw">0</b><span>pre-work received</span></div>
-            <div class="stat"><b id="t-calls">0</b><span>welcome calls done</span></div>
+            <div class="stat"><b id="t-people">0</b><span>people coming <button class="info" type="button" data-tip="Everyone on each practice’s ticket, including people whose names we don’t have yet." aria-label="What is this?">i</button></span></div>
+            <div class="stat"><b id="t-booked">$0</b><span><span id="t-paid">$0 paid</span> <button class="info" type="button" data-tip="The big number is the ticket value of every registration. “Paid” counts only invoices you have marked Paid." aria-label="What is this?">i</button></span></div>
+            <div class="stat"><b id="t-pw">0</b><span>pre-work received <button class="info" type="button" data-tip="Practices that sent their pre-work. It’s due Dec 11 and becomes their Practice Snapshot." aria-label="What is this?">i</button></span></div>
+            <div class="stat"><b id="t-calls">0</b><span>welcome calls done <button class="info" type="button" data-tip="20-minute calls in mid-December where we walk each team through its Snapshot. Mark them done in Today or in the practice." aria-label="What is this?">i</button></span></div>
           </div>
         </div>
       </div>
-      <div class="card"><h2>Registration targets</h2><div class="cps" id="t-cps"></div></div>
+      <div class="card"><h2>Registration targets <button class="info" type="button" data-tip="How many tables we want claimed by each date, to reach all 35 before Jan 5. The bar fills as practices register." aria-label="What is this?">i</button></h2><div class="cps" id="t-cps"></div></div>
     </div>
-    <div class="viewhead"><div><h2 style="font-size:22px;font-weight:800">What needs doing</h2><p class="muted">Each item clears itself once it’s done. Click a practice to see everything about it.</p></div></div>
+    <div class="viewhead"><div><h2 style="font-size:22px;font-weight:800">What needs doing <button class="info" type="button" data-tip="Every open job for every practice, grouped by type. Pink buttons send an approved email; the other buttons just update the record. Locked buttons need the email approved in the Emails tab first." aria-label="What is this?">i</button></h2><p class="muted">Each item clears itself once it’s done. Click a practice to see everything about it.</p></div></div>
     <div id="t-tasks" class="tasks"></div>
     <div class="grid2">
       <div class="card"><h2>Latest activity</h2><ul class="feed" id="t-feed"></ul></div>
@@ -412,7 +441,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   <!-- PRACTICES -->
   <section class="view" id="v-practices" hidden>
-    <div class="viewhead"><div><h1>Practices</h1><p class="muted">Every registration from the website lands here within 30 seconds. Click one to open it.</p></div>
+    <div class="viewhead"><div><h1>Practices <button class="info" type="button" data-tip="Each practice moves through 7 steps: registered, invoice sent, paid, pre-work in, report sent, welcome call done, checked in. The ring shows how many are complete, and “Next” is the step to do now." aria-label="What is this?">i</button></h1><p class="muted">Every registration from the website lands here within 30 seconds. Click one to open it.</p></div>
       <button class="btn" type="button" id="p-export">Download all as CSV</button></div>
     <div class="filters" id="p-filters"></div>
     <div class="plist" id="p-list"></div>
@@ -420,17 +449,18 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   <!-- REPORTS -->
   <section class="view" id="v-reports" hidden>
-    <div class="viewhead"><div><h1>Practice reports</h1><p class="muted">Each office’s answers against published industry benchmarks, and where its Practice Snapshot stands. Open an office to edit its note and release its report.</p></div></div>
+    <div class="viewhead"><div><h1>Practice reports <button class="info" type="button" data-tip="A report builds itself from each office’s pre-work. Draft: only the team can see it. Ready: the office’s private link works. Sent: the link has been emailed to the office." aria-label="What is this?">i</button></h1><p class="muted">Each office’s answers against published industry benchmarks, and where its Practice Snapshot stands. Open an office to edit its note and release its report.</p></div></div>
     <div class="big3" id="r-big"></div>
-    <div class="card"><h2>Across all offices</h2><p class="muted" style="font-size:13.5px">How many offices are ahead, on par or behind on each benchmark.</p><div id="r-agg" class="agg"></div></div>
+    <div id="r-cta"></div>
+    <div class="card"><h2>Across all offices <button class="info" type="button" data-tip="Ahead: better than the published average. On par: about average. Behind or Well behind: below it. Not tracked: the office told us it doesn’t measure this." aria-label="What is this?">i</button></h2><p class="muted" style="font-size:13.5px">How many offices are ahead, on par or behind on each benchmark.</p><div id="r-agg" class="agg"></div></div>
     <div class="tablewrap"><table class="t rtable"><thead><tr><th>Office</th><th>New patients</th><th>Reappointment</th><th>Acceptance</th><th>Overhead</th><th>Patients per dentist</th><th>Focus points</th><th>Report</th><th></th></tr></thead><tbody id="r-rows"></tbody></table></div>
   </section>
 
   <!-- EVENT PREP -->
   <section class="view" id="v-prep" hidden>
-    <div class="viewhead"><div><h1>Event prep</h1><p class="muted">Badges, catering, rooms and lunch groups, from what practices told us when they registered.</p></div></div>
+    <div class="viewhead"><div><h1>Event prep <button class="info" type="button" data-tip="Everything the venue and caterer need, built from the registration forms. Copy the badge list into a spreadsheet to print badges and table cards." aria-label="What is this?">i</button></h1><p class="muted">Badges, catering, rooms and lunch groups, from what practices told us when they registered.</p></div></div>
     <div class="big3" id="e-big"></div>
-    <div class="card"><div class="viewhead"><h2>Badges and tables</h2><button class="btn sm" id="e-copybadges" type="button">Copy as spreadsheet rows</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Table</th><th>Name</th><th>Role</th><th>Practice</th><th>Email</th></tr></thead><tbody id="e-badges"></tbody></table></div></div>
+    <div class="card"><div class="viewhead"><h2>Badges and tables <button class="info" type="button" data-tip="One row per named person. The table number is the practice’s registration number." aria-label="What is this?">i</button></h2><button class="btn sm" id="e-copybadges" type="button">Copy as spreadsheet rows</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Table</th><th>Name</th><th>Role</th><th>Practice</th><th>Email</th></tr></thead><tbody id="e-badges"></tbody></table></div></div>
     <div class="grid2">
       <div class="card"><h2>Dietary needs</h2><ul class="list" id="e-diet"></ul></div>
       <div class="card"><h2>Accessibility</h2><ul class="list" id="e-access"></ul></div>
@@ -441,9 +471,9 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   <!-- EMAILS -->
   <section class="view" id="v-emails" hidden>
-    <div class="viewhead"><div><h1>Emails</h1><p class="muted">What practices receive, and when. Nothing scheduled goes out until you approve it.</p></div><span class="pill b" id="em-count"></span></div>
+    <div class="viewhead"><div><h1>Emails <button class="info" type="button" data-tip="Approve an email once and it can go out: scheduled emails on their date at 9 am Eastern, the others when you press send in Today. Preview always shows sample data; real emails use each practice’s own details." aria-label="What is this?">i</button></h1><p class="muted">What practices receive, and when. Nothing scheduled goes out until you approve it.</p></div><span class="pill b" id="em-count"></span></div>
     <div class="card"><div class="sendstate" id="em-state"><i class="dot"></i><div id="em-statetext"></div></div></div>
-    <div class="card"><div class="viewhead"><div><h2>Event details used in the emails</h2><p class="muted" style="font-size:13.5px">Fill these once. An email that needs a blank one waits until it’s filled in.</p></div><button class="btn sm dark" type="button" id="em-savevars">Save details</button></div><div class="vars" id="em-vars"></div></div>
+    <div class="card"><div class="viewhead"><div><h2>Event details used in the emails <button class="info" type="button" data-tip="Filled in once and used in every email that needs them. Emails that need a blank detail wait until it’s filled in." aria-label="What is this?">i</button></h2><p class="muted" style="font-size:13.5px">Fill these once. An email that needs a blank one waits until it’s filled in.</p></div><button class="btn sm dark" type="button" id="em-savevars">Save details</button></div><div class="vars" id="em-vars"></div></div>
     <h2>The journey</h2>
     <div class="emails" id="emails"></div>
     <h2>Other automatic emails</h2>
@@ -453,7 +483,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   <!-- CHECK-IN -->
   <section class="view" id="v-checkin" hidden>
-    <div class="viewhead"><div><h1>Check-in</h1><p class="muted">Search, then tap once. Works on a phone at the door.</p></div><div style="text-align:right"><div class="cicount" id="ci-count">0</div><span class="muted" id="ci-of">of 0 checked in</span></div></div>
+    <div class="viewhead"><div><h1>Check-in <button class="info" type="button" data-tip="On the day, search for a name and tap Check in. Tap Undo if you tap the wrong person. Checked-in practices receive the thank-you and Day-30 and Day-90 emails." aria-label="What is this?">i</button></h1><p class="muted">Search, then tap once. Works on a phone at the door.</p></div><div style="text-align:right"><div class="cicount" id="ci-count">0</div><span class="muted" id="ci-of">of 0 checked in</span></div></div>
     <input type="search" class="bigsearch" id="ci-q" placeholder="Type a name or practice" aria-label="Find an attendee" autocomplete="off">
     <div class="cilist" id="ci-list"></div>
   </section>
@@ -463,6 +493,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 <aside class="drawer" id="drawer" aria-modal="true" role="dialog" aria-labelledby="d-name" hidden>
   <div class="dhead">
     <div class="dtop"><div><h1 id="d-name"></h1><p id="d-sub"></p></div><button class="iconbtn" id="d-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div id="d-progress"></div>
     <div class="status" id="d-status"></div>
   </div>
   <div class="dtabs" role="tablist" id="d-tabs">
@@ -524,6 +555,22 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       createdAt:Date.parse(r.createdAt||"")||0, pw:pw, pwAt:r.pw ? (Date.parse(r.pw.createdAt||"")||0) : 0,
       reportKey:r.reportKey||"", reportStatus:r.reportStatus||"Draft", reportNote:r.reportNote||"", reportSentAt:r.reportSentAt||""};
   }
+  // The 7 steps every practice goes through, in order.
+  var JSTEPS = [
+    {label:"Registered", done:function(p){return true}},
+    {label:"Invoice sent", next:"Send the invoice", done:function(p){return p.invoice!=="To send"}},
+    {label:"Paid", next:"Get payment", done:function(p){return p.invoice==="Paid"}},
+    {label:"Pre-work in", next:"Get the pre-work", done:function(p){return !!p.pw}},
+    {label:"Report sent", next:"Send the report", done:function(p){return p.reportStatus==="Sent"}},
+    {label:"Welcome call", next:"Hold the welcome call", done:function(p){return p.call==="Done"}},
+    {label:"Checked in", next:"Check in on Jan 9", done:function(p){return p.people.some(function(m){return m.checkedIn})}}
+  ];
+  function progress(p){
+    var d = JSTEPS.map(function(s){return s.done(p)}), n = d.filter(Boolean).length, nx = null;
+    for (var i = 0; i < d.length; i++) if (!d[i]) { nx = JSTEPS[i]; break; }
+    return {done:d, n:n, total:JSTEPS.length, pct:Math.round(n / JSTEPS.length * 100), next:nx};
+  }
+  function ring(pct, size){ var r = 15.9155; return '<svg class="ring" viewBox="0 0 36 36" width="'+(size||44)+'" height="'+(size||44)+'" aria-hidden="true"><circle cx="18" cy="18" r="'+r+'" class="rbg"/><circle cx="18" cy="18" r="'+r+'" class="rfg" stroke-dasharray="'+pct+' 100"/></svg>'; }
   function stage(p){
     if (p.people.some(function(m){return m.checkedIn})) return 5;
     if (p.call === "Done") return 4;
@@ -701,6 +748,22 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       test:function(p){return p.windso==="Eligible"}, sub:function(p){return p.ticket},
       act:"Mark offered", run:function(p){setStatus(p,"windso","Offered")}}
   ];
+  // The buttons for a practice's next step, shown at the top of its panel.
+  function nextActions(p){
+    var g = progress(p), nx = g.next, out = [], T = function(id){ return TASKS.filter(function(t){return t.id===id})[0] };
+    var mail = function(task, label){ var t = T(task); return approved(t.mail) ? {label:label, run:function(b){ mailOne(t, p, b) }} : {label:label, locked:true, title:"Approve “"+emName(t.mail)+"” in the Emails tab first", run:function(){ location.hash = "#emails"; closeDrawer(); toast("Approve “" + emName(t.mail) + "” to send it from here."); }}; };
+    if (!nx) return out;
+    if (nx.label === "Invoice sent") { out.push(mail("invoice", "Email the invoice")); out.push({label:"Mark invoice sent", run:function(){ setStatus(p,"invoice","Sent") }}); }
+    else if (nx.label === "Paid") { out.push({label:"Mark paid", run:function(){ setStatus(p,"invoice","Paid") }}); out.push(mail("pay", "Email a payment reminder")); }
+    else if (nx.label === "Pre-work in") { out.push(mail("prework", "Email a pre-work reminder")); out.push({label:"Copy reminder", run:function(){ copyText(reminder(p), "Reminder copied.") }}); }
+    else if (nx.label === "Report sent") {
+      if (p.reportStatus === "Draft") out.push({label:"Review the report", run:function(){ dtab = "report"; renderDrawer(); }});
+      out.push(approved("e04") ? {label:"Email the report", run:function(b){ emailReport(p, b) }} : {label:"Email the report", locked:true, title:"Approve “"+emName("e04")+"” in the Emails tab first", run:function(){ location.hash = "#emails"; closeDrawer(); toast("Approve “" + emName("e04") + "” to send it from here."); }});
+    }
+    else if (nx.label === "Welcome call") out.push(p.call === "Booked" ? {label:"Mark call done", run:function(){ setStatus(p,"call","Done") }} : {label:"Mark call booked", run:function(){ setStatus(p,"call","Booked") }});
+    else if (nx.label === "Checked in") out.push({label:"Open check-in", run:function(){ closeDrawer(); location.hash = "#checkin"; }});
+    return out;
+  }
   function approved(id){ var e = (state.emails||[]).filter(function(x){return x.id===id})[0]; return !!e && e.status === "approved"; }
   function emName(id){ var e = (state.emails||[]).filter(function(x){return x.id===id})[0]; return e ? e.name : "this email"; }
   async function sendOneEmail(t, p){
@@ -799,10 +862,10 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var fil = PFILTERS.filter(function(f){return f[0]===pf.f})[0][2], q2 = pf.q.toLowerCase();
     var ps = state.practices.filter(fil).filter(function(p){ return !q2 || [p.name,p.town,p.ref].concat(p.people.map(function(m){return m.name})).join(" ").toLowerCase().indexOf(q2) >= 0 });
     $("#p-list").innerHTML = ps.length ? ps.map(function(p){
-      var s = stage(p);
+      var g = progress(p), inn = p.people.filter(function(m){return m.checkedIn}).length;
       return '<button class="prow" type="button" data-open="'+esc(p.id)+'"><span class="nm"><b>'+esc(p.name)+'</b><span>'+esc(p.ref)+' · '+esc(p.town)+(p.type?' · '+esc(p.type):'')+'</span></span>'+
-        '<span class="seats" title="'+p.people.length+' people">'+p.people.map(function(m){return '<i class="'+(m.checkedIn?"in":"")+'"></i>'}).join("")+(p.count>p.people.length?'<em>+'+(p.count-p.people.length)+'</em>':'')+'</span>'+
-        '<span class="jcol"><span class="journey">'+STEPS.map(function(x,i){return '<span class="'+(i<=s?"on":i===s+1?"next":"")+'"></span>'}).join("")+'</span><span class="jlabel">'+STEPS[s]+(s<5?' · next: '+STEPS[s+1].toLowerCase():'')+'</span></span>'+
+        '<span class="ppl"><b>'+p.count+'</b> '+(p.count===1?'person':'people')+(inn?'<small>'+inn+' checked in</small>':'')+'</span>'+
+        '<span class="prog" title="'+esc(JSTEPS.map(function(x,i){return (g.done[i]?"✓ ":"○ ")+x.label}).join("\n"))+'"><span class="ringwrap">'+ring(g.pct)+'<b>'+g.pct+'%</b></span><span class="ptext"><b>'+g.n+' of '+g.total+' steps done</b><span>'+(g.next?'Next: '+esc(g.next.next):'All done')+'</span></span></span>'+
         '<span class="amt">'+money(p.total)+'</span></button>';
     }).join("") : '<div class="empty"><p>'+(state.practices.length ? "No practices match. Try another filter." : "No practices yet. Registrations from the website appear here within 30 seconds.")+'</p></div>';
   }
@@ -836,13 +899,18 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     $("#d-sub").innerHTML = esc(p.ref) + " · " + esc(p.town) + (p.type ? " · " + esc(p.type) : "") + " · " + esc(p.ticket) + ", " + money(p.total) + (p.website ? ' · <a href="'+esc(p.website)+'" target="_blank" rel="noopener">website</a>' : "");
     $("#d-status").innerHTML = Object.keys(STATUS).filter(function(k){return k !== "reportStatus"}).map(function(k){
       var st = STATUS[k];
-      return '<div><label>'+st.label+'</label><div class="seg" role="group" aria-label="'+st.label+'">'+st.opts.map(function(o){ return '<button type="button" data-st="'+k+'" data-v="'+esc(o)+'" aria-pressed="'+(p[k]===o)+'" class="'+(o===st.good?"g":"")+'"'+(state.canEdit?"":" disabled")+'>'+esc(o)+'</button>' }).join("")+'</div></div>';
+      var tips = {invoice:"To send: we owe them an invoice. Sent: invoice emailed, waiting for payment. Paid: money received.", call:"The 20-minute welcome call in mid-December to walk through the Practice Snapshot.", windso:"Teams of three or more qualify for a WinDSO Empower & Grow ticket while they last: Eligible, then Offered, then Claimed."};
+      return '<div><label>'+st.label+' <button class="info" type="button" data-tip="'+tips[k]+'" aria-label="What is this?">i</button></label><div class="seg" role="group" aria-label="'+st.label+'">'+st.opts.map(function(o){ return '<button type="button" data-st="'+k+'" data-v="'+esc(o)+'" aria-pressed="'+(p[k]===o)+'" class="'+(o===st.good?"g":"")+'"'+(state.canEdit?"":" disabled")+'>'+esc(o)+'</button>' }).join("")+'</div></div>';
     }).join("");
+    var g = progress(p), acts = nextActions(p);
+    $("#d-progress").innerHTML = '<div class="dprog"><span class="ringwrap">'+ring(g.pct, 52)+'<b>'+g.pct+'%</b></span><div><b>'+g.n+' of '+g.total+' steps done'+(g.next?' · Next: '+esc(g.next.next):'')+'</b><ol class="steplist">'+JSTEPS.map(function(x,i){return '<li class="'+(g.done[i]?"ok":(g.next===x?"now":""))+'">'+esc(x.label)+'</li>'}).join("")+'</ol></div></div>'+
+      (acts.length ? '<div class="dnext">'+acts.map(function(a,i){ return '<button class="btn sm '+(a.locked?'locked':i===0?'primary':'')+'" type="button" data-nx="'+i+'"'+(a.title?' title="'+esc(a.title)+'"':'')+'>'+esc(a.label)+'</button>' }).join("")+'</div>' : '');
+    $("#d-progress").onclick = function(e){ var b = e.target.closest("[data-nx]"); if (!b) return; var a = acts[+b.dataset.nx]; if (a) a.run(b); };
     $$("#d-tabs [data-tab]").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.tab === dtab) });
     var body = $("#d-body"), h = "";
     if (dtab === "team"){
       h += '<div class="people">' + p.people.map(function(m){ return '<div class="person"><span class="avatar">'+esc(initials(m.name))+'</span><div><b>'+esc(m.name)+'</b><span>'+esc(m.role)+(m.email?' · '+esc(m.email):'')+'</span></div>'+(m.email?'<button class="copy" type="button" data-copy="'+esc(m.email)+'">Copy email</button>':'<span class="muted" style="font-size:13px">no email</span>')+'</div>' }).join("") +
-        (p.count > p.people.length ? '<p class="muted">Plus '+(p.count-p.people.length)+' more people. Their names come by email to '+INBOX+'.</p>' : '') + '</div>';
+        (p.count > p.people.length ? '<p class="muted">Plus '+(p.count-p.people.length)+((p.count-p.people.length)===1?' more person.':' more people.')+' Their names come by email to '+INBOX+'.</p>' : '') + '</div>';
       h += '<dl class="dl"><dt>Owner phone</dt><dd>'+esc(p.phone||"Not given")+'</dd><dt>Invoice goes to</dt><dd>'+esc(p.invoiceEmail || ((p.people[0]||{}).email) || "")+'</dd><dt>Kasper customer</dt><dd>'+(p.kasper?"Yes":"No")+'</dd>'+
         '<dt>Hotel</dt><dd>'+esc(p.hotel||"Not asked")+'</dd><dt>Dietary needs</dt><dd>'+esc(p.diet||"None")+'</dd><dt>Accessibility</dt><dd>'+esc(p.access||"None")+'</dd>'+
         '<dt>Heard via</dt><dd>'+esc(p.heard||"Not given")+(p.refby?' (referred by '+esc(p.refby)+')':'')+'</dd><dt>Registered</dt><dd>'+(p.createdAt?new Date(p.createdAt).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"")+'</dd>'+
@@ -921,6 +989,10 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var ps = state.practices, withPw = ps.filter(function(p){return p.pw});
     var c = {Draft:0, Ready:0, Sent:0}; withPw.forEach(function(p){ c[p.reportStatus] = (c[p.reportStatus]||0)+1 });
     $("#r-big").innerHTML = [["Pre-work received", withPw.length + " of " + ps.length], ["Reports to review", c.Draft], ["Released, not sent", c.Ready], ["Sent to offices", c.Sent]].map(function(x){ return '<div class="card stat"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>' }).join("");
+    var nextDraft = withPw.filter(function(p){return p.reportStatus==="Draft"})[0], nextReady = withPw.filter(function(p){return p.reportStatus==="Ready"})[0];
+    $("#r-cta").innerHTML = nextDraft ? '<div class="ctabar"><span>'+c.Draft+' report'+(c.Draft===1?'':'s')+' waiting for your review.</span><button class="btn primary sm" type="button" data-openrep="'+esc(nextDraft.id)+'">Review '+esc(nextDraft.name)+'</button></div>' :
+      nextReady ? '<div class="ctabar"><span>'+c.Ready+' released report'+(c.Ready===1?'':'s')+' not emailed yet.</span><button class="btn primary sm" type="button" data-openrep="'+esc(nextReady.id)+'">Open '+esc(nextReady.name)+'</button></div>' :
+      (ps.length && !withPw.length ? '<div class="ctabar"><span>No pre-work yet. Reports appear as offices send it.</span><a class="btn sm" href="#today">Send pre-work reminders</a></div>' : '');
     var agg = {}; KNAMES.forEach(function(n){ agg[n] = {good:0,ok:0,warn:0,bad:0,none:0,n:0} });
     var sums = {};
     withPw.forEach(function(p){ var s = window.PLS_REPORT.summary(answersOf(p)); sums[p.id] = s; s.kpis.forEach(function(k){ if (agg[k.name]){ agg[k.name][k.tone]++; agg[k.name].n++; } }) });
@@ -934,6 +1006,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       return '<tr><td><button type="button" data-openrep="'+esc(p.id)+'">'+esc(p.name)+'</button><br><span class="muted" style="font-size:12.5px">'+esc(p.ref)+'</span></td>'+KNAMES.map(cell).join("")+'<td class="num">'+(s ? s.priorities : "–")+'</td><td>'+st+'</td><td><button class="btn sm" type="button" data-openrep="'+esc(p.id)+'">'+(p.pw?"Open":"View")+'</button></td></tr>';
     }).join("") : '<tr><td colspan="9" class="muted">Offices appear here as they register.</td></tr>';
   }
+  $("#r-cta").addEventListener("click", function(e){ var b = e.target.closest("[data-openrep]"); if (!b) return; openDrawer(b.dataset.openrep); dtab = "report"; renderDrawer(); });
   $("#r-rows").addEventListener("click", function(e){ var b = e.target.closest("[data-openrep]"); if (!b) return; openDrawer(b.dataset.openrep); dtab = "report"; renderDrawer(); });
 
   /* ---------- event prep ---------- */
@@ -1084,6 +1157,24 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   function renderAll(){ renderToday(); renderPractices(); renderReports(); renderPrep(); renderEmails(); renderCheckin(); freshness(); }
   renderAll();
+
+  /* ---------- "i" explanations ---------- */
+  var tipEl = null, tipBtn = null;
+  function hideTip(){ if (tipEl) { tipEl.remove(); tipEl = null; } if (tipBtn) { tipBtn.setAttribute("aria-expanded","false"); tipBtn = null; } }
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("[data-tip]");
+    if (!b) { if (tipEl && !e.target.closest(".tipbox")) hideTip(); return; }
+    e.preventDefault(); e.stopPropagation();
+    if (tipBtn === b) { hideTip(); return; }
+    hideTip(); tipBtn = b; b.setAttribute("aria-expanded","true");
+    tipEl = document.createElement("div"); tipEl.className = "tipbox"; tipEl.setAttribute("role","tooltip"); tipEl.textContent = b.dataset.tip; document.body.appendChild(tipEl);
+    var r = b.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    var left = Math.max(12, Math.min(innerWidth - w - 12, r.left + r.width/2 - w/2)), top = r.bottom + 8;
+    if (top + h > innerHeight - 12) top = r.top - h - 8;
+    tipEl.style.left = left + "px"; tipEl.style.top = top + "px"; tipY = scrollY;
+  }, true);
+  addEventListener("keydown", function(e){ if (e.key === "Escape") hideTip(); });
+  var tipY = 0; addEventListener("scroll", function () { if (tipEl && Math.abs(scrollY - tipY) > 60) hideTip(); }, true);
 
   /* ---------- sign-in ---------- */
   function showSignIn(){ state.signedIn = false; $("#app").hidden = true; $("#signin").hidden = false; setTimeout(function(){ $("#si-email").focus() }, 50); }
