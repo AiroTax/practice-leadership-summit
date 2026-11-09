@@ -370,6 +370,14 @@ dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;backgrou
 .dlpop button:hover,.dlpop button:focus-visible{background:var(--sunk)}
 .dlpop b{font-size:14.5px}
 .dlpop span{font-size:12.5px;color:var(--muted)}
+.ttoggle{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;flex:1;min-width:0;border-radius:8px}
+.ttoggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.chev{width:9px;height:9px;border-right:2.2px solid var(--muted);border-bottom:2.2px solid var(--muted);transform:rotate(-45deg);transition:transform .2s var(--ease);flex:none;margin-right:2px}
+.task.open .chev{transform:rotate(45deg)}
+.task:not(.open) header{border-bottom:0}
+.tpeek{all:unset;cursor:pointer;display:block;padding:0 16px 14px 35px;font-size:13.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;box-sizing:border-box}
+.tpeek:hover{color:var(--ink)}
+.task.open .tbody{animation:rowin .24s var(--ease)}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -453,7 +461,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       <div class="card"><h2>Registration targets <button class="info" type="button" data-tip="How many tables we want claimed by each date, to reach all 35 before Jan 5. The bar fills as practices register." aria-label="What is this?">i</button></h2><div class="cps" id="t-cps"></div></div>
     </div>
     <div class="tourcard" id="tourcard"><button type="button" class="tourplay" data-tour aria-label="Play the console tour"><img src="/assets/video/console-tour.jpg" alt=""><span class="pl" aria-hidden="true"></span></button><div><b>New to the console?</b><span>A 40-second tour of everything here: Today, practices, reports, emails and check-in.</span><div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm primary" type="button" data-tour>Watch the tour</button><button class="btn sm" type="button" id="tourhide">Hide</button></div></div></div>
-    <div class="viewhead"><div><h2 style="font-size:22px;font-weight:800">What needs doing <button class="info" type="button" data-tip="Every open job for every practice, grouped by type. Pink buttons send an approved email; the other buttons just update the record. Locked buttons need the email approved in the Emails tab first." aria-label="What is this?">i</button></h2><p class="muted">Each item clears itself once it’s done. Click a practice to see everything about it.</p></div></div>
+    <div class="viewhead"><div><h2 style="font-size:22px;font-weight:800">What needs doing <button class="info" type="button" data-tip="Every open job for every practice, grouped by type. Pink buttons send an approved email; the other buttons just update the record. Locked buttons need the email approved in the Emails tab first." aria-label="What is this?">i</button></h2><p class="muted">Each item clears itself once it’s done. Tap a group to open it.</p></div><button class="btn sm" type="button" id="t-openall">Open all</button></div>
     <div id="t-tasks" class="tasks"></div>
     <div class="grid2">
       <div class="card"><h2>Latest activity</h2><ul class="feed" id="t-feed"></ul></div>
@@ -751,6 +759,9 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   /* ---------- today ---------- */
   var expanded = {};
+  // Which task cards are open. Closed by default so Today stays short; remembered on this device.
+  var openTasks = {}; try { openTasks = JSON.parse(localStorage.getItem("pls-open-tasks") || "{}"); } catch(e){}
+  function saveOpen(){ try { localStorage.setItem("pls-open-tasks", JSON.stringify(openTasks)); } catch(e){} }
   var TASKS = [
     {id:"invoice", title:"Send the invoice", mail:"pay", mailAct:"Email invoice", why:"Registered practices waiting for their invoice. Promised within two business days. Emailing it marks the invoice sent.",
       test:function(p){return p.invoice==="To send"}, sub:function(p){return money(p.total)+" to "+(p.invoiceEmail||((p.people[0]||{}).email||"owner"))+" · registered "+ago(p.createdAt)},
@@ -846,16 +857,19 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       var show = expanded[t.id] ? list : list.slice(0,5);
       var ok = t.mail && approved(t.mail);
       var allBtn = ok && list.length > 1 ? '<button class="btn sm primary" type="button" data-mailall="'+t.id+'">Email all '+list.length+'</button>' : '';
-      return '<section class="task" data-task="'+t.id+'"><header><h2>'+t.title+' <span class="count">'+list.length+'</span></h2>'+allBtn+'</header><p class="why">'+t.why+'</p><ul>'+
+      var isOpen = !!openTasks[t.id], names = list.slice(0,3).map(function(p){return p.name}).join(", ") + (list.length > 3 ? " and " + (list.length-3) + " more" : "");
+      return '<section class="task'+(isOpen?' open':'')+'" data-task="'+t.id+'"><header><button type="button" class="ttoggle" data-toggle="'+t.id+'" aria-expanded="'+isOpen+'"><span class="chev" aria-hidden="true"></span><h2>'+t.title+' <span class="count">'+list.length+'</span></h2></button>'+allBtn+'</header>'+
+        (isOpen ? '' : '<button type="button" class="tpeek" data-toggle="'+t.id+'">'+esc(names)+'</button>')+'<div class="tbody"'+(isOpen?'':' hidden')+'><p class="why">'+t.why+'</p><ul>'+
         show.map(function(p){
           var mailBtn = t.mail ? '<button class="btn sm '+(ok?'primary':'locked')+'" type="button" '+(ok?'data-mail="'+t.id+'"':'data-approve="'+t.mail+'"')+' data-id="'+esc(p.id)+'"'+(ok?'':' title="Approve “'+esc(emName(t.mail))+'” in the Emails tab first"')+'>'+t.mailAct+'</button>' : '';
           var other = t.mailOnly ? '' : '<button class="btn sm '+(t.mail?'':(t.id==="prework"||t.id==="review"?"":"dark"))+'" type="button" data-run="'+t.id+'" data-id="'+esc(p.id)+'"'+(t.id!=="prework"&&t.id!=="review"&&!state.canEdit?" disabled":"")+'>'+t.act+'</button>';
           return '<li data-id="'+esc(p.id)+'"><div class="who"><button type="button" data-open="'+esc(p.id)+'">'+esc(p.name)+'</button><span>'+esc(t.sub(p))+'</span></div><div class="tacts">'+other+mailBtn+'</div></li>' }).join("")+
-        '</ul>'+(list.length>5 ? '<button class="more" type="button" data-more="'+t.id+'">'+(expanded[t.id]?"Show fewer":"Show all "+list.length)+'</button>' : "")+'</section>';
+        '</ul>'+(list.length>5 ? '<button class="more" type="button" data-more="'+t.id+'">'+(expanded[t.id]?"Show fewer":"Show all "+list.length)+'</button>' : "")+'</div></section>';
     }).join("");
     $("#t-tasks").innerHTML = total ? html : (n ? '<div class="alldone" style="grid-column:1/-1"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b style="font-size:17px">Nothing waiting.</b><br>Every practice is up to date. New registrations appear here within 30 seconds.</div></div>' :
       '<div class="empty" style="grid-column:1/-1"><h2>No practices yet</h2><p>When a practice registers on the website, it appears here within 30 seconds, with its first task ready.</p></div>');
     $("#b-today").textContent = total; $("#b-today").hidden = !total;
+    var anyClosed = TASKS.some(function(t){ return ps.some(t.test) && !openTasks[t.id] }); $("#t-openall").textContent = anyClosed ? "Open all" : "Close all"; $("#t-openall").hidden = !total;
     // feed
     var ev = [];
     ps.forEach(function(p){ if (p.createdAt) ev.push({t:p.createdAt, c:"", h:'<b>'+esc(p.name)+'</b> registered, '+esc(p.ticket.toLowerCase()), id:p.id}); if (p.pwAt) ev.push({t:p.pwAt, c:"pw", h:'<b>'+esc(p.name)+'</b> sent pre-work', id:p.id}); });
@@ -865,7 +879,12 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var keys = Object.keys(src).sort(function(a,b){return src[b]-src[a]});
     $("#t-src").innerHTML = keys.length ? keys.map(function(k){return '<div><span>'+esc(k)+'</span><b class="num">'+src[k]+'</b></div>'}).join("") : '<p class="muted">Fills in as registrations arrive.</p>';
   }
+  $("#t-openall").addEventListener("click", function(){
+    var anyClosed = TASKS.some(function(t){ return state.practices.some(t.test) && !openTasks[t.id] });
+    TASKS.forEach(function(t){ openTasks[t.id] = anyClosed }); saveOpen(); renderToday();
+  });
   $("#t-tasks").addEventListener("click", function(e){
+    var tg = e.target.closest("[data-toggle]"); if (tg){ openTasks[tg.dataset.toggle] = !openTasks[tg.dataset.toggle]; saveOpen(); renderToday(); return; }
     var m = e.target.closest("[data-more]"); if (m){ expanded[m.dataset.more] = !expanded[m.dataset.more]; renderToday(); return; }
     var ap = e.target.closest("[data-approve]"); if (ap){ var nm = emName(ap.dataset.approve); location.hash = "#emails"; editing = {}; setTimeout(function(){ var c = $('[data-em="'+ap.dataset.approve+'"]'); if (c) { c.scrollIntoView({block:"center", behavior:"smooth"}); c.focus(); } }, 120); toast("Preview “" + nm + "”, then approve it to send it from Today."); return; }
     var mb = e.target.closest("[data-mail]"); if (mb){ var tk = TASKS.filter(function(x){return x.id===mb.dataset.mail})[0], pp = byId(mb.dataset.id); if (tk && pp) mailOne(tk, pp, mb); return; }
