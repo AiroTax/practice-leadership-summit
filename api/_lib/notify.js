@@ -78,12 +78,21 @@ The Kasper summit team, in partnership with Global Academy of Dentistry`);
 }
 
 // e04, the report link. Sent from the console.
-export async function sendReport(p, pw) {
-  const st = (await journeyState())["e04"] || {};
-  const msg = renderJourney(def("e04"), p, pw, st);
-  if (msg.missing.length) throw Object.assign(new Error("Missing " + msg.missing.join(", ")), { status: 400 });
-  const cc = pw && pw.email && pw.email !== p.owner.email ? [pw.email] : [];
-  return deliver("e04", p, msg, [p.owner.email], cc);
+export async function sendReport(p, pw) { return sendNow("e04", p, pw); }
+
+// Sends one approved email to one practice right now, from the console's Today view or Reports tab.
+export async function sendNow(id, p, pw) {
+  const d = def(id); if (!d) throw Object.assign(new Error("Unknown email."), { status: 404 });
+  const st = (await journeyState())[id] || {};
+  if (id !== "e01" && st.status !== "approved") throw Object.assign(new Error(`Approve “${d.name}” in the Emails tab first.`), { status: 409, code: "not_approved" });
+  const msg = renderJourney(d, p, pw, st);
+  if (msg.missing.length) throw Object.assign(new Error("Fill in " + msg.missing.join(", ").replace(/_/g, " ") + " under Event details in the Emails tab first."), { status: 400 });
+  let to = [p.owner.email].filter(Boolean), cc = [];
+  if (id === "pay" && p.invoiceEmail) { to = [p.invoiceEmail]; if (p.owner.email && p.owner.email !== p.invoiceEmail) cc = [p.owner.email]; }
+  else if (id === "e04") { if (pw && pw.email && pw.email !== p.owner.email) cc = [pw.email]; }
+  else if (d.cc) cc = recipients(p, true).cc;
+  if (!to.length) throw Object.assign(new Error("This practice has no email address."), { status: 400 });
+  return deliver(id, p, msg, to, cc);
 }
 
 export async function sendSignIn(email, link) {

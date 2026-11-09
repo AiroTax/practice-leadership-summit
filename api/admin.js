@@ -3,7 +3,7 @@ import { readBody, str, send } from "./_lib/airtable.js";
 import { sessionEmail } from "./_lib/auth.js";
 import { backend, listPractices, listPrework, getPractice, getPrework, updatePractice, saveJourneyState, emailLog } from "./_lib/store.js";
 import { JOURNEY, AUDIENCES, GLOBAL_VARS, renderJourney, inAudience, nextDate } from "./_lib/journey.js";
-import { journeyState, sendReport, broadcast, runJourney, buildTeamNotice, buildPreworkThanks, buildSignIn } from "./_lib/notify.js";
+import { journeyState, sendReport, sendNow, broadcast, runJourney, buildTeamNotice, buildPreworkThanks, buildSignIn } from "./_lib/notify.js";
 import { sendEmail, emailReady, getOutbox, sender } from "./_lib/email.js";
 import { reviewsFor, reviewsReady, draftFromPasted } from "./_lib/reviews.js";
 
@@ -25,10 +25,20 @@ export default async function handler(req, res) {
       case "sendReport": {
         let p = await getPractice(str(b.id, 80)); if (!p) throw fail("That practice wasn’t found.", 404);
         const pw = await getPrework(p.number); if (!pw) throw fail("No pre-work yet, so there’s no report to send.");
+        if (((await journeyState()).e04 || {}).status !== "approved") throw fail("Approve “Your Practice Snapshot is ready” in the Emails tab first.", 409);
         if (!p.reportKey || p.reportStatus === "Draft") p = await updatePractice(p.id, { reportStatus: "Ready" }, p);
         const r = await sendReport(p, pw);
         if (!r.ok) throw fail("The email didn’t go: " + (r.error || "unknown error"), 502);
         p = await updatePractice(p.id, { reportStatus: "Sent" }, p);
+        return send(res, 200, { ok: true, practice: p, local: !!r.local });
+      }
+      case "sendNow": {
+        let p = await getPractice(str(b.practiceId, 80)); if (!p) throw fail("That practice wasn’t found.", 404);
+        const id = str(b.id, 10), pw = await getPrework(p.number);
+        if (id === "e04") throw fail("Send the report from its own button.");
+        const r = await sendNow(id, p, pw);
+        if (!r.ok) throw fail("The email didn’t go: " + (r.error || "unknown error"), 502);
+        if (id === "pay" && p.invoice === "To send") p = await updatePractice(p.id, { invoice: "Sent" }, p);
         return send(res, 200, { ok: true, practice: p, local: !!r.local });
       }
       case "journey": {

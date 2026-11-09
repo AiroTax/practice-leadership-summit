@@ -313,6 +313,13 @@ table.t tr:last-child td{border-bottom:0}
 .prow2{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .prow2 label{display:grid;gap:3px;font-size:12.5px;font-weight:700;color:var(--muted)}
 .prow2 input{width:90px;font:14px var(--body);padding:7px 9px;border:1.5px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink)}
+.task header .btn{margin-left:auto}
+.task header h2{white-space:nowrap}
+.tacts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.task li:has(.tacts .btn + .btn){grid-template-columns:minmax(0,1fr)}
+.task li:has(.tacts .btn + .btn) .tacts{justify-content:flex-start}
+.btn.locked{background:var(--sunk);border-color:var(--line);color:var(--muted);font-weight:600}
+.btn.locked::before{content:"";width:10px;height:10px;border:2px solid currentColor;border-radius:3px 3px 2px 2px;opacity:.7}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -668,13 +675,13 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   /* ---------- today ---------- */
   var expanded = {};
   var TASKS = [
-    {id:"invoice", title:"Send the invoice", why:"Registered practices waiting for their invoice. Promised within two business days.",
+    {id:"invoice", title:"Send the invoice", mail:"pay", mailAct:"Email invoice", why:"Registered practices waiting for their invoice. Promised within two business days. Emailing it marks the invoice sent.",
       test:function(p){return p.invoice==="To send"}, sub:function(p){return money(p.total)+" to "+(p.invoiceEmail||((p.people[0]||{}).email||"owner"))+" · registered "+ago(p.createdAt)},
       act:"Mark sent", run:function(p){setStatus(p,"invoice","Sent")}},
-    {id:"pay", title:"Waiting for payment", why:"Invoice sent, not paid yet. Chase anything older than a week.",
+    {id:"pay", title:"Waiting for payment", mail:"pay", mailAct:"Email reminder", why:"Invoice sent, not paid yet. Chase anything older than a week.",
       test:function(p){return p.invoice==="Sent"}, sub:function(p){return money(p.total)+" · "+p.ref},
       act:"Mark paid", run:function(p){setStatus(p,"invoice","Paid")}},
-    {id:"prework", title:"Pre-work not in yet", why:"Due Dec 11. Copy a friendly reminder with their registration number.",
+    {id:"prework", title:"Pre-work not in yet", mail:"e02", mailAct:"Email reminder", why:"Due Dec 11. Email a friendly reminder with their registration number.",
       test:function(p){return !p.pw}, sub:function(p){var d=Math.ceil((PW_DUE-Date.now())/864e5); return p.ref+" · "+(d>0? d+" days to the deadline" : "past the deadline")},
       act:"Copy reminder", run:function(p){copyText(reminder(p), "Reminder copied. Paste it into an email to "+((p.people[0]||{}).email||"the owner")+".")}},
     {id:"book", title:"Book the welcome call", why:"Pre-work is in. Their preferred time is shown.",
@@ -686,13 +693,39 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     {id:"review", title:"Review and release a report", why:"Pre-work is in. Add a note, check the report, then set it to Ready.",
       test:function(p){return p.pw && p.reportStatus==="Draft"}, sub:function(p){var s = window.PLS_REPORT.summary(answersOf(p)); return s.priorities + " focus points · " + (s.counts.warn+s.counts.bad) + " benchmarks behind"},
       act:"Open report", run:function(p){ openDrawer(p.id); dtab = "report"; renderDrawer(); }},
-    {id:"sendrep", title:"Send the report", why:"Released reports not yet sent. One click emails the private link to the owner.",
+    {id:"sendrep", title:"Send the report", mail:"e04", mailAct:"Email it", mailOnly:true, why:"Released reports not yet sent. One click emails the private link to the owner.",
       test:function(p){return p.reportStatus==="Ready"}, sub:function(p){return (p.people[0]||{}).email || ""},
       act:"Email it", run:function(p){ emailReport(p) }},
     {id:"windso", title:"Offer a WinDSO ticket", why:"Teams of three or more qualify while tickets last.",
       test:function(p){return p.windso==="Eligible"}, sub:function(p){return p.ticket},
       act:"Mark offered", run:function(p){setStatus(p,"windso","Offered")}}
   ];
+  function approved(id){ var e = (state.emails||[]).filter(function(x){return x.id===id})[0]; return !!e && e.status === "approved"; }
+  function emName(id){ var e = (state.emails||[]).filter(function(x){return x.id===id})[0]; return e ? e.name : "this email"; }
+  async function sendOneEmail(t, p){
+    if (t.mail === "e04") { await emailReport(p); return; }
+    var j = await api({a:"sendNow", id:t.mail, practiceId:p.id});
+    if (j.practice) { p.invoice = j.practice.invoice; }
+    return j;
+  }
+  async function mailOne(t, p, btn){
+    btn.disabled = true; var label = btn.textContent; btn.textContent = "Sending…";
+    try {
+      var j = await sendOneEmail(t, p);
+      if (t.mail !== "e04") toast(j && j.local ? emName(t.mail) + " built for " + p.name + ", but sending isn’t switched on yet." : emName(t.mail) + " sent to " + p.name + ".");
+      renderAll(); if (openId === p.id) renderDrawer();
+    } catch(x){ btn.disabled = false; btn.textContent = label; if (x.code !== "signin") toast(x.message, null, true); }
+  }
+  async function mailAll(t, btn){
+    var list = state.practices.filter(t.test), sent = 0, failed = [];
+    btn.disabled = true;
+    for (var i = 0; i < list.length; i++){
+      btn.textContent = "Sending " + (i+1) + " of " + list.length + "…";
+      try { await sendOneEmail(t, list[i]); sent++; } catch(x){ if (x.code === "signin") return; failed.push(list[i].name + ": " + x.message); }
+    }
+    renderAll();
+    toast(failed.length ? sent + " sent. Not sent: " + failed.slice(0,2).join("; ") + (failed.length > 2 ? " and " + (failed.length-2) + " more" : "") : emName(t.mail) + " sent to " + sent + " practices.", null, !!failed.length);
+  }
   function renderToday(){
     var ps = state.practices, n = ps.length, now = Date.now();
     var hr = new Date().getHours();
@@ -718,8 +751,13 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var total = 0, html = TASKS.map(function(t){
       var list = ps.filter(t.test); total += list.length; if (!list.length) return "";
       var show = expanded[t.id] ? list : list.slice(0,5);
-      return '<section class="task" data-task="'+t.id+'"><header><h2>'+t.title+' <span class="count">'+list.length+'</span></h2></header><p class="why">'+t.why+'</p><ul>'+
-        show.map(function(p){ return '<li data-id="'+esc(p.id)+'"><div class="who"><button type="button" data-open="'+esc(p.id)+'">'+esc(p.name)+'</button><span>'+esc(t.sub(p))+'</span></div><button class="btn sm '+(t.id==="prework"||t.id==="review"?"":"dark")+'" type="button" data-run="'+t.id+'" data-id="'+esc(p.id)+'"'+(t.id!=="prework"&&t.id!=="review"&&!state.canEdit?" disabled":"")+'>'+t.act+'</button></li>' }).join("")+
+      var ok = t.mail && approved(t.mail);
+      var allBtn = ok && list.length > 1 ? '<button class="btn sm primary" type="button" data-mailall="'+t.id+'">Email all '+list.length+'</button>' : '';
+      return '<section class="task" data-task="'+t.id+'"><header><h2>'+t.title+' <span class="count">'+list.length+'</span></h2>'+allBtn+'</header><p class="why">'+t.why+'</p><ul>'+
+        show.map(function(p){
+          var mailBtn = t.mail ? '<button class="btn sm '+(ok?'primary':'locked')+'" type="button" '+(ok?'data-mail="'+t.id+'"':'data-approve="'+t.mail+'"')+' data-id="'+esc(p.id)+'"'+(ok?'':' title="Approve “'+esc(emName(t.mail))+'” in the Emails tab first"')+'>'+t.mailAct+'</button>' : '';
+          var other = t.mailOnly ? '' : '<button class="btn sm '+(t.mail?'':(t.id==="prework"||t.id==="review"?"":"dark"))+'" type="button" data-run="'+t.id+'" data-id="'+esc(p.id)+'"'+(t.id!=="prework"&&t.id!=="review"&&!state.canEdit?" disabled":"")+'>'+t.act+'</button>';
+          return '<li data-id="'+esc(p.id)+'"><div class="who"><button type="button" data-open="'+esc(p.id)+'">'+esc(p.name)+'</button><span>'+esc(t.sub(p))+'</span></div><div class="tacts">'+other+mailBtn+'</div></li>' }).join("")+
         '</ul>'+(list.length>5 ? '<button class="more" type="button" data-more="'+t.id+'">'+(expanded[t.id]?"Show fewer":"Show all "+list.length)+'</button>' : "")+'</section>';
     }).join("");
     $("#t-tasks").innerHTML = total ? html : (n ? '<div class="alldone" style="grid-column:1/-1"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><div><b style="font-size:17px">Nothing waiting.</b><br>Every practice is up to date. New registrations appear here within 30 seconds.</div></div>' :
@@ -736,6 +774,9 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   }
   $("#t-tasks").addEventListener("click", function(e){
     var m = e.target.closest("[data-more]"); if (m){ expanded[m.dataset.more] = !expanded[m.dataset.more]; renderToday(); return; }
+    var ap = e.target.closest("[data-approve]"); if (ap){ var nm = emName(ap.dataset.approve); location.hash = "#emails"; editing = {}; setTimeout(function(){ var c = $('[data-em="'+ap.dataset.approve+'"]'); if (c) { c.scrollIntoView({block:"center", behavior:"smooth"}); c.focus(); } }, 120); toast("Preview “" + nm + "”, then approve it to send it from Today."); return; }
+    var mb = e.target.closest("[data-mail]"); if (mb){ var tk = TASKS.filter(function(x){return x.id===mb.dataset.mail})[0], pp = byId(mb.dataset.id); if (tk && pp) mailOne(tk, pp, mb); return; }
+    var ma = e.target.closest("[data-mailall]"); if (ma){ var tk2 = TASKS.filter(function(x){return x.id===ma.dataset.mailall})[0]; if (tk2 && confirmSend(ma, "Email " + state.practices.filter(tk2.test).length + "? Tap again")) mailAll(tk2, ma); return; }
     var b = e.target.closest("[data-run]"); if (!b) return;
     var p = byId(b.dataset.id), t = TASKS.filter(function(x){return x.id===b.dataset.run})[0]; if (!p || !t) return;
     if (t.id === "prework" || t.id === "review") { t.run(p); return; }
@@ -920,8 +961,8 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   var editing = {};
   function renderEmails(){
     var es = state.emails || [], m = state.meta || {};
-    var approved = es.filter(function(e){return e.status==="approved"}).length, sched = es.filter(function(e){return e.type==="date"||e.type==="after"}).length;
-    $("#em-count").textContent = approved + " of " + sched + " scheduled emails approved";
+    var nAppr = es.filter(function(e){return e.status==="approved"}).length, need = es.filter(function(e){return ["date","after","manual","report"].indexOf(e.type) >= 0}).length;
+    $("#em-count").textContent = nAppr + " of " + need + " emails approved";
     var st = $("#em-state"); st.className = "sendstate" + (m.emailReady ? " on" : "");
     $("#em-statetext").innerHTML = m.emailReady
       ? '<b>Sending is on.</b> Emails go from ' + esc(m.from) + '; replies come to ' + esc(INBOX) + '. Approved emails go out at 9 am Eastern on their day.'
@@ -929,10 +970,10 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     $("#em-vars").innerHTML = Object.keys(state.varLabels).map(function(k){
       return '<label>'+esc(k.replace(/_/g," ").replace(/^./,function(c){return c.toUpperCase()}))+'<input data-var="'+k+'" value="'+esc(state.vars[k]||"")+'" placeholder="'+esc(state.varLabels[k])+'"></label>' }).join("");
     $("#emails").innerHTML = es.map(function(e){
-      var pill = e.status === "automatic" ? '<span class="pill ok">Automatic</span>' : e.type === "report" ? '<span class="pill b">From Reports</span>' : e.type === "broadcast" ? '<span class="pill">Send when needed</span>' :
+      var pill = e.status === "automatic" ? '<span class="pill ok">Automatic</span>' : (e.type === "report" || e.type === "manual") ? (e.status === "approved" ? '<span class="pill ok">Approved · send from Today</span>' : '<span class="pill warn">Needs approval</span>') : e.type === "broadcast" ? '<span class="pill">Send when needed</span>' :
         e.status === "approved" ? '<span class="pill ok">Approved</span>' : e.status === "paused" ? '<span class="pill">Paused</span>' : '<span class="pill warn">Needs approval</span>';
       var acts = '<button class="btn sm" type="button" data-pv="'+e.id+'">Preview</button><button class="btn sm" type="button" data-ed="'+e.id+'">'+(editing[e.id]?"Close editor":"Edit text")+'</button><button class="btn sm" type="button" data-test="'+e.id+'">Send me a test</button>';
-      if (e.type === "date" || e.type === "after") acts += e.status === "approved" ? '<button class="btn sm" type="button" data-em="'+e.id+'" data-to="paused">Pause</button>' : '<button class="btn primary sm" type="button" data-em="'+e.id+'" data-to="approved">Approve</button>';
+      if (e.type === "date" || e.type === "after" || e.type === "manual" || e.type === "report") acts += e.status === "approved" ? '<button class="btn sm" type="button" data-em="'+e.id+'" data-to="paused">Pause</button>' : '<button class="btn primary sm" type="button" data-em="'+e.id+'" data-to="approved">Approve</button>';
       if (e.type === "broadcast") acts += '<button class="btn dark sm" type="button" data-bc="'+e.id+'">Send to '+e.reach+(e.reach===1?' practice':' practices')+'</button>';
       var ed = editing[e.id] ? '<div class="edit"><input data-es="'+e.id+'" value="'+esc(e.subject)+'" aria-label="Subject"><textarea data-eb="'+e.id+'" aria-label="Email text">'+esc(e.body)+'</textarea>'+
         '<p class="hint">Blank line = new paragraph · “1. ” lines = numbered steps · “- ” lines = bullets · “~ Label: value” = a details card · [[Button text|link]] = a button · **bold** · {{first_name}}, {{practice}}, {{table_no}} and the other {{…}} fill in per practice.</p>'+
@@ -986,7 +1027,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     if ((t = e.target.closest("[data-ed]"))) { editing[t.dataset.ed] = !editing[t.dataset.ed]; renderEmails(); return; }
     try {
       if ((t = e.target.closest("[data-em]"))) { var em = emById(t.dataset.em), before = em.status; em.status = t.dataset.to; renderEmails();
-        try { await api({a:"journey", id:em.id, status:t.dataset.to}); toast(t.dataset.to === "approved" ? em.name + ": approved. It goes out on its day." : em.name + ": paused.", function(){ api({a:"journey", id:em.id, status:before}).then(load); }); }
+        try { await api({a:"journey", id:em.id, status:t.dataset.to}); renderAll(); toast(t.dataset.to === "approved" ? em.name + (em.type === "manual" || em.type === "report" ? ": approved. Send it from Today." : ": approved. It goes out on its day.") : em.name + ": paused.", function(){ api({a:"journey", id:em.id, status:before}).then(load); }); }
         catch(x){ em.status = before; renderEmails(); throw x; } return; }
       if ((t = e.target.closest("[data-save]"))) { var id = t.dataset.save; await api({a:"journey", id:id, subject:$('[data-es="'+id+'"]').value, body:$('[data-eb="'+id+'"]').value}); editing[id] = false; toast("Text saved."); load(); return; }
       if ((t = e.target.closest("[data-reset]"))) { await api({a:"journey", id:t.dataset.reset, subject:"", body:""}); editing[t.dataset.reset] = false; toast("Back to the original text."); load(); return; }

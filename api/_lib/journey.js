@@ -11,6 +11,8 @@ export const GLOBAL_VARS = {
   weather_decision: "e.g. going ahead as planned / moving to Jan 23–24",
   survey_link: "Link to the feedback survey",
   review_link: "Link to book the Day-90 review",
+  payment_due: "When payment is due, e.g. within 14 days, by Dec 4",
+  payment_details: "How to pay: a payment link, or bank transfer or check details",
 };
 
 const SIGN = "The Kasper summit team, in partnership with Global Academy of Dentistry";
@@ -41,6 +43,29 @@ Table **{{table_no}}** at the Practice Leadership Summit is now held for {{pract
 One thing to do this week: tell the people coming with you. The plan you build is theirs to run too.
 
 See you at your table,
+${SIGN}` },
+
+  { id: "pay", name: "Payment request", when: "Sent from Today when an invoice is due, and again as a reminder", schedule: { type: "manual" }, audience: "unpaid",
+    eyebrow: "Payment", title: "Your invoice for the summit",
+    subject: "Invoice for {{practice}}: {{price}} · Practice Leadership Summit",
+    preheader: "{{price}} for {{ticket}}, reference {{ref}}.",
+    body: `Hi {{first_name}},
+
+Thank you for registering {{practice}} for the Practice Leadership Summit. Here is what’s due to confirm your table.
+
+~ Reference: {{ref}}
+~ Ticket: {{ticket}}
+~ Amount due: **{{price}}**
+~ Due: {{payment_due}}
+
+**How to pay**
+
+{{payment_details}}
+
+Please quote your reference **{{ref}}** with your payment. Your table stays held while payment is on its way. Need a formal invoice for your accountant, or a different arrangement? Reply to this email.
+
+Terms: full refund to Dec 4, 50% to Dec 18, then a credit for a future event. Name changes are free.
+
 ${SIGN}` },
 
   { id: "e02", name: "Pre-work nudge", when: "7 days after registering, if pre-work isn’t in (until Dec 11)", schedule: { type: "after", days: 7, until: "2026-12-11" }, audience: "prework_missing",
@@ -75,7 +100,7 @@ It takes 20 minutes. Your registration number is **{{table_no}}**. Reply to this
 
 The summit team` },
 
-  { id: "e04", name: "Your Practice Snapshot is ready", when: "Sent from the Reports tab when a report is released", schedule: { type: "report" }, audience: "prework_in",
+  { id: "e04", name: "Your Practice Snapshot is ready", when: "Sent from Today or the Reports tab when a report is released", schedule: { type: "report" }, audience: "prework_in",
     eyebrow: "Practice Snapshot", title: "Your Practice Snapshot is ready",
     subject: "Your Practice Snapshot, and your welcome call",
     preheader: "Your answers set against industry benchmarks, and where to focus first.",
@@ -190,12 +215,14 @@ export const AUDIENCES = {
   prework_missing: "Practices without pre-work",
   prework_in: "Practices with pre-work",
   all: "Every registered practice",
+  unpaid: "Practices that haven’t paid",
   attended: "Practices that checked in",
 };
 export function inAudience(audience, p, pw) {
   if (audience === "prework_missing") return !pw;
   if (audience === "prework_in") return !!pw;
   if (audience === "attended") return (p.checkedIn || []).some(Boolean);
+  if (audience === "unpaid") return p.invoice !== "Paid";
   return true;
 }
 
