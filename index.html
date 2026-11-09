@@ -48,6 +48,7 @@
       <div class="ctas">
         <button type="button" class="btn primary" data-open="register">Claim your table</button>
         <a class="btn line" href="#days">See the weekend</a>
+        <button type="button" class="btn ghost playbtn" data-video><span class="pl" aria-hidden="true"></span>Watch the 40-second intro</button>
       </div>
       <div class="countdown" aria-label="Time until doors open" id="countdown">
         <div><b id="cd-d">—</b><span>days to go</span></div>
@@ -281,6 +282,12 @@
 
 
 
+<dialog class="vid" id="dlg-video" aria-label="Summit intro video">
+  <button type="button" class="vclose" aria-label="Close video">×</button>
+  <video id="introvid" controls playsinline preload="none" poster="/assets/video/summit-intro.jpg">
+    <source src="/assets/video/summit-intro.mp4" type="video/mp4">
+  </video>
+</dialog>
 <dialog class="wiz" id="dlg-register" aria-labelledby="reg-label">
   <aside class="wiz-rail">
     <p class="railhead" id="reg-label">Claim your table</p>

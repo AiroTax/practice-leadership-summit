@@ -239,6 +239,16 @@
     setTimeout(function () { openModal(location.hash.slice(1)); }, 300);
   }
 
+  /* ---------- intro video ---------- */
+  var vd = $("#dlg-video"), vid = $("#introvid");
+  if (vd) {
+    $$("[data-video]").forEach(function (b) { b.addEventListener("click", function () { vd.showModal(); try { vid.currentTime = 0; vid.play(); } catch (e) {} }); });
+    var shut = function () { try { vid.pause(); } catch (e) {} if (vd.open) vd.close(); };
+    $(".vclose", vd).addEventListener("click", shut);
+    vd.addEventListener("click", function (e) { if (e.target === vd) shut(); });
+    vd.addEventListener("close", function () { try { vid.pause(); } catch (e) {} });
+  }
+
   /* ---------- "i" explanations: tap to open, tap anywhere else to close ---------- */
   var tipEl = null, tipBtn = null;
   function hideTip() { if (tipEl) { tipEl.remove(); tipEl = null; } if (tipBtn) { tipBtn.setAttribute("aria-expanded", "false"); tipBtn = null; } }

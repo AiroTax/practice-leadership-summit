@@ -350,3 +350,17 @@ li#prework,.path li{text-wrap:pretty}
 .bonusrow .bonus{flex:1}
 .ctaline{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
 @media (prefers-reduced-motion:reduce){.tipbox{animation:none}}
+
+/* intro video */
+.playbtn{background:none;border:0;color:var(--ink);font-weight:700;display:inline-flex;align-items:center;gap:10px;cursor:pointer;padding:12px 6px}
+.playbtn .pl{width:34px;height:34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 0 0 0 rgba(217,46,102,.45);animation:playpulse 2.4s cubic-bezier(.23,1,.32,1) infinite}
+.playbtn .pl::after{content:"";border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+.playbtn:hover .pl{transform:scale(1.06)}
+@keyframes playpulse{0%{box-shadow:0 0 0 0 rgba(217,46,102,.45)}70%{box-shadow:0 0 0 14px rgba(217,46,102,0)}100%{box-shadow:0 0 0 0 rgba(217,46,102,0)}}
+dialog.vid{border:0;padding:0;background:#000;border-radius:18px;width:min(1100px,calc(100vw - 32px));overflow:hidden;box-shadow:0 40px 120px -30px rgba(0,0,0,.6)}
+dialog.vid::backdrop{background:rgba(11,26,51,.78);backdrop-filter:blur(4px)}
+dialog.vid[open]{animation:vidin .32s cubic-bezier(.23,1,.32,1)}
+@keyframes vidin{from{opacity:0;transform:scale(.96)}}
+dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#0B1A33}
+.vclose{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.9);color:#0B1A33;font-size:24px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.playbtn .pl{animation:none}}

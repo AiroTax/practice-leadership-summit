@@ -350,6 +350,20 @@ h1 .info{width:22px;height:22px;font-size:13px;margin-left:8px}
 .steplist li.now{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)}
 .dnext{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
 .ctabar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent-soft);border-radius:14px;padding:12px 16px;font-weight:700}
+.tourcard{display:flex;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;margin:0 0 18px}
+.tourcard b{display:block;font-family:var(--display);font-size:17px}
+.tourcard span{font-size:14px;color:var(--muted)}
+.tourplay{all:unset;position:relative;cursor:pointer;flex:none;width:176px;border-radius:10px;overflow:hidden;display:block}
+.tourplay img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.tourplay .pl,.linkbtn::before{position:absolute;inset:0;margin:auto;width:40px;height:40px;border-radius:50%;background:var(--accent);display:grid;place-items:center}
+.tourplay .pl::after{content:"";border-left:12px solid #fff;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:3px}
+.linkbtn{all:unset;cursor:pointer;color:var(--blue);font-weight:700;font-size:14px;text-align:center;text-decoration:underline}
+.linkbtn::before{content:none}
+dialog.vid{border:0;padding:0;background:#000;border-radius:18px;width:min(1100px,calc(100vw - 32px));overflow:hidden;box-shadow:var(--shadow)}
+dialog.vid::backdrop{background:rgba(11,26,51,.78);backdrop-filter:blur(4px)}
+dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#0B1A33}
+.vclose{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.9);color:#0B1A33;font-size:24px;cursor:pointer}
+@media (max-width:560px){.tourcard{flex-direction:column;align-items:stretch}.tourplay{width:100%}}
 /* emails view */
 .sendstate{display:flex;gap:12px;align-items:flex-start}
 .sendstate .dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none;background:var(--warn)}
@@ -389,6 +403,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     <button class="btn primary" type="submit" id="si-go">Email me a link</button>
     <p class="sent" id="si-sent" hidden>Check your inbox. If it’s an @amalandcompany.com email, the link is there now. It expires in 15 minutes.</p>
     <p id="si-dev" hidden></p>
+    <button type="button" class="linkbtn" data-tour>New here? Watch the 40-second tour</button>
   </form>
 </div>
 <div id="app" hidden>
@@ -431,6 +446,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       </div>
       <div class="card"><h2>Registration targets <button class="info" type="button" data-tip="How many tables we want claimed by each date, to reach all 35 before Jan 5. The bar fills as practices register." aria-label="What is this?">i</button></h2><div class="cps" id="t-cps"></div></div>
     </div>
+    <div class="tourcard" id="tourcard"><button type="button" class="tourplay" data-tour aria-label="Play the console tour"><img src="/assets/video/console-tour.jpg" alt=""><span class="pl" aria-hidden="true"></span></button><div><b>New to the console?</b><span>A 40-second tour of everything here: Today, practices, reports, emails and check-in.</span><div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm primary" type="button" data-tour>Watch the tour</button><button class="btn sm" type="button" id="tourhide">Hide</button></div></div></div>
     <div class="viewhead"><div><h2 style="font-size:22px;font-weight:800">What needs doing <button class="info" type="button" data-tip="Every open job for every practice, grouped by type. Pink buttons send an approved email; the other buttons just update the record. Locked buttons need the email approved in the Emails tab first." aria-label="What is this?">i</button></h2><p class="muted">Each item clears itself once it’s done. Click a practice to see everything about it.</p></div></div>
     <div id="t-tasks" class="tasks"></div>
     <div class="grid2">
@@ -506,6 +522,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 </aside>
 
 <dialog class="pv" id="pv" aria-labelledby="pv-subj"><div class="pvhead"><div><b id="pv-subj"></b><span id="pv-sub"></span></div><button class="iconbtn" type="button" id="pv-close" aria-label="Close preview"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><p class="notice miss" id="pv-miss" hidden></p><iframe id="pv-frame" title="Email preview" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></dialog>
+<dialog class="vid" id="dlg-tour" aria-label="Console tour"><button type="button" class="vclose" aria-label="Close video">×</button><video id="tourvid" controls playsinline preload="none" poster="/assets/video/console-tour.jpg"><source src="/assets/video/console-tour.mp4" type="video/mp4"></video></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastmsg"></span><button id="toastundo" type="button" hidden>Undo</button></div>
 
 </div>
@@ -1175,6 +1192,18 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   }, true);
   addEventListener("keydown", function(e){ if (e.key === "Escape") hideTip(); });
   var tipY = 0; addEventListener("scroll", function () { if (tipEl && Math.abs(scrollY - tipY) > 60) hideTip(); }, true);
+
+  /* ---------- console tour video ---------- */
+  (function(){
+    var d = $("#dlg-tour"), v = $("#tourvid");
+    try { if (localStorage.getItem("pls-tour-hidden")) $("#tourcard").hidden = true; } catch(e){}
+    document.addEventListener("click", function(e){ if (e.target.closest("[data-tour]")) { d.showModal(); try { v.currentTime = 0; v.play(); } catch(x){} } });
+    var shut = function(){ try { v.pause(); } catch(x){} if (d.open) d.close(); };
+    $(".vclose", d).addEventListener("click", shut);
+    d.addEventListener("click", function(e){ if (e.target === d) shut(); });
+    d.addEventListener("close", function(){ try { v.pause(); } catch(x){} });
+    $("#tourhide").addEventListener("click", function(){ $("#tourcard").hidden = true; try { localStorage.setItem("pls-tour-hidden", "1"); } catch(e){} toast("Tour hidden. It’s still on the sign-in page."); });
+  })();
 
   /* ---------- sign-in ---------- */
   function showSignIn(){ state.signedIn = false; $("#app").hidden = true; $("#signin").hidden = false; setTimeout(function(){ $("#si-email").focus() }, 50); }
