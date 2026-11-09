@@ -364,3 +364,7 @@ dialog.vid[open]{animation:vidin .32s cubic-bezier(.23,1,.32,1)}
 dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#0B1A33}
 .vclose{position:absolute;top:10px;right:10px;z-index:2;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.9);color:#0B1A33;font-size:24px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.playbtn .pl{animation:none}}
+.vidlinks{display:flex;flex-wrap:wrap;gap:4px 22px;flex-basis:100%}
+.playbtn .pl.alt{background:var(--ink)}
+.playbtn.small{font-size:14.5px;padding:8px 2px;margin-top:4px}
+.playbtn.small .pl{width:28px;height:28px}

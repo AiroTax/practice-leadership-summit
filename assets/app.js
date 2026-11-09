@@ -242,7 +242,12 @@
   /* ---------- intro video ---------- */
   var vd = $("#dlg-video"), vid = $("#introvid");
   if (vd) {
-    $$("[data-video]").forEach(function (b) { b.addEventListener("click", function () { vd.showModal(); try { vid.currentTime = 0; vid.play(); } catch (e) {} }); });
+    var VIDS = { intro: ["/assets/video/summit-intro.mp4", "/assets/video/summit-intro.jpg", "Summit intro video"], guide: ["/assets/video/how-to-register.mp4", "/assets/video/how-to-register.jpg", "How to register: video guide with voice-over"] };
+    $$("[data-video]").forEach(function (b) { b.addEventListener("click", function () {
+      var v = VIDS[b.dataset.video] || VIDS.intro;
+      if (vid.getAttribute("src") !== v[0]) { vid.setAttribute("poster", v[1]); vid.setAttribute("src", v[0]); }
+      vd.setAttribute("aria-label", v[2]); vd.showModal(); try { vid.currentTime = 0; vid.muted = false; vid.play(); } catch (e) {}
+    }); });
     var shut = function () { try { vid.pause(); } catch (e) {} if (vd.open) vd.close(); };
     $(".vclose", vd).addEventListener("click", shut);
     vd.addEventListener("click", function (e) { if (e.target === vd) shut(); });
