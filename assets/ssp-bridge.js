@@ -62,7 +62,7 @@ export async function handle(url, init) {
     if (name === "admin") {
       const u = await teamMember();
       if (!u || !TEAM_ROLES.includes(u.role)) return json(401, { ok: false, error: "Please sign in." });
-      const { consoleRequest } = await import("/api/_lib/console.js");
+      const { consoleRequest } = await import("/api/_lib/team-desk.js");
       const [status, out] = await consoleRequest(method, method === "POST" ? body : null, u.email);
       return json(status, out);
     }
