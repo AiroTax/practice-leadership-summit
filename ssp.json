@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "permissions": [
+    {
+      "collection": "practices",
+      "role": "admin",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "practices",
+      "role": "staff",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "practices",
+      "role": "viewer",
+      "can_read": false,
+      "can_write": false,
+      "scope": "all"
+    },
+    {
+      "collection": "prework",
+      "role": "admin",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "prework",
+      "role": "staff",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "prework",
+      "role": "viewer",
+      "can_read": false,
+      "can_write": false,
+      "scope": "all"
+    },
+    {
+      "collection": "journey",
+      "role": "admin",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "journey",
+      "role": "staff",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "journey",
+      "role": "viewer",
+      "can_read": false,
+      "can_write": false,
+      "scope": "all"
+    },
+    {
+      "collection": "email_log",
+      "role": "admin",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "email_log",
+      "role": "staff",
+      "can_read": true,
+      "can_write": true,
+      "scope": "all"
+    },
+    {
+      "collection": "email_log",
+      "role": "viewer",
+      "can_read": false,
+      "can_write": false,
+      "scope": "all"
+    }
+  ],
+  "collections": {
+    "practices": {
+      "strict": true,
+      "fields": {
+        "number": {
+          "type": "integer",
+          "required": true
+        },
+        "reference": {
+          "type": "string",
+          "max": 20
+        },
+        "name": {
+          "type": "string",
+          "max": 120,
+          "required": true
+        },
+        "town": {
+          "type": "string",
+          "max": 80
+        },
+        "website": {
+          "type": "string",
+          "max": 200
+        },
+        "type": {
+          "type": "string",
+          "max": 40,
+          "values": [
+            "Startup (under 5 years)",
+            "Established, one location",
+            "Multi-site"
+          ]
+        },
+        "ticket": {
+          "type": "string",
+          "max": 40,
+          "values": [
+            "Team of 3",
+            "Team of 2",
+            "Single seat",
+            "Team of 4 or more"
+          ]
+        },
+        "extra": {
+          "type": "integer"
+        },
+        "people": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "kasper": {
+          "type": "boolean"
+        },
+        "owner_name": {
+          "type": "string",
+          "max": 100
+        },
+        "owner_email": {
+          "type": "email",
+          "required": true
+        },
+        "owner_phone": {
+          "type": "string",
+          "max": 40
+        },
+        "invoice_email": {
+          "type": "string",
+          "max": 120
+        },
+        "members": {
+          "type": "array",
+          "max": 3,
+          "items": {
+            "strict": true,
+            "fields": {
+              "name": {
+                "type": "string",
+                "max": 100,
+                "required": true
+              },
+              "role": {
+                "type": "string",
+                "max": 40
+              },
+              "email": {
+                "type": "string",
+                "max": 120
+              }
+            }
+          }
+        },
+        "heard": {
+          "type": "string",
+          "max": 60,
+          "values": [
+            "Kasper",
+            "Global Academy of Dentistry",
+            "Another practice (referral)",
+            "Greater New York Dental Meeting",
+            "Other"
+          ]
+        },
+        "referred_by": {
+          "type": "string",
+          "max": 120
+        },
+        "diet": {
+          "type": "string",
+          "max": 200
+        },
+        "access": {
+          "type": "string",
+          "max": 200
+        },
+        "hotel": {
+          "type": "string",
+          "max": 40,
+          "values": [
+            "No room needed",
+            "Friday night",
+            "Saturday night",
+            "Friday and Saturday"
+          ]
+        },
+        "consent_photo": {
+          "type": "boolean"
+        },
+        "consent_kasper": {
+          "type": "boolean"
+        },
+        "consent_gad": {
+          "type": "boolean"
+        },
+        "consent_intros": {
+          "type": "boolean"
+        },
+        "terms_at": {
+          "type": "datetime"
+        },
+        "invoice": {
+          "type": "string",
+          "max": 20,
+          "values": [
+            "To send",
+            "Sent",
+            "Paid"
+          ]
+        },
+        "call": {
+          "type": "string",
+          "max": 20,
+          "values": [
+            "Not booked",
+            "Booked",
+            "Done"
+          ]
+        },
+        "windso": {
+          "type": "string",
+          "max": 20,
+          "values": [
+            "None",
+            "Eligible",
+            "Offered",
+            "Claimed"
+          ]
+        },
+        "day30": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string",
+          "max": 4096
+        },
+        "checked_in": {
+          "type": "array",
+          "max": 4
+        },
+        "report_key": {
+          "type": "string",
+          "max": 64
+        },
+        "report_status": {
+          "type": "string",
+          "max": 10,
+          "values": [
+            "Draft",
+            "Ready",
+            "Sent"
+          ]
+        },
+        "report_note": {
+          "type": "string",
+          "max": 4096
+        },
+        "report_sent_at": {
+          "type": "datetime"
+        },
+        "created_at": {
+          "type": "datetime"
+        },
+        "updated_at": {
+          "type": "datetime"
+        }
+      },
+      "public_insert": [
+        "number",
+        "reference",
+        "name",
+        "town",
+        "website",
+        "type",
+        "ticket",
+        "extra",
+        "kasper",
+        "owner_name",
+        "owner_email",
+        "owner_phone",
+        "invoice_email",
+        "members",
+        "heard",
+        "referred_by",
+        "diet",
+        "access",
+        "hotel",
+        "consent_photo",
+        "consent_kasper",
+        "consent_gad",
+        "consent_intros",
+        "terms_at"
+      ]
+    },
+    "prework": {
+      "strict": true,
+      "fields": {
+        "number": {
+          "type": "integer",
+          "required": true
+        },
+        "email": {
+          "type": "string",
+          "max": 120
+        },
+        "answered_by": {
+          "type": "string",
+          "max": 120
+        },
+        "answers": {
+          "type": "object",
+          "required": true
+        },
+        "created_at": {
+          "type": "datetime"
+        }
+      },
+      "public_insert": [
+        "number",
+        "email",
+        "answered_by",
+        "answers"
+      ]
+    },
+    "journey": {
+      "strict": true,
+      "fields": {
+        "key": {
+          "type": "string",
+          "max": 20,
+          "required": true
+        },
+        "status": {
+          "type": "string",
+          "max": 10,
+          "values": [
+            "draft",
+            "approved",
+            "paused"
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "max": 200
+        },
+        "body": {
+          "type": "string"
+        },
+        "vars": {
+          "type": "object"
+        },
+        "updated_by": {
+          "type": "string",
+          "max": 160
+        }
+      }
+    },
+    "email_log": {
+      "strict": true,
+      "fields": {
+        "practice_id": {
+          "type": "string",
+          "max": 64
+        },
+        "email_id": {
+          "type": "string",
+          "max": 40,
+          "required": true
+        },
+        "to_addr": {
+          "type": "string",
+          "max": 2000
+        },
+        "subject": {
+          "type": "string",
+          "max": 300
+        },
+        "status": {
+          "type": "string",
+          "max": 20,
+          "required": true
+        },
+        "provider_id": {
+          "type": "string",
+          "max": 200
+        },
+        "error": {
+          "type": "string",
+          "max": 1000
+        },
+        "created_at": {
+          "type": "datetime"
+        }
+      }
+    }
+  }
+}

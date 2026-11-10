@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script src="/assets/ssp-loader.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Summit Console</title>
@@ -417,6 +418,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 .pvhead span{font-size:13px;color:var(--muted)}
 .pv iframe{width:100%;height:min(70vh,760px);border:0;display:block;background:#EEF1F7}
 .pv .miss{margin:10px 16px 0}
+#sspnote{margin-bottom:18px;font-weight:400}#sspnote b{font-weight:700}
 </style>
 </head>
 <body>
@@ -425,11 +427,14 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   <form class="box" id="si-form" novalidate>
     <div class="brandline">Summit <span>Console</span></div>
     <h1>Sign in</h1>
-    <p class="muted">For the summit team. Enter your @amalandcompany.com email and we’ll send you a sign-in link.</p>
+    <p class="muted" id="si-lead">For the summit team. Enter your @amalandcompany.com email and we’ll send you a sign-in link.</p>
     <p class="err" id="si-err" hidden></p>
+    <div id="si-mail">
     <label for="si-email">Your work email</label>
     <input id="si-email" type="email" autocomplete="email" required placeholder="you@amalandcompany.com">
     <button class="btn primary" type="submit" id="si-go">Email me a link</button>
+    </div>
+    <button class="btn primary" type="button" id="si-google" hidden>Sign in with Google</button>
     <p class="sent" id="si-sent" hidden>Check your inbox. If it’s an @amalandcompany.com email, the link is there now. It expires in 15 minutes.</p>
     <p id="si-dev" hidden></p>
     <button type="button" class="linkbtn" data-tour>New here? Watch the 40-second tour</button>
@@ -456,6 +461,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
 <main class="wrap">
   <p class="notice bad" id="connerr" hidden></p>
+  <p class="notice" id="sspnote" hidden></p>
 
   <!-- TODAY -->
   <section class="view" id="v-today">
@@ -676,15 +682,36 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       var j = await api();
       state.practices = j.practices.map(toPractice).sort(function(x,y){return y.createdAt-x.createdAt});
       state.emails = j.journey; state.system = j.system || []; state.vars = j.vars || {}; state.varLabels = j.varLabels || {}; state.log = j.log || [];
-      state.meta = {backend:j.backend, emailReady:j.emailReady, from:j.from}; state.canEdit = true;
+      state.meta = {backend:j.backend, emailReady:j.emailReady, from:j.from, ssp:!!j.ssp}; state.canEdit = true;
+      sspNotes(j);
       $("#me").textContent = j.me;
       state.loadedAt = Date.now(); $("#connerr").hidden = true; $("#live").className = "live on";
       renderAll(); if (openId) renderDrawer();
+      setTimeout(sweep, 1500);
     } catch(e){
       if (e.code !== "signin") { $("#live").className = "live"; $("#connerr").hidden = false; $("#connerr").textContent = (e.message || "Can’t reach the server.") + " Trying again every 30 seconds."; }
     }
     loading = false; setTimeout(function(){ $("#refresh").classList.remove("spin") }, 300);
   }
+  // On the Site Serving Platform the website's forms can't send email, so the console sends the
+  // waiting confirmations, team notices and pre-work thanks while it's open (a scheduled job does
+  // the same every 15 minutes). It also shows pre-work that matches no registration number.
+  function sspNotes(j){
+    var el = $("#sspnote"), bits = [];
+    if (j.ssp && j.unmatched && j.unmatched.length) bits.push("<b>Pre-work with no matching registration:</b> " + j.unmatched.map(function(u){ return "#" + esc(u.number) + (u.email ? " (" + esc(u.email) + ")" : ""); }).join(", ") + ". The office may have mistyped its number; check with them and ask them to send it again with the right one.");
+    if (j.ssp && j.clashes && j.clashes.length) bits.push("<b>Registration number used twice:</b> #" + j.clashes.map(esc).join(", #") + ". Tell one of the two offices which number to use for its pre-work.");
+    el.hidden = !bits.length; el.innerHTML = bits.join("<br>");
+  }
+  var sweeping = false, lastSweep = 0;
+  async function sweep(){
+    if (!state.meta || !state.meta.ssp || sweeping || Date.now() - lastSweep < 170000) return;
+    sweeping = true; lastSweep = Date.now();
+    try { var r = await api({a:"sweep"}); var n = (r.sent || []).length + ((r.journey || []).filter(function(x){return x.ok}).length);
+      if (n) { toast(n + (n === 1 ? " waiting email" : " waiting emails") + " sent."); sweeping = false; return load(); }
+    } catch(e){}
+    sweeping = false;
+  }
+  setInterval(function(){ if (state.signedIn) sweep(); }, 60000);
   function freshness(){ $("#livet").textContent = state.loadedAt ? "Updated " + ago(state.loadedAt) : "Loading…"; }
   setInterval(freshness, 10000);
   $("#refresh").addEventListener("click", function(){ load(true) });
@@ -1109,7 +1136,9 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var nAppr = es.filter(function(e){return e.status==="approved"}).length, need = es.filter(function(e){return ["date","after","manual","report"].indexOf(e.type) >= 0}).length;
     $("#em-count").textContent = nAppr + " of " + need + " emails approved";
     var st = $("#em-state"); st.className = "sendstate" + (m.emailReady ? " on" : "");
-    $("#em-statetext").innerHTML = m.emailReady
+    $("#em-statetext").innerHTML = m.ssp
+      ? '<b>Sending is on.</b> Emails go through the platform mailer; replies come to ' + esc(INBOX) + '. Confirmations and pre-work thanks go out within 15 minutes; approved dated emails at 9 am Eastern on their day.'
+      : m.emailReady
       ? '<b>Sending is on.</b> Emails go from ' + esc(m.from) + '; replies come to ' + esc(INBOX) + '. Approved emails go out at 9 am Eastern on their day.'
       : '<b>Sending isn’t switched on yet.</b> Everything here works and previews, but nothing reaches practices until the email service key and sender address are added to the website settings. Data is in ' + esc(m.backend === "supabase" ? "the database" : m.backend === "airtable" ? "Airtable" : "test mode") + '.';
     $("#em-vars").innerHTML = Object.keys(state.varLabels).map(function(k){
@@ -1311,7 +1340,25 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   })();
 
   /* ---------- sign-in ---------- */
-  function showSignIn(){ state.signedIn = false; $("#app").hidden = true; $("#signin").hidden = false; setTimeout(function(){ $("#si-email").focus() }, 50); }
+  function showSignIn(){ state.signedIn = false; $("#app").hidden = true; $("#signin").hidden = false; setTimeout(function(){ (state.sspAuth ? $("#si-google") : $("#si-email")).focus() }, 50); }
+  function useGoogle(){
+    state.sspAuth = true; $("#si-mail").hidden = true; $("#si-sent").hidden = true; $("#si-google").hidden = false;
+    $("#si-lead").textContent = "For the summit team. Sign in with your @amalandcompany.com Google account.";
+  }
+  $("#si-google").addEventListener("click", async function(){
+    var b = this; b.disabled = true; b.textContent = "Opening Google…"; $("#si-err").hidden = true;
+    try { if (state.denied) await fetch("/api/auth", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({logout:true})});
+      var r = await fetch("/api/auth", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({google:true, redirect:location.origin + "/admin" + location.hash})}), j = await r.json();
+      if (!j.ok || !j.url) throw new Error(j.error); location.href = j.url;
+    } catch(x){ $("#si-err").hidden = false; $("#si-err").textContent = x.message || "Couldn’t open Google sign-in. Try again."; b.disabled = false; b.textContent = "Sign in with Google"; }
+  });
+  (function(){
+    var q = new URLSearchParams(location.search), e = q.get("ssp_error");
+    if (!e) return;
+    $("#si-err").hidden = false;
+    $("#si-err").textContent = e === "account_deactivated" ? "Your access to this console was switched off. Ask a summit admin to turn it back on." : "That Google account can’t sign in here. Use your @amalandcompany.com account, or ask a summit admin to add you.";
+    history.replaceState(null, "", "/admin" + location.hash);
+  })();
   function showApp(){ state.signedIn = true; $("#signin").hidden = true; $("#app").hidden = false; route(); }
   if (/signin=expired/.test(location.search)) { $("#si-err").hidden = false; $("#si-err").textContent = "That sign-in link has expired or was already replaced. Ask for a new one."; history.replaceState(null, "", "/admin" + location.hash); }
   $("#si-form").addEventListener("submit", async function(e){
@@ -1331,6 +1378,8 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 
   (async function(){
     try { var r = await fetch("/api/auth", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({me:true})}), j = await r.json();
+      if (j.ssp) useGoogle();
+      if (j.denied) { state.denied = true; $("#si-google").textContent = "Sign in with a different Google account"; $("#si-err").hidden = false; $("#si-err").textContent = j.denied + " is signed in, but isn’t on the summit team yet. Ask a summit admin to give you the staff role."; }
       if (!j.email) return showSignIn();
       showApp(); renderAll(); load(); setInterval(load, 30000);
     } catch(e){ showSignIn(); }

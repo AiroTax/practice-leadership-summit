@@ -3,6 +3,9 @@
 //   SUPABASE_URL + SUPABASE_SERVICE_KEY set  -> Supabase (Postgres)
 //   otherwise AIRTABLE_TOKEN set             -> the Airtable base (the original setup)
 //   STORE_MOCK=1 or AIRTABLE_MOCK=1          -> in-memory, for local testing
+//   STORE_BACKEND=ssp                        -> SSP.db on the Site Serving Platform (see ssp.js,
+//                                               ssp.json); set by the browser bridge on SSP hosts
+//                                               and by the scheduled sweep
 //
 // Records come back in one plain shape whichever backend is used:
 //   practice: { id, number, reference, createdAt, name, town, website, type, ticket, extra, people, price,
@@ -14,10 +17,13 @@
 import { P, TABLES, airtable } from "./airtable.js";
 import { PREWORK, allQuestions } from "./questions.js";
 import { priceFor, peopleFor } from "./pricing.js";
+import { db as sspDb, kv, sspPublic } from "./ssp.js";
+import { sealReport, openReport, reportSlot } from "./report-crypto.js";
 
 const QUESTIONS = allQuestions(PREWORK);
 
 export function backend() {
+  if (process.env.STORE_BACKEND === "ssp") return "ssp";
   if (process.env.STORE_MOCK === "1" || process.env.AIRTABLE_MOCK === "1") return "mock";
   const k = process.env.SUPABASE_SERVICE_KEY || "";
   if (process.env.SUPABASE_URL && k && !k.startsWith("sb_publishable_")) return "supabase"; // the public key can't read the tables
@@ -33,8 +39,9 @@ export const EDITABLE = {
 };
 
 export function newKey() {
-  const b = new Uint8Array(18); crypto.getRandomValues(b);
-  return Buffer.from(b).toString("base64url");
+  const b = new Uint8Array(18); globalThis.crypto.getRandomValues(b);
+  let s = ""; b.forEach((x) => { s += String.fromCharCode(x); });
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 /* ======================================================================================
@@ -63,12 +70,13 @@ function fromRow(r) {
   return {
     id: r.id, number: r.number, reference: r.reference, createdAt: r.created_at, name: r.name || "", town: r.town || "",
     website: r.website || "", type: r.type || "", ticket: r.ticket || "", extra: r.extra || 0,
-    people: r.people || peopleFor(r.ticket, r.extra), price: r.price || 0, kasper: !!r.kasper,
+    people: r.people || peopleFor(r.ticket, r.extra), price: r.price || priceFor(r.ticket, r.extra, !!r.kasper), kasper: !!r.kasper,
     owner: { name: r.owner_name || "", email: r.owner_email || "", phone: r.owner_phone || "" },
     invoiceEmail: r.invoice_email || "", members: Array.isArray(r.members) ? r.members : [],
     heard: r.heard || "", referredBy: r.referred_by || "", diet: r.diet || "", access: r.access || "", hotel: r.hotel || "",
     consents: { photo: !!r.consent_photo, kasper: !!r.consent_kasper, gad: !!r.consent_gad, intros: !!r.consent_intros },
-    invoice: r.invoice || "To send", call: r.call || "Not booked", windso: r.windso || "None", day30: !!r.day30, notes: r.notes || "",
+    invoice: r.invoice || "To send", call: r.call || "Not booked",
+    windso: r.windso || (r.ticket === "Team of 3" || r.ticket === "Team of 4 or more" ? "Eligible" : "None"), day30: !!r.day30, notes: r.notes || "",
     checkedIn: Array.isArray(r.checked_in) ? r.checked_in : [false, false, false, false],
     reportKey: r.report_key || "", reportStatus: r.report_status || "Draft", reportNote: r.report_note || "", reportSentAt: r.report_sent_at || "",
   };
@@ -259,7 +267,91 @@ const MOCK = {
   async emailLog() { return mem.log.slice(0, 300); },
 };
 
-const impl = () => ({ supabase: SUPA, airtable: AT, mock: MOCK })[backend()];
+
+/* ======================================================================================
+   SSP.db (Site Serving Platform). Same row shape as Supabase, kept in four collections
+   declared in ssp.json. Website forms create records signed-out (public_insert) and can't
+   read anything back; the team console reads and writes as a signed-in team member; the
+   scheduled sweep uses the site API key.
+   ====================================================================================== */
+const sspRow = (rec) => rec && ({ ...(rec.data || {}), id: rec.id, created_at: (rec.data && rec.data.created_at) || rec.created_at });
+const byNewest = (a, b) => String(b.created_at).localeCompare(String(a.created_at));
+// Fields a signed-out registration may send (ssp.json → practices.public_insert).
+const PUBLIC_PRACTICE = ["number", "reference", "name", "town", "website", "type", "ticket", "extra", "kasper", "owner_name", "owner_email",
+  "owner_phone", "invoice_email", "members", "heard", "referred_by", "diet", "access", "hotel", "consent_photo", "consent_kasper",
+  "consent_gad", "consent_intros", "terms_at"];
+const noBlank = (o) => { Object.keys(o).forEach((k) => { if (o[k] === "" || o[k] == null) delete o[k]; }); return o; };
+// Registration numbers can't come from a database sequence on a signed-out form, so the
+// browser picks one at random; the console flags the (very unlikely) clash.
+const pickNumber = () => 1000 + Math.floor(Math.random() * 9000);
+
+async function sspPractices() { return (await sspDb.list("practices")).map(sspRow).sort(byNewest); }
+async function sspPracticeRec(id) { return sspDb.get("practices", id).catch((e) => { if (e.status === 404) return null; throw e; }); }
+
+// Publishes (or withdraws) the encrypted report the office opens from its link.
+export async function publishReport(p, pw) {
+  if (backend() !== "ssp" || !p || !p.reportKey) return;
+  if (["Ready", "Sent"].includes(p.reportStatus)) {
+    const { name, value } = await sealReport(p.reportKey, reportData(p, pw));
+    await kv.set(name, value);
+  } else await kv.set(await reportSlot(p.reportKey), null);
+}
+
+const SSP = {
+  async createPractice(p) {
+    const number = pickNumber(), row = toRow(p);
+    const data = { number, reference: "PLS-" + number };
+    PUBLIC_PRACTICE.forEach((k) => { if (k in row) data[k] = row[k]; });
+    noBlank(data);
+    if (sspPublic()) await sspDb.publicCreate("practices", data);
+    else await sspDb.create("practices", { ...data, created_at: new Date().toISOString() });
+    return fromRow({ ...data, id: "", created_at: new Date().toISOString() });
+  },
+  async getPractice(id) { return fromRow(sspRow(await sspPracticeRec(id))); },
+  async findPracticeByNumber(n) { return (await this.listPractices()).find((p) => p.number === Number(n)) || null; },
+  async findPracticeByReportKey(k) { return (await this.listPractices()).find((p) => p.reportKey === k) || null; },
+  async listPractices() { return (await sspPractices()).map(fromRow); },
+  async countPractices() { const s = await kv.get("stats").catch(() => null); return (s && s.claimed) || 0; },
+  async updatePractice(id, patch) {
+    const rec = await sspPracticeRec(id); if (!rec) throw err("Not found", 404);
+    const data = { ...(rec.data || {}), updated_at: new Date().toISOString() };
+    for (const k of Object.keys(patch)) if (PATCH_COL[k]) data[PATCH_COL[k]] = patch[k];
+    const out = fromRow(sspRow(await sspDb.replace("practices", id, noBlank(data))));
+    if (["reportStatus", "reportNote", "reportKey"].some((k) => k in patch)) await publishReport(out, await this.getPrework(out.number));
+    return out;
+  },
+  async savePrework(number, a) {
+    const data = noBlank({ number, email: a.email || null, answered_by: a.answeredBy || null, answers: a });
+    if (sspPublic()) await sspDb.publicCreate("prework", data);
+    else await sspDb.create("prework", { ...data, created_at: new Date().toISOString() });
+  },
+  async getPrework(number) { return (await this.listPrework())[Number(number)] || null; },
+  async listPrework() {
+    const rows = (await sspDb.list("prework")).map(sspRow).sort(byNewest), out = {};
+    rows.forEach((r) => { if (!out[r.number]) out[r.number] = pwFromRow(r); });
+    return out;
+  },
+  async getJourney() { return (await sspDb.list("journey")).map((rec) => ({ ...rec.data, id: rec.data.key, updated_at: rec.updated_at })); },
+  async saveJourney(id, patch) {
+    const rec = (await sspDb.list("journey")).find((r) => r.data && r.data.key === id);
+    const data = noBlank({ ...((rec && rec.data) || {}), key: id, ...patch });
+    if ("subject" in patch && patch.subject == null) delete data.subject;
+    if ("body" in patch && patch.body == null) delete data.body;
+    return rec ? sspDb.replace("journey", rec.id, data) : sspDb.create("journey", data);
+  },
+  async logEmail(e) {
+    try { await sspDb.create("email_log", noBlank({ ...e, created_at: new Date().toISOString() })); }
+    catch (x) { console.error("email_log insert failed", x.message); }
+  },
+  async emailLog(limit = 300) { return (await sspDb.list("email_log")).map(sspRow).sort(byNewest).slice(0, limit); },
+  // Report pages: the office's browser opens the encrypted copy, so there is no database read.
+  async reportByKey(k) {
+    const value = await kv.get(await reportSlot(k)).catch(() => null);
+    return value ? openReport(k, value) : null;
+  },
+};
+
+const impl = () => ({ ssp: SSP, supabase: SUPA, airtable: AT, mock: MOCK })[backend()];
 
 /* ======================================================================================
    Public API
@@ -289,7 +381,7 @@ export async function updatePractice(id, patch, current) {
     const rule = EDITABLE[k];
     if (Array.isArray(rule)) { if (rule.includes(v)) clean[k] = v; }
     else if (rule === "bool") clean[k] = !!v;
-    else if (rule === "text") clean[k] = String(v ?? "").slice(0, 5000);
+    else if (rule === "text") clean[k] = String(v ?? "").slice(0, 4000);
     else if (rule === "bools" && Array.isArray(v)) clean[k] = [0, 1, 2, 3].map((i) => !!v[i]);
   }
   if (clean.reportStatus && clean.reportStatus !== "Draft") {
@@ -303,6 +395,7 @@ export async function updatePractice(id, patch, current) {
 
 // The data behind an office's report page. Only Ready or Sent reports open; no emails or phones.
 export async function reportByKey(k) {
+  if (backend() === "ssp") return SSP.reportByKey(k);
   const p = await impl().findPracticeByReportKey(k);
   if (!p || !["Ready", "Sent"].includes(p.reportStatus)) return null;
   const pw = await getPrework(p.number);

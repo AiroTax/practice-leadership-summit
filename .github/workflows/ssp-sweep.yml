@@ -1,0 +1,27 @@
+# Every 15 minutes: send the confirmations, team notices and pre-work thanks that the website's
+# forms can't send on SSP, then any approved journey emails that are due (from 9 am Eastern).
+# Needs the repository secret SSP_SITE_API_KEY (SSP dashboard → this site → API key).
+name: SSP email sweep
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+concurrency:
+  group: ssp-sweep
+  cancel-in-progress: false
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Sweep
+        env:
+          SSP_SITE_API_KEY: ${{ secrets.SSP_SITE_API_KEY }}
+          SSP_SITE_DOMAIN: ${{ vars.SSP_SITE_DOMAIN || 'practice-leadership-summit.amalandco.com' }}
+        run: |
+          if [ -z "$SSP_SITE_API_KEY" ]; then echo "SSP_SITE_API_KEY isn't set yet; skipping."; exit 0; fi
+          node scripts/ssp-sweep.mjs

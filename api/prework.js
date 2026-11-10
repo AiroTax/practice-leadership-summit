@@ -5,6 +5,7 @@ import { findPracticeByNumber, savePrework, updatePractice } from "./_lib/store.
 import { reviewsFor, reviewsReady } from "./_lib/reviews.js";
 import { sendPreworkThanks } from "./_lib/notify.js";
 import { PREWORK, allQuestions } from "./_lib/questions.js";
+import { sspPublic } from "./_lib/ssp.js";
 
 const QUESTIONS = allQuestions(PREWORK);
 
@@ -77,6 +78,13 @@ async function handle(req, res) {
   if (b.email && !isEmail(str(b.email, 120))) b.email = "";
 
   try {
+    // On SSP the form can't look registrations up (signed-out visitors read nothing), so the
+    // answers are saved by number and the console matches them; the sweep sends the thanks.
+    if (sspPublic()) {
+      const answers = cleanAnswers(b); answers.number = number;
+      await savePrework(number, answers);
+      return send(res, 200, { ok: true });
+    }
     const match = await findPracticeByNumber(number);
     if (!match) return send(res, 404, { ok: false, error: `We couldn't find registration #${number}. Check the number in your confirmation email, or write to us.` });
     const answers = cleanAnswers(b);

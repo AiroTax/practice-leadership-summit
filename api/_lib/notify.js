@@ -2,7 +2,8 @@
 // the report link, sign-in links, and the scheduled journey.
 import { sendEmail, layout, markup, facts, button, esc, INBOX, SITE } from "./email.js";
 import { JOURNEY, renderJourney, inAudience, isDue, firstName } from "./journey.js";
-import { getJourneyState, logEmail, emailLog, listPractices, listPrework } from "./store.js";
+import { getJourneyState, logEmail, emailLog, listPractices, listPrework, backend, publishReport } from "./store.js";
+import { sspOn, sspPublic, kv } from "./ssp.js";
 
 const TEAM = () => (process.env.TEAM_EMAILS || INBOX).split(",").map((s) => s.trim()).filter(Boolean);
 const money = (n) => "$" + Math.round(n || 0).toLocaleString("en-US");
@@ -21,9 +22,12 @@ export function recipients(p, withTeam) {
   return { to, cc };
 }
 
+const practiceRef = (p) => (!p || !p.id || p.id === "sample" ? null : backend() === "supabase" && !/^[0-9a-f-]{36}$/.test(p.id) ? null : String(p.id));
 async function deliver(id, p, msg, to, cc) {
+  // A signed-out visitor on SSP can't send mail or write the log; the sweep sends these instead.
+  if (sspPublic()) return { ok: true, deferred: true };
   const r = await sendEmail({ to, cc, subject: msg.subject, html: msg.html, text: msg.text, tag: id });
-  await logEmail({ practice_id: p && /^[0-9a-f-]{36}$/.test(p.id) ? p.id : null, email_id: id, to_addr: [].concat(to, cc || []).join(", "),
+  await logEmail({ practice_id: practiceRef(p), email_id: id, to_addr: [].concat(to, cc || []).join(", "),
     subject: msg.subject, status: r.ok ? (r.local ? "preview" : "sent") : "failed", provider_id: r.id || null, error: r.ok ? null : r.error });
   return r;
 }
@@ -112,7 +116,7 @@ If you didn’t ask to sign in, you can ignore this email.`);
 // Runs every morning (Vercel Cron). Sends approved, dated emails that are due and not yet sent.
 export async function runJourney({ now = Date.now(), dry = false } = {}) {
   const st = await journeyState(), practices = await listPractices(), pre = await listPrework();
-  const sent = new Set((await emailLog(5000)).filter((l) => l.status === "sent").map((l) => l.practice_id + "|" + l.email_id));
+  const sent = new Set((await emailLog(100000)).filter((l) => l.status === "sent").map((l) => l.practice_id + "|" + l.email_id));
   const out = [];
   for (const d of JOURNEY) {
     const s = st[d.id] || {};
@@ -126,6 +130,57 @@ export async function runJourney({ now = Date.now(), dry = false } = {}) {
       const r = await deliver(d.id, p, msg, to, cc);
       out.push({ id: d.id, practice: p.name, ok: r.ok, error: r.error });
     }
+  }
+  return out;
+}
+
+/* ---------------------------------------------------------------------------------------
+   The sweep (SSP only). On SSP the website's forms save signed-out and can't send email, so
+   the confirmation, the team notice and the pre-work thanks are sent here, followed by the
+   dated journey emails and the public table count. It runs from the scheduled GitHub Action
+   (scripts/ssp-sweep.mjs, with the site API key) and from the console while a team member
+   has it open. The email log keeps every email to once per practice.
+   --------------------------------------------------------------------------------------- */
+const SWEEP_LOCK = "sweep_lock";
+async function takeLock(ms) {
+  const me = Math.random().toString(36).slice(2), now = Date.now();
+  const cur = await kv.get(SWEEP_LOCK).catch(() => null);
+  if (cur && cur.until > now && cur.by !== me) return null;
+  await kv.set(SWEEP_LOCK, { by: me, until: now + ms });
+  await new Promise((r) => setTimeout(r, 700));
+  const check = await kv.get(SWEEP_LOCK).catch(() => null);
+  return check && check.by === me ? me : null;
+}
+export async function sweep({ now = Date.now(), journey = true } = {}) {
+  if (!sspOn() || sspPublic()) return { ok: false, skipped: "not on SSP" };
+  const lock = await takeLock(4 * 60e3);
+  if (!lock) return { ok: true, skipped: "another sweep is running" };
+  const out = { ok: true, sent: [], failed: [], journey: [] };
+  try {
+    const practices = await listPractices(), pre = await listPrework(), log = await emailLog(100000);
+    const tries = {};
+    log.forEach((l) => { const k = l.practice_id + "|" + l.email_id; tries[k] = tries[k] || { sent: false, failed: 0 }; if (l.status === "sent") tries[k].sent = true; else if (l.status === "failed") tries[k].failed++; });
+    const due = (p, id) => { const t = tries[p.id + "|" + id]; return !t || (!t.sent && t.failed < 3); };
+    const note = (id, p, r) => (r.ok ? out.sent : out.failed).push({ id, practice: p.name, error: r.error });
+    // Only practices registered on SSP get the instant emails; anything older was already handled where it registered.
+    const fresh = (p) => now - Date.parse(p.createdAt || 0) < 14 * 86400e3;
+    for (const p of practices) {
+      if (!fresh(p)) continue;
+      if (due(p, "e01")) note("e01", p, await sendConfirmation(p).catch((e) => ({ ok: false, error: e.message })));
+      if (due(p, "team-notice")) note("team-notice", p, await sendTeamNotice(p).catch((e) => ({ ok: false, error: e.message })));
+      const pw = pre[p.number];
+      if (pw && now - Date.parse(pw.createdAt || 0) < 14 * 86400e3 && due(p, "prework-thanks")) {
+        note("prework-thanks", p, await sendPreworkThanks(p, pw.answers || {}).catch((e) => ({ ok: false, error: e.message })));
+        // The office's report may already be released; refresh its private copy with the new answers.
+        if (p.reportKey) await publishReport(p, pw).catch(() => {});
+      }
+    }
+    // Dated journey emails go out from 9am Eastern, like the old daily run.
+    if (journey && new Date(now).getUTCHours() >= 14) out.journey = await runJourney({ now });
+    const claimed = practices.length, cur = await kv.get("stats").catch(() => null);
+    if (!cur || cur.claimed !== claimed) await kv.set("stats", { claimed, total: 35, at: new Date(now).toISOString() });
+  } finally {
+    await kv.set(SWEEP_LOCK, null).catch(() => {});
   }
   return out;
 }

@@ -111,6 +111,29 @@ and the sign-in link appears on the sign-in screen.
 - A hidden "honeypot" field quietly drops most spam bots, and each visitor is limited to 8 submissions per 10 minutes.
 - Pre-work is only accepted for a registration number that exists.
 
+## Hosting on SSP (practice-leadership-summit.amalandco.com)
+
+The same repo runs on the Site Serving Platform with no server code. On an SSP host the pages load
+`assets/ssp-loader.js`, which answers the site's `/api/*` calls in the browser (`assets/ssp-bridge.js`)
+using the platform's own services:
+
+| Need | On Vercel | On SSP |
+|---|---|---|
+| Data | Supabase (`supabase/schema.sql`) | SSP.db collections `practices`, `prework`, `journey`, `email_log`, declared with their permissions in `ssp.json` |
+| Registration and pre-work forms | `/api/register`, `/api/prework` | signed-out "public form" inserts (`public_insert` in `ssp.json`); nothing can be read back |
+| Console sign-in | emailed magic link | Google sign-in; the `admin` and `staff` roles get in, everyone else is refused |
+| Email | Gmail SMTP or Resend | the platform mailer (`/_ssp/mail`), wrapped in `ssp-mail-template.html` |
+| Instant emails | sent by the form's function | sent by the sweep within 15 minutes (`.github/workflows/ssp-sweep.yml`), and by the console while it's open |
+| Dated journey emails | Vercel Cron, 9 am Eastern | the same sweep, from 9 am Eastern |
+| Report page | `/api/report` reads the database | the console publishes each released report AES-encrypted to SSP.store; only the key in the office's link opens it |
+| Live table count | `/api/stats` | `stats` in SSP.store, refreshed by the sweep |
+
+Registration numbers on SSP are four digits chosen at random (PLS-4821); the console flags a clash or
+pre-work sent under a number that matches no registration.
+
+Moving the existing data: `SUPABASE_URL=… SUPABASE_SERVICE_KEY=… SSP_SITE_API_KEY=… node scripts/supabase-to-ssp.mjs`
+(it refuses to run twice, and marks emails already sent so nobody is emailed again).
+
 ## Hosting elsewhere
 
 The `api/` handlers use the standard Node `(req, res)` signature that Vercel runs as-is. On Netlify, Cloudflare or your own server, wrap each handler in that platform's function format, or run `dev-server.js` behind any Node host (set `PORT`).

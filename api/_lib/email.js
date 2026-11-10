@@ -4,10 +4,12 @@
 //   EMAIL_FROM       e.g. "Practice Leadership Summit <hello@yoursummitdomain.com>" (a domain verified in Resend)
 //   EMAIL_REPLY_TO   where replies go (default: the team inbox below)
 //
-// Without RESEND_API_KEY nothing is sent: emails are kept in memory (and written to .outbox/
+// On the Site Serving Platform (STORE_BACKEND=ssp) mail goes through the platform mailer
+// instead: see sspMail in ssp.js and ssp-mail-template.html.
+//
+// Without any of these nothing is sent: emails are kept in memory (and written to .outbox/
 // when running locally) so they can be previewed.
-import fs from "node:fs";
-import path from "node:path";
+import { sspOn, sspMail } from "./ssp.js";
 
 export const INBOX = process.env.EMAIL_REPLY_TO || "Programs@amalandcompany.com";
 export const SITE = (process.env.SITE_URL || "https://practice-leadership-summit.vercel.app").replace(/\/+$/, "");
@@ -17,8 +19,24 @@ export const getOutbox = () => outbox;
 // Two ways to send: your own mailbox (SMTP_USER + SMTP_PASS, e.g. Google Workspace with an app
 // password) or Resend (RESEND_API_KEY). The mailbox wins when both are set.
 const smtpOn = () => !!(process.env.SMTP_USER && process.env.SMTP_PASS);
-export const sender = () => process.env.EMAIL_FROM || (smtpOn() ? `Practice Leadership Summit <${process.env.SMTP_USER}>` : "");
-export function emailReady() { return smtpOn() || !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM); }
+export const sender = () => sspOn() ? "the platform mailer (Site settings → Mail)" : process.env.EMAIL_FROM || (smtpOn() ? `Practice Leadership Summit <${process.env.SMTP_USER}>` : "");
+export function emailReady() { return sspOn() || smtpOn() || !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM); }
+
+// The platform wraps each message in the site's mail template and strips <head> and <style>,
+// so only the body goes; ssp-mail-template.html carries the rest (paste it into Site settings → Mail).
+const bodyOnly = (html) => { const m = String(html || "").match(/<body[^>]*>([\s\S]*)<\/body>/i); return m ? m[1] : String(html || ""); };
+const textOf = (html) => bodyOnly(html).replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<br\s*\/?>/gi, "\n").replace(/<\/(p|tr|li|h\d|div)>/gi, "\n")
+  .replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&rarr;/g, "→").replace(/&[a-z#0-9]+;/gi, "").replace(/\n{3,}/g, "\n\n").trim();
+async function platformSend({ to, cc, subject, html, text, replyTo }) {
+  try {
+    // The platform has no Cc: everyone goes on To (they're all from the same practice).
+    await sspMail({ to: [...to, ...cc].slice(0, 20), subject: subject.slice(0, 200), text: (text || textOf(html) || subject).slice(0, 20000),
+      html: bodyOnly(html).slice(0, 100000), replyTo: replyTo || INBOX });
+    return { ok: true, id: "ssp-queued" };
+  } catch (e) {
+    return { ok: false, error: e.status === 403 ? "Mail is off for this site, or your role can’t send it (Site settings → Mail)." : e.message };
+  }
+}
 let transport;
 async function smtpSend({ to, cc, subject, html, text, replyTo }) {
   if (!transport) {
@@ -40,11 +58,13 @@ export async function sendEmail({ to, cc, subject, html, text, replyTo, tag }) {
   const list = (Array.isArray(to) ? to : [to]).filter(Boolean);
   const ccs = (Array.isArray(cc) ? cc : cc ? [cc] : []).filter((x) => x && !list.includes(x));
   if (!list.length) return { ok: false, error: "No recipient" };
+  if (sspOn()) return platformSend({ to: list, cc: ccs, subject, html, text, replyTo });
   if (!emailReady()) {
     const msg = { id: "local-" + (outbox.length + 1), to: list, cc: ccs, subject, html, text, at: new Date().toISOString(), tag };
     outbox.unshift(msg);
-    if (!process.env.VERCEL) {
+    if (!process.env.VERCEL && typeof window === "undefined") {
       try {
+        const fs = await import("node:fs"), path = await import("node:path");
         const dir = path.join(process.cwd(), ".outbox"); fs.mkdirSync(dir, { recursive: true });
         fs.writeFileSync(path.join(dir, `${String(outbox.length).padStart(3, "0")}-${(tag || "email").replace(/[^a-z0-9-]/gi, "")}.html`), html);
       } catch {}
