@@ -134,6 +134,15 @@ export function plain(src) {
   return String(src || "").replace(/\[\[(.+?)\|(.+?)\]\]/g, "$1: $2").replace(/^~\s*/gm, "").replace(/\*\*(.+?)\*\*/g, "$1");
 }
 
+// The wrapper the platform puts around every email (Site settings → Mail, or the console's
+// "Set up email" button): the page head and mobile styles that the platform strips from messages.
+export function mailTemplateHtml() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>{{subject}}</title>
+<style>@media (max-width:620px){.px{padding-left:22px!important;padding-right:22px!important}.h1{font-size:26px!important}}a{color:${C.blue}}</style></head>
+<body style="margin:0;padding:0;background:${C.bg};-webkit-text-size-adjust:100%">{{content}}</body></html>`;
+}
+
 export function layout({ title, preheader = "", eyebrow = "", body, footerNote = "" }) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${esc(title)}</title>

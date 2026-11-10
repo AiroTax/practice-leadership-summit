@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script src="/assets/ssp-loader.js?v=ed0106187d"></script>
-<script type="importmap">{"imports":{"/api/_lib/airtable.js":"/api/_lib/airtable.js?v=ed0106187d","/api/_lib/auth.js":"/api/_lib/auth.js?v=ed0106187d","/api/_lib/email.js":"/api/_lib/email.js?v=ed0106187d","/api/_lib/journey.js":"/api/_lib/journey.js?v=ed0106187d","/api/_lib/notify.js":"/api/_lib/notify.js?v=ed0106187d","/api/_lib/pricing.js":"/api/_lib/pricing.js?v=ed0106187d","/api/_lib/questions.js":"/api/_lib/questions.js?v=ed0106187d","/api/_lib/report-crypto.js":"/api/_lib/report-crypto.js?v=ed0106187d","/api/_lib/reviews.js":"/api/_lib/reviews.js?v=ed0106187d","/api/_lib/ssp.js":"/api/_lib/ssp.js?v=ed0106187d","/api/_lib/store.js":"/api/_lib/store.js?v=ed0106187d","/api/_lib/team-desk.js":"/api/_lib/team-desk.js?v=ed0106187d","/api/admin.js":"/api/admin.js?v=ed0106187d","/api/auth.js":"/api/auth.js?v=ed0106187d","/api/cron.js":"/api/cron.js?v=ed0106187d","/api/prework.js":"/api/prework.js?v=ed0106187d","/api/register.js":"/api/register.js?v=ed0106187d","/api/report.js":"/api/report.js?v=ed0106187d","/api/stats.js":"/api/stats.js?v=ed0106187d","/assets/ssp-bridge.js":"/assets/ssp-bridge.js?v=ed0106187d"}}</script>
+<script src="/assets/ssp-loader.js?v=21b45e1fbf"></script>
+<script type="importmap">{"imports":{"/api/_lib/airtable.js":"/api/_lib/airtable.js?v=21b45e1fbf","/api/_lib/auth.js":"/api/_lib/auth.js?v=21b45e1fbf","/api/_lib/email.js":"/api/_lib/email.js?v=21b45e1fbf","/api/_lib/journey.js":"/api/_lib/journey.js?v=21b45e1fbf","/api/_lib/notify.js":"/api/_lib/notify.js?v=21b45e1fbf","/api/_lib/pricing.js":"/api/_lib/pricing.js?v=21b45e1fbf","/api/_lib/questions.js":"/api/_lib/questions.js?v=21b45e1fbf","/api/_lib/report-crypto.js":"/api/_lib/report-crypto.js?v=21b45e1fbf","/api/_lib/reviews.js":"/api/_lib/reviews.js?v=21b45e1fbf","/api/_lib/ssp.js":"/api/_lib/ssp.js?v=21b45e1fbf","/api/_lib/store.js":"/api/_lib/store.js?v=21b45e1fbf","/api/_lib/team-desk.js":"/api/_lib/team-desk.js?v=21b45e1fbf","/api/admin.js":"/api/admin.js?v=21b45e1fbf","/api/auth.js":"/api/auth.js?v=21b45e1fbf","/api/cron.js":"/api/cron.js?v=21b45e1fbf","/api/prework.js":"/api/prework.js?v=21b45e1fbf","/api/register.js":"/api/register.js?v=21b45e1fbf","/api/report.js":"/api/report.js?v=21b45e1fbf","/api/stats.js":"/api/stats.js?v=21b45e1fbf","/assets/ssp-bridge.js":"/assets/ssp-bridge.js?v=21b45e1fbf"}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Summit Console</title>
@@ -683,7 +683,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       var j = await api();
       state.practices = j.practices.map(toPractice).sort(function(x,y){return y.createdAt-x.createdAt});
       state.emails = j.journey; state.system = j.system || []; state.vars = j.vars || {}; state.varLabels = j.varLabels || {}; state.log = j.log || [];
-      state.meta = {backend:j.backend, emailReady:j.emailReady, from:j.from, ssp:!!j.ssp}; state.canEdit = true;
+      state.meta = {backend:j.backend, emailReady:j.emailReady, from:j.from, ssp:!!j.ssp, mail:j.mail || null}; state.canEdit = true;
       sspNotes(j);
       $("#me").textContent = j.me;
       state.loadedAt = Date.now(); $("#connerr").hidden = true; $("#live").className = "live on";
@@ -697,10 +697,18 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   // On the Site Serving Platform the website's forms can't send email, so the console sends the
   // waiting confirmations, team notices and pre-work thanks while it's open (a scheduled job does
   // the same every 15 minutes). It also shows pre-work that matches no registration number.
+  // Failures that haven't since gone through (the log is newest first).
+  function stillFailing(log){
+    var ok = {}; (log || []).forEach(function(l){ if (l.status === "sent") ok[l.practiceId + "|" + l.emailId] = 1; });
+    return (log || []).filter(function(l){ return l.status === "failed" && !ok[l.practiceId + "|" + l.emailId]; });
+  }
   function sspNotes(j){
     var el = $("#sspnote"), bits = [];
     if (j.ssp && j.unmatched && j.unmatched.length) bits.push("<b>Pre-work with no matching registration:</b> " + j.unmatched.map(function(u){ return "#" + esc(u.number) + (u.email ? " (" + esc(u.email) + ")" : ""); }).join(", ") + ". The office may have mistyped its number; check with them and ask them to send it again with the right one.");
     if (j.ssp && j.clashes && j.clashes.length) bits.push("<b>Registration number used twice:</b> #" + j.clashes.map(esc).join(", #") + ". Tell one of the two offices which number to use for its pre-work.");
+    var mail = j.mail || {}, failed = stillFailing(j.log).length;
+    if (j.ssp && mail.known && !mail.enabled) bits.unshift('<b>Email is switched off for this site, so nothing is going out.</b> <a href="#emails">Switch it on in the Emails tab</a>.');
+    else if (j.ssp && failed) bits.unshift('<b>' + failed + (failed === 1 ? ' email' : ' emails') + ' didn’t go.</b> <a href="#emails">See why in the Emails tab</a>.');
     el.hidden = !bits.length; el.innerHTML = bits.join("<br>");
   }
   var sweeping = false, lastSweep = 0;
@@ -1137,8 +1145,17 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     var nAppr = es.filter(function(e){return e.status==="approved"}).length, need = es.filter(function(e){return ["date","after","manual","report"].indexOf(e.type) >= 0}).length;
     $("#em-count").textContent = nAppr + " of " + need + " emails approved";
     var st = $("#em-state"); st.className = "sendstate" + (m.emailReady ? " on" : "");
+    var failed = stillFailing(state.log), mail = m.mail || {};
+    var retryBtn = failed.length ? ' <button class="btn sm primary" type="button" id="em-retry">Try the failed emails again</button>' : '';
+    var lastErr = failed.length ? '<br><span class="muted">Last error: ' + esc(failed[0].error || "no reason given") + '</span>' : '';
+    if (m.ssp) st.className = "sendstate" + (mail.known && !mail.enabled ? "" : failed.length ? "" : " on");
     $("#em-statetext").innerHTML = m.ssp
-      ? '<b>Sending is on.</b> Emails go through the platform mailer; replies come to ' + esc(INBOX) + '. Confirmations and pre-work thanks go out within 15 minutes; approved dated emails at 9 am Eastern on their day.'
+      ? (mail.known && !mail.enabled
+          ? '<b>Email is switched off for this site.</b> Nothing reaches practices or the team until it’s on. <button class="btn sm primary" type="button" id="em-setup">Switch email on</button><br><span class="muted">This turns on the platform mailer for this site, adds the summit’s email design and sends replies to ' + esc(INBOX) + '.</span>'
+          : failed.length
+          ? '<b>' + failed.length + (failed.length === 1 ? ' email' : ' emails') + ' didn’t go.</b>' + retryBtn + lastErr
+          : '<b>Sending is on.</b> Emails go through the platform mailer; replies come to ' + esc(INBOX) + '. Confirmations and pre-work thanks go out within 15 minutes; approved dated emails at 9 am Eastern on their day.' +
+            (mail.known ? (mail.template ? '' : ' <button class="btn sm" type="button" id="em-setup">Add the summit email design</button>') + (mail.quota && mail.quota < 200 ? '<br><span class="muted">Daily limit: ' + mail.quota + ' emails. Ask the platform admin to raise it to 200+ before you email every practice at once.</span>' : '') : (mail.reason === "not_admin" ? '<br><span class="muted">Only a site admin can see or change the email settings.</span>' : '')))
       : m.emailReady
       ? '<b>Sending is on.</b> Emails go from ' + esc(m.from) + '; replies come to ' + esc(INBOX) + '. Approved emails go out at 9 am Eastern on their day.'
       : '<b>Sending isn’t switched on yet.</b> Everything here works and previews, but nothing reaches practices until the email service key and sender address are added to the website settings. Data is in ' + esc(m.backend === "supabase" ? "the database" : m.backend === "airtable" ? "Airtable" : "test mode") + '.';
@@ -1163,6 +1180,17 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       return '<div><span class="muted">'+(l.at ? new Date(l.at).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "")+'</span><span><b>'+esc(nm[l.emailId]||l.emailId)+'</b> to '+esc(l.to)+'</span>'+(l.status==="sent"?'<span class="pill ok">Sent</span>':l.status==="preview"?'<span class="pill" title="Email sending isn’t switched on yet">Not sent (preview)</span>':'<span class="pill bad" title="'+esc(l.error||"")+'">'+esc(l.status)+'</span>')+'</div>' }).join("")
       : '<p class="muted">Every email the system sends is listed here.</p>';
   }
+  document.addEventListener("click", async function(e){
+    var b = e.target.closest("#em-setup, #em-retry"); if (!b) return;
+    b.disabled = true; var label = b.textContent; b.textContent = "Working…";
+    try {
+      if (b.id === "em-setup") { await api({a:"mailSetup"}); toast("Email is on for this site."); lastSweep = 0; }
+      var r = await api({a:"sweep", retry:true});
+      var n = (r.sent||[]).length, f = (r.failed||[]).length;
+      toast(r.skipped ? "Another send is running; try again in a minute." : n || f ? n + " sent" + (f ? ", " + f + " still failing" : "") + "." : "Nothing waiting to send.", null, f > 0);
+      load(true);
+    } catch(x){ toast(x.message || "That didn’t work.", null, true); b.disabled = false; b.textContent = label; }
+  });
   function emById(id){ return state.emails.concat(state.system||[]).filter(function(e){return e.id===id})[0] }
   async function preview(id, draft){
     var d = $("#pv"), fr = $("#pv-frame"), em = emById(id) || {};

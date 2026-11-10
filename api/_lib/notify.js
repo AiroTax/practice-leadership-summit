@@ -151,7 +151,7 @@ async function takeLock(ms) {
   const check = await kv.get(SWEEP_LOCK).catch(() => null);
   return check && check.by === me ? me : null;
 }
-export async function sweep({ now = Date.now(), journey = true } = {}) {
+export async function sweep({ now = Date.now(), journey = true, retry = false } = {}) {
   if (!sspOn() || sspPublic()) return { ok: false, skipped: "not on SSP" };
   const lock = await takeLock(4 * 60e3);
   if (!lock) return { ok: true, skipped: "another sweep is running" };
@@ -159,8 +159,14 @@ export async function sweep({ now = Date.now(), journey = true } = {}) {
   try {
     const practices = await listPractices(), pre = await listPrework(), log = await emailLog(100000);
     const tries = {};
-    log.forEach((l) => { const k = l.practice_id + "|" + l.email_id; tries[k] = tries[k] || { sent: false, failed: 0 }; if (l.status === "sent") tries[k].sent = true; else if (l.status === "failed") tries[k].failed++; });
-    const due = (p, id) => { const t = tries[p.id + "|" + id]; return !t || (!t.sent && t.failed < 3); };
+    log.forEach((l) => {
+      const k = l.practice_id + "|" + l.email_id; tries[k] = tries[k] || { sent: false, failed: 0, last: 0 };
+      if (l.status === "sent") tries[k].sent = true;
+      else if (l.status === "failed") { tries[k].failed++; tries[k].last = Math.max(tries[k].last, Date.parse(l.created_at) || 0); }
+    });
+    // A failed email is tried again on later sweeps: straight away for the first three tries, then
+    // once an hour (so a mail outage fixes itself), or at once when the team presses "Try again".
+    const due = (p, id) => { const t = tries[p.id + "|" + id]; return !t || (!t.sent && (retry || t.failed < 3 || now - t.last > 3600e3)); };
     const note = (id, p, r) => (r.ok ? out.sent : out.failed).push({ id, practice: p.name, error: r.error });
     // Only practices registered on SSP get the instant emails; anything older was already handled where it registered.
     const fresh = (p) => now - Date.parse(p.createdAt || 0) < 14 * 86400e3;

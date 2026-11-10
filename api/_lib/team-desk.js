@@ -4,9 +4,9 @@
 import { str } from "./airtable.js";
 import { backend, listPractices, listPrework, getPractice, getPrework, updatePractice, saveJourneyState, emailLog } from "./store.js";
 import { JOURNEY, AUDIENCES, GLOBAL_VARS, renderJourney, inAudience, nextDate } from "./journey.js";
-import { sspOn } from "./ssp.js";
+import { sspOn, sspFetch } from "./ssp.js";
 import { journeyState, sweep, sendReport, sendNow, broadcast, runJourney, buildTeamNotice, buildPreworkThanks, buildSignIn } from "./notify.js";
-import { sendEmail, emailReady, getOutbox, sender } from "./email.js";
+import { sendEmail, emailReady, getOutbox, sender, mailTemplateHtml, INBOX } from "./email.js";
 import { reviewsFor, reviewsReady, draftFromPasted } from "./reviews.js";
 
 const fail = (msg, status = 400) => Object.assign(new Error(msg), { status });
@@ -87,7 +87,14 @@ export async function consoleRequest(method, b, me) {
       }
       case "broadcast": return [200, { ok: true, results: await broadcast(str(b.id, 10)) }];
       case "dryRun": return [200, { ok: true, results: await runJourney({ dry: true, now: b.date ? Date.parse(b.date + "T15:00:00Z") : Date.now() }) }];
-      case "sweep": return [200, { ok: true, ...(await sweep()) }];
+      case "sweep": return [200, { ok: true, ...(await sweep({ retry: !!b.retry })) }];
+      // SSP: switch the platform mailer on for this site, with our template and reply-to.
+      case "mailSetup": {
+        if (!sspOn()) throw fail("Only on the SSP site.");
+        const out = await sspFetch("/_ssp/admin/mail-settings", { method: "PUT", body: JSON.stringify({ enabled: true, template_html: mailTemplateHtml(), reply_to: INBOX }) })
+          .catch((e) => { throw fail(e.status === 403 ? "Only a site admin can switch email on. Ask an admin, or set your role to admin under the site’s Access tab on SSP." : e.message, e.status || 502); });
+        return [200, { ok: true, mail: mailInfo(out && out.mailSettings) }];
+      }
       case "outbox": return [200, { ok: true, outbox: getOutbox().slice(0, 30).map((m) => ({ ...m, html: undefined })) }];
       default: throw fail("Unknown action.");
     }
@@ -118,8 +125,19 @@ function sample() {
     reportKey: "sample-report-link", checkedIn: [true, true, false, false], createdAt: new Date().toISOString() };
 }
 
+// The site's mail settings on SSP; only site admins may read them, so staff see "unknown".
+function mailInfo(m) {
+  if (!m) return { known: false };
+  return { known: true, enabled: !!m.enabled, template: !!m.template_html, replyTo: m.reply_to || "", quota: m.daily_quota || 0, roles: m.allowed_roles || [] };
+}
+async function mailStatus() {
+  if (!sspOn()) return null;
+  try { const r = await sspFetch("/_ssp/admin/mail-settings"); return mailInfo(r && r.mailSettings); }
+  catch (e) { return { known: false, reason: e.status === 403 ? "not_admin" : e.message }; }
+}
+
 async function data(me) {
-  const [practices, pre, st, log] = await Promise.all([listPractices(), listPrework(), journeyState(), emailLog(400)]);
+  const [practices, pre, st, log, mail] = await Promise.all([listPractices(), listPrework(), journeyState(), emailLog(400), mailStatus()]);
   const sentBy = {}; log.filter((l) => l.status === "sent").forEach((l) => { sentBy[l.email_id] = (sentBy[l.email_id] || 0) + 1; });
   const journey = JOURNEY.map((d) => {
     const s = st[d.id] || {};
@@ -129,7 +147,7 @@ async function data(me) {
       reach: practices.filter((p) => inAudience(d.audience, p, pre[p.number])).length, sent: sentBy[d.id] || 0, updatedBy: s.updated_by || "", updatedAt: s.updated_at || "" };
   });
   return {
-    ok: true, me, backend: backend(), ssp: sspOn(),
+    ok: true, me, backend: backend(), ssp: sspOn(), mail,
     // On SSP pre-work is saved by the number the office typed, so show any that match no registration,
     // and any registration numbers picked twice.
     unmatched: Object.values(pre).filter((pw) => !practices.some((p) => p.number === pw.number)).map((pw) => ({ number: pw.number, email: pw.email, at: pw.createdAt })),
