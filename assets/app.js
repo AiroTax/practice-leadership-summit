@@ -13,6 +13,7 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   window.PLS_INBOX = INBOX;
   var money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   $("#inbox3").textContent = INBOX;
   var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -183,14 +184,27 @@
   }
   function people(s) { return s.team === 4 ? 3 + Math.max(1, Math.min(6, s.extra || 1)) : s.team; }
 
+  // Arrived from a summit email with a discount code (/?code=SUMMIT20): show it in the price.
+  var code = null;
+  (function () {
+    var given = (new URLSearchParams(location.search).get("code") || "").toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 30);
+    if (!given) return;
+    fetch("/api/code?c=" + encodeURIComponent(given), { cache: "no-store" }).then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.ok) { code = j; renderBuilder(); } }).catch(function () {});
+  })();
+
   function renderBuilder() {
     var n = people(sel), p = price(n, sel.kasper);
+    if (code) {
+      var off = code.kind === "percent" ? Math.round(p.total * Math.min(100, code.value) / 100) : Math.min(p.total, Math.round(code.value));
+      p = { early: p.early, total: p.total - off, lines: p.lines.concat([["Your code " + code.code, -off]]), bonus: p.bonus };
+    }
     $$("#teamseg button").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.n === sel.team); });
     $("#extrawrap").hidden = sel.team !== 4;
-    $("#pricetag").textContent = p.early ? "Early-bird price until Dec 4" : "Standard price";
+    $("#pricetag").textContent = code ? "Code " + code.code + " applied" : p.early ? "Early-bird price until Dec 4" : "Standard price";
     tween($("#ptotal"), p.total);
     $("#pper").textContent = money(p.total / n) + " per person, " + n + (n === 1 ? " person" : " people");
-    $("#plines").innerHTML = p.lines.map(function (l) { return "<div><span>" + l[0] + "</span><span>" + money(l[1]) + "</span></div>"; }).join("");
+    $("#plines").innerHTML = p.lines.map(function (l) { return "<div><span>" + esc(l[0]) + "</span><span>" + (l[1] < 0 ? "−" + money(-l[1]) : money(l[1])) + "</span></div>"; }).join("");
     var b = $("#pbonus"); b.className = p.bonus ? "bonus" : "bonus none";
     b.textContent = p.bonus || "Add a third person to qualify for a WinDSO ticket";
   }

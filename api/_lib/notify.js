@@ -4,6 +4,7 @@ import { sendEmail, layout, markup, facts, button, esc, INBOX, SITE } from "./em
 import { JOURNEY, renderJourney, inAudience, isDue, firstName } from "./journey.js";
 import { getJourneyState, logEmail, emailLog, listPractices, listPrework, backend, publishReport } from "./store.js";
 import { sspOn, sspPublic, kv } from "./ssp.js";
+import { getCodes, publishCodes, describe } from "./codes.js";
 
 const TEAM = () => (process.env.TEAM_EMAILS || INBOX).split(",").map((s) => s.trim()).filter(Boolean);
 const money = (n) => "$" + Math.round(n || 0).toLocaleString("en-US");
@@ -79,6 +80,19 @@ Need to change an answer? Reply to this email and tell us what to update.
 The Kasper summit team, in partnership with Global Academy of Dentistry`);
   const html = layout({ title: "Your pre-work is in", eyebrow: "Pre-work received", preheader: "Your Practice Snapshot is next.", body });
   return { subject: `Pre-work received for ${p.name}`, html, text: "Thank you, we have your pre-work." };
+}
+
+// The discount-code emails, sent from the console to the people the team picks.
+export function codeVars(c) {
+  const exp = c.expires ? new Date(c.expires + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "the summit fills up";
+  return { discount_code: c.code, discount_text: describe(c), code_expires: exp, code_link: `${SITE}/?code=${encodeURIComponent(c.code)}#register` };
+}
+export async function sendCodeEmail(id, c, p, to) {
+  const d = def(id), st = (await journeyState())[id] || {};
+  if (st.status !== "approved") throw Object.assign(new Error(`Approve “${d.name}” in the Emails tab first.`), { status: 409, code: "not_approved" });
+  const msg = renderJourney(d, p, null, st, { vars: codeVars(c) });
+  if (msg.missing.length) throw Object.assign(new Error("Fill in " + msg.missing.join(", ").replace(/_/g, " ") + " under Event details first."), { status: 400 });
+  return deliver(id, p && p.id ? p : null, msg, to, []);
 }
 
 // e04, the report link. Sent from the console.
@@ -183,6 +197,9 @@ export async function sweep({ now = Date.now(), journey = true, retry = false } 
     }
     // Dated journey emails go out from 9am Eastern, like the old daily run.
     if (journey && new Date(now).getUTCHours() >= 14) out.journey = await runJourney({ now });
+    // Keep the public code lookup in step with how many times each code has been used.
+    const codes = await getCodes().catch(() => ({}));
+    if (Object.keys(codes).length) await publishCodes(codes, practices).catch(() => {});
     const claimed = practices.length, cur = await kv.get("stats").catch(() => null);
     if (!cur || cur.claimed !== claimed) await kv.set("stats", { claimed, total: 35, at: new Date(now).toISOString() });
   } finally {

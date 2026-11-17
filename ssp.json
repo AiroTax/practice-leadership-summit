@@ -287,6 +287,13 @@
         "report_sent_at": {
           "type": "datetime"
         },
+        "discount_code": {
+          "type": "string",
+          "max": 30
+        },
+        "discount": {
+          "type": "integer"
+        },
         "created_at": {
           "type": "datetime"
         },
@@ -318,7 +325,9 @@
         "consent_kasper",
         "consent_gad",
         "consent_intros",
-        "terms_at"
+        "terms_at",
+        "discount_code",
+        "discount"
       ]
     },
     "prework": {

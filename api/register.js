@@ -2,6 +2,8 @@
 import { readBody, str, isEmail, rateLimited, send } from "./_lib/airtable.js";
 import { createPractice } from "./_lib/store.js";
 import { sendConfirmation, sendTeamNotice } from "./_lib/notify.js";
+import { checkCode, amountOff } from "./_lib/codes.js";
+import { priceFor } from "./_lib/pricing.js";
 
 const TYPES = ["Startup (under 5 years)", "Established, one location", "Multi-site"];
 const TICKETS = ["Team of 3", "Team of 2", "Single seat", "Team of 4 or more"];
@@ -47,13 +49,19 @@ async function handle(req, res) {
     consents: { photo: b.photo === true, kasper: b.kasperUpdates === true, gad: b.gadUpdates === true, intros: b.partnerIntros === true },
   };
 
+  // A discount code that doesn't check out is left off rather than blocking the registration.
+  if (str(b.code, 40)) {
+    const c = await checkCode(str(b.code, 40)).catch(() => ({ ok: false }));
+    if (c.ok) { practiceRec.discountCode = c.code; practiceRec.discount = amountOff(c, priceFor(ticket, practiceRec.extra, practiceRec.kasper)); }
+  }
+
   try {
     const p = await createPractice(practiceRec);
     // Emails never block the registration itself.
     await Promise.allSettled([sendConfirmation(p), sendTeamNotice(p)]).then((rs) => rs.forEach((r) => {
       if (r.status === "rejected") console.error("Registration email failed", r.reason);
     }));
-    return send(res, 200, { ok: true, number: p.number, reference: p.reference || "", price: p.price ?? null });
+    return send(res, 200, { ok: true, number: p.number, reference: p.reference || "", price: p.price ?? null, discountCode: p.discountCode || "", discount: p.discount || 0 });
   } catch (e) {
     return send(res, e.status || 500, { ok: false, error: e.message || "Something went wrong. Please try again." });
   }

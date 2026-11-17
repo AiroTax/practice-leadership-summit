@@ -10,7 +10,7 @@ const env = globalThis.process.env;
 env.STORE_BACKEND = "ssp";
 env.SITE_URL = location.origin;
 
-const PUBLIC = ["register", "prework", "report", "stats"];
+const PUBLIC = ["register", "prework", "report", "stats", "code"];
 const TEAM_ROLES = ["admin", "staff"];
 const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
 

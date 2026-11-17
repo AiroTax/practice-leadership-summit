@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script src="/assets/ssp-loader.js?v=21b45e1fbf"></script>
-<script type="importmap">{"imports":{"/api/_lib/airtable.js":"/api/_lib/airtable.js?v=21b45e1fbf","/api/_lib/auth.js":"/api/_lib/auth.js?v=21b45e1fbf","/api/_lib/email.js":"/api/_lib/email.js?v=21b45e1fbf","/api/_lib/journey.js":"/api/_lib/journey.js?v=21b45e1fbf","/api/_lib/notify.js":"/api/_lib/notify.js?v=21b45e1fbf","/api/_lib/pricing.js":"/api/_lib/pricing.js?v=21b45e1fbf","/api/_lib/questions.js":"/api/_lib/questions.js?v=21b45e1fbf","/api/_lib/report-crypto.js":"/api/_lib/report-crypto.js?v=21b45e1fbf","/api/_lib/reviews.js":"/api/_lib/reviews.js?v=21b45e1fbf","/api/_lib/ssp.js":"/api/_lib/ssp.js?v=21b45e1fbf","/api/_lib/store.js":"/api/_lib/store.js?v=21b45e1fbf","/api/_lib/team-desk.js":"/api/_lib/team-desk.js?v=21b45e1fbf","/api/admin.js":"/api/admin.js?v=21b45e1fbf","/api/auth.js":"/api/auth.js?v=21b45e1fbf","/api/cron.js":"/api/cron.js?v=21b45e1fbf","/api/prework.js":"/api/prework.js?v=21b45e1fbf","/api/register.js":"/api/register.js?v=21b45e1fbf","/api/report.js":"/api/report.js?v=21b45e1fbf","/api/stats.js":"/api/stats.js?v=21b45e1fbf","/assets/ssp-bridge.js":"/assets/ssp-bridge.js?v=21b45e1fbf"}}</script>
+<script src="/assets/ssp-loader.js?v=0c0d310897"></script>
+<script type="importmap">{"imports":{"/api/_lib/airtable.js":"/api/_lib/airtable.js?v=0c0d310897","/api/_lib/auth.js":"/api/_lib/auth.js?v=0c0d310897","/api/_lib/codes.js":"/api/_lib/codes.js?v=0c0d310897","/api/_lib/discount.js":"/api/_lib/discount.js?v=0c0d310897","/api/_lib/email.js":"/api/_lib/email.js?v=0c0d310897","/api/_lib/journey.js":"/api/_lib/journey.js?v=0c0d310897","/api/_lib/notify.js":"/api/_lib/notify.js?v=0c0d310897","/api/_lib/pricing.js":"/api/_lib/pricing.js?v=0c0d310897","/api/_lib/questions.js":"/api/_lib/questions.js?v=0c0d310897","/api/_lib/report-crypto.js":"/api/_lib/report-crypto.js?v=0c0d310897","/api/_lib/reviews.js":"/api/_lib/reviews.js?v=0c0d310897","/api/_lib/ssp.js":"/api/_lib/ssp.js?v=0c0d310897","/api/_lib/store.js":"/api/_lib/store.js?v=0c0d310897","/api/_lib/team-desk.js":"/api/_lib/team-desk.js?v=0c0d310897","/api/admin.js":"/api/admin.js?v=0c0d310897","/api/auth.js":"/api/auth.js?v=0c0d310897","/api/code.js":"/api/code.js?v=0c0d310897","/api/cron.js":"/api/cron.js?v=0c0d310897","/api/prework.js":"/api/prework.js?v=0c0d310897","/api/register.js":"/api/register.js?v=0c0d310897","/api/report.js":"/api/report.js?v=0c0d310897","/api/stats.js":"/api/stats.js?v=0c0d310897","/assets/ssp-bridge.js":"/assets/ssp-bridge.js?v=0c0d310897"}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Summit Console</title>
@@ -401,6 +401,17 @@ dialog.vid video{display:block;width:100%;height:auto;aspect-ratio:16/9;backgrou
 .sendstate.on .dot{background:#2BB57C}
 .vars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .vars label{display:grid;gap:5px;font-weight:700;font-size:13px;color:var(--ink2)}
+.edit select,#cd-emails{font:14.5px var(--body);padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:100%}
+#cd-emails{min-height:84px;resize:vertical}
+.cdform{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.cdform label{display:grid;gap:5px;font-weight:700;font-size:13px;color:var(--ink2)}
+.cdbody{padding:16px;display:grid;gap:10px;overflow:auto;max-height:calc(100vh - 140px)}
+.cdbody h3{font-family:var(--display);font-size:15px;font-weight:600;margin-top:6px}
+.cdpick{display:grid;gap:2px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:6px}
+.cdpick label{display:flex;gap:10px;align-items:center;font-size:14px;padding:7px 8px;border-radius:8px;cursor:pointer}
+.cdpick label:hover{background:var(--sunk)}
+.cdpick label span{margin-left:auto;color:var(--muted);font-size:13px}
+.cdfoot{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding-top:6px}
 .vars input,.edit input,.edit textarea{font:14.5px var(--body);padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:100%}
 .vars input:focus,.edit input:focus,.edit textarea:focus{outline:none;border-color:var(--blue)}
 .email .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
@@ -532,6 +543,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     <div class="viewhead"><div><h1>Emails <button class="info" type="button" data-tip="Approve an email once and it can go out: scheduled emails on their date at 9 am Eastern, the others when you press send in Today. Preview always shows sample data; real emails use each practice’s own details." aria-label="What is this?">i</button></h1><p class="muted">What practices receive, and when. Nothing scheduled goes out until you approve it.</p></div><span class="pill b" id="em-count"></span></div>
     <div class="card"><div class="sendstate" id="em-state"><i class="dot"></i><div id="em-statetext"></div></div></div>
     <div class="card"><div class="viewhead"><div><h2>Event details used in the emails <button class="info" type="button" data-tip="Filled in once and used in every email that needs them. Emails that need a blank detail wait until it’s filled in." aria-label="What is this?">i</button></h2><p class="muted" style="font-size:13.5px">Fill these once. An email that needs a blank one waits until it’s filled in.</p></div><button class="btn sm dark" type="button" id="em-savevars">Save details</button></div><div class="vars" id="em-vars"></div></div>
+    <div class="card"><div class="viewhead"><div><h2>Discount codes <button class="info" type="button" data-tip="Make a code, then send it. People who haven’t registered get an invitation with the code filled in on the form. A registered practice gets the discount on its registration and an email with its new total." aria-label="What is this?">i</button></h2><p class="muted" style="font-size:13.5px">Make a code, then send it to people you choose: before they register, or straight onto a registration.</p></div><button class="btn sm dark" type="button" id="cd-new">New code</button></div><div class="edit" id="cd-form" hidden></div><div class="emails" id="cd-list"></div></div>
     <h2>The journey</h2>
     <div class="emails" id="emails"></div>
     <h2>Other automatic emails</h2>
@@ -564,6 +576,18 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
 </aside>
 
 <dialog class="pv" id="pv" aria-labelledby="pv-subj"><div class="pvhead"><div><b id="pv-subj"></b><span id="pv-sub"></span></div><button class="iconbtn" type="button" id="pv-close" aria-label="Close preview"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><p class="notice miss" id="pv-miss" hidden></p><iframe id="pv-frame" title="Email preview" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></dialog>
+<dialog class="pv" id="cd-dlg" aria-labelledby="cd-title"><div class="pvhead"><div><b id="cd-title">Send a code</b><span id="cd-sub"></span></div><button class="iconbtn" type="button" id="cd-close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="cdbody">
+    <p class="notice bad" id="cd-err" hidden></p>
+    <h3>Registered practices</h3>
+    <p class="muted" style="font-size:13.5px">The discount goes onto their registration, and they get “Discount applied” with their new total.</p>
+    <div class="cdpick" id="cd-pick"></div>
+    <h3>People who haven’t registered yet</h3>
+    <p class="muted" style="font-size:13.5px">They get “Discount code invitation”, with a button that opens the form with the code filled in. One email address per line.</p>
+    <textarea id="cd-emails" placeholder="dr.lee@example.com" aria-label="Email addresses"></textarea>
+    <div class="cdfoot"><button class="btn sm" type="button" data-pv="codeinv">Preview the invitation</button><button class="btn sm" type="button" data-pv="codeapp">Preview “Discount applied”</button><button class="btn primary" type="button" id="cd-send">Send</button></div>
+  </div>
+</dialog>
 <dialog class="vid" id="dlg-tour" aria-label="Console tour"><button type="button" class="vclose" aria-label="Close video">×</button><video id="tourvid" controls playsinline preload="none" poster="/assets/video/team-tour.jpg"><source src="/assets/video/team-tour.mp4" type="video/mp4"></video></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastmsg"></span><button id="toastundo" type="button" hidden>Undo</button></div>
 
@@ -612,7 +636,8 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       hotel:r.hotel||"", kasper:!!r.kasper, heard:r.heard||"", refby:r.referredBy||"", diet:r.diet||"", access:r.access||"",
       consents:r.consents||{}, invoice:r.invoice||"To send", call:r.call||"Not booked", windso:r.windso||"None", day30:!!r.day30, notes:r.notes||"",
       createdAt:Date.parse(r.createdAt||"")||0, pw:pw, pwAt:r.pw ? (Date.parse(r.pw.createdAt||"")||0) : 0,
-      reportKey:r.reportKey||"", reportStatus:r.reportStatus||"Draft", reportNote:r.reportNote||"", reportSentAt:r.reportSentAt||""};
+      reportKey:r.reportKey||"", reportStatus:r.reportStatus||"Draft", reportNote:r.reportNote||"", reportSentAt:r.reportSentAt||"",
+      discountCode:r.discountCode||"", discount:+r.discount||0, discountIssue:r.discountIssue||""};
   }
   // The 7 steps every practice goes through, in order.
   var JSTEPS = [
@@ -682,6 +707,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
     try {
       var j = await api();
       state.practices = j.practices.map(toPractice).sort(function(x,y){return y.createdAt-x.createdAt});
+      state.codes = j.codes || [];
       state.emails = j.journey; state.system = j.system || []; state.vars = j.vars || {}; state.varLabels = j.varLabels || {}; state.log = j.log || [];
       state.meta = {backend:j.backend, emailReady:j.emailReady, from:j.from, ssp:!!j.ssp, mail:j.mail || null}; state.canEdit = true;
       sspNotes(j);
@@ -1003,7 +1029,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   function renderDrawer(){
     var p = byId(openId); if (!p) { closeDrawer(); return; }
     $("#d-name").textContent = p.name;
-    $("#d-sub").innerHTML = esc(p.ref) + " · " + esc(p.town) + (p.type ? " · " + esc(p.type) : "") + " · " + esc(p.ticket) + ", " + money(p.total) + (p.website ? ' · <a href="'+esc(p.website)+'" target="_blank" rel="noopener">website</a>' : "");
+    $("#d-sub").innerHTML = esc(p.ref) + " · " + esc(p.town) + (p.type ? " · " + esc(p.type) : "") + " · " + esc(p.ticket) + ", " + money(p.total) + (p.discountCode ? " (code " + esc(p.discountCode) + ", " + money(p.discount) + " off)" : "") + (p.discountIssue === "unknown code" ? ' <span class="pill bad">code ' + esc(p.discountCode) + ' not recognised: full price</span>' : "") + (p.website ? ' · <a href="'+esc(p.website)+'" target="_blank" rel="noopener">website</a>' : "");
     $("#d-status").innerHTML = Object.keys(STATUS).filter(function(k){return k !== "reportStatus"}).map(function(k){
       var st = STATUS[k];
       var tips = {invoice:"To send: we owe them an invoice. Sent: invoice emailed, waiting for payment. Paid: money received.", call:"The 20-minute welcome call in mid-December to walk through the Practice Snapshot.", windso:"Teams of three or more qualify for a WinDSO Empower & Grow ticket while they last: Eligible, then Offered, then Claimed."};
@@ -1142,7 +1168,7 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
   var editing = {};
   function renderEmails(){
     var es = state.emails || [], m = state.meta || {};
-    var nAppr = es.filter(function(e){return e.status==="approved"}).length, need = es.filter(function(e){return ["date","after","manual","report"].indexOf(e.type) >= 0}).length;
+    var nAppr = es.filter(function(e){return e.status==="approved"}).length, need = es.filter(function(e){return ["date","after","manual","report","code"].indexOf(e.type) >= 0}).length;
     $("#em-count").textContent = nAppr + " of " + need + " emails approved";
     var st = $("#em-state"); st.className = "sendstate" + (m.emailReady ? " on" : "");
     var failed = stillFailing(state.log), mail = m.mail || {};
@@ -1159,13 +1185,14 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       : m.emailReady
       ? '<b>Sending is on.</b> Emails go from ' + esc(m.from) + '; replies come to ' + esc(INBOX) + '. Approved emails go out at 9 am Eastern on their day.'
       : '<b>Sending isn’t switched on yet.</b> Everything here works and previews, but nothing reaches practices until the email service key and sender address are added to the website settings. Data is in ' + esc(m.backend === "supabase" ? "the database" : m.backend === "airtable" ? "Airtable" : "test mode") + '.';
+    renderCodes();
     $("#em-vars").innerHTML = Object.keys(state.varLabels).map(function(k){
       return '<label>'+esc(k.replace(/_/g," ").replace(/^./,function(c){return c.toUpperCase()}))+'<input data-var="'+k+'" value="'+esc(state.vars[k]||"")+'" placeholder="'+esc(state.varLabels[k])+'"></label>' }).join("");
     $("#emails").innerHTML = es.map(function(e){
-      var pill = e.status === "automatic" ? '<span class="pill ok">Automatic</span>' : (e.type === "report" || e.type === "manual") ? (e.status === "approved" ? '<span class="pill ok">Approved · send from Today</span>' : '<span class="pill warn">Needs approval</span>') : e.type === "broadcast" ? '<span class="pill">Send when needed</span>' :
+      var pill = e.status === "automatic" ? '<span class="pill ok">Automatic</span>' : (e.type === "report" || e.type === "manual" || e.type === "code") ? (e.status === "approved" ? '<span class="pill ok">Approved · send from ' + (e.type === "code" ? "Discount codes" : "Today") + '</span>' : '<span class="pill warn">Needs approval</span>') : e.type === "broadcast" ? '<span class="pill">Send when needed</span>' :
         e.status === "approved" ? '<span class="pill ok">Approved</span>' : e.status === "paused" ? '<span class="pill">Paused</span>' : '<span class="pill warn">Needs approval</span>';
       var acts = '<button class="btn sm" type="button" data-pv="'+e.id+'">Preview</button><button class="btn sm" type="button" data-ed="'+e.id+'">'+(editing[e.id]?"Close editor":"Edit text")+'</button><button class="btn sm" type="button" data-test="'+e.id+'">Send me a test</button>';
-      if (e.type === "date" || e.type === "after" || e.type === "manual" || e.type === "report") acts += e.status === "approved" ? '<button class="btn sm" type="button" data-em="'+e.id+'" data-to="paused">Pause</button>' : '<button class="btn primary sm" type="button" data-em="'+e.id+'" data-to="approved">Approve</button>';
+      if (e.type === "date" || e.type === "after" || e.type === "manual" || e.type === "report" || e.type === "code") acts += e.status === "approved" ? '<button class="btn sm" type="button" data-em="'+e.id+'" data-to="paused">Pause</button>' : '<button class="btn primary sm" type="button" data-em="'+e.id+'" data-to="approved">Approve</button>';
       if (e.type === "broadcast") acts += '<button class="btn dark sm" type="button" data-bc="'+e.id+'">Send to '+e.reach+(e.reach===1?' practice':' practices')+'</button>';
       var ed = editing[e.id] ? '<div class="edit"><input data-es="'+e.id+'" value="'+esc(e.subject)+'" aria-label="Subject"><textarea data-eb="'+e.id+'" aria-label="Email text">'+esc(e.body)+'</textarea>'+
         '<p class="hint">Blank line = new paragraph · “1. ” lines = numbered steps · “- ” lines = bullets · “~ Label: value” = a details card · [[Button text|link]] = a button · **bold** · {{first_name}}, {{practice}}, {{table_no}} and the other {{…}} fill in per practice.</p>'+
@@ -1190,6 +1217,92 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       toast(r.skipped ? "Another send is running; try again in a minute." : n || f ? n + " sent" + (f ? ", " + f + " still failing" : "") + "." : "Nothing waiting to send.", null, f > 0);
       load(true);
     } catch(x){ toast(x.message || "That didn’t work.", null, true); b.disabled = false; b.textContent = label; }
+  });
+  /* ---------- discount codes ---------- */
+  var CODE_PILL = { ok:'<span class="pill ok">Active</span>', off:'<span class="pill">Switched off</span>', expired:'<span class="pill warn">Expired</span>', "used up":'<span class="pill warn">Used up</span>' };
+  function codeById(c){ return (state.codes||[]).filter(function(x){ return x.code === c })[0] }
+  function shortDay(d){ return new Date(d + "T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}) }
+  function renderCodes(){
+    var cs = state.codes || [];
+    $("#cd-list").innerHTML = cs.length ? cs.map(function(c){
+      var acts = '<button class="btn sm primary" type="button" data-cdsend="'+esc(c.code)+'"'+(c.state==="off"?' disabled title="Switch the code on first"':'')+'>Send…</button>' +
+        '<button class="btn sm" type="button" data-cdcopy="'+esc(c.code)+'">Copy link</button><button class="btn sm" type="button" data-cdedit="'+esc(c.code)+'">Edit</button>' +
+        '<button class="btn sm" type="button" data-cdtoggle="'+esc(c.code)+'">'+(c.active?"Switch off":"Switch on")+'</button>' +
+        (c.uses ? '' : '<button class="btn sm" type="button" data-cddel="'+esc(c.code)+'">Delete</button>');
+      return '<div class="email"><div><h3>'+esc(c.code)+'</h3><div class="meta">'+(CODE_PILL[c.state]||"")+'<span>'+esc(c.label)+'</span><span>'+(c.expires?"until "+shortDay(c.expires):"no end date")+'</span><span>used '+c.uses+(c.max?" of "+c.max:"")+'</span>'+(c.saved?'<span>'+money(c.saved)+' off in total</span>':'')+'</div>'+(c.note?'<p class="muted" style="margin-top:6px;font-size:13.5px">'+esc(c.note)+'</p>':'')+'</div><div class="acts">'+acts+'</div></div>';
+    }).join("") : '<p class="muted">No codes yet. Press “New code” to make one.</p>';
+  }
+  function codeForm(c){
+    var f = $("#cd-form"); c = c || {kind:"amount", active:true};
+    f.hidden = false; f.dataset.original = c.code || "";
+    f.innerHTML = '<div class="cdform">' +
+      '<label>Code<input id="cf-code" maxlength="30" value="'+esc(c.code||"")+'" placeholder="SUMMIT300" autocomplete="off"></label>' +
+      '<label>Discount<select id="cf-kind"><option value="amount"'+(c.kind!=="percent"?" selected":"")+'>Dollars off</option><option value="percent"'+(c.kind==="percent"?" selected":"")+'>Percent off</option></select></label>' +
+      '<label>Amount<input id="cf-value" type="number" min="1" max="10000" inputmode="numeric" value="'+esc(c.value||"")+'" placeholder="300"></label>' +
+      '<label>Valid until <span class="muted" style="font-weight:400">optional</span><input id="cf-exp" type="date" value="'+esc(c.expires||"")+'"></label>' +
+      '<label>Most uses <span class="muted" style="font-weight:400">optional</span><input id="cf-max" type="number" min="0" inputmode="numeric" value="'+esc(c.max||"")+'" placeholder="no limit"></label>' +
+      '</div><label style="display:grid;gap:5px;font-weight:700;font-size:13px;color:var(--ink2)">Note for the team <span class="muted" style="font-weight:400">optional</span><input id="cf-note" maxlength="200" value="'+esc(c.note||"")+'" placeholder="e.g. for GNYDM booth visitors"></label>' +
+      '<p class="hint">Letters and numbers only. The code works on the registration form and on the link in the invitation email.</p>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm dark" type="button" id="cf-save">Save code</button><button class="btn sm" type="button" id="cf-cancel">Cancel</button></div>';
+    $("#cf-code").focus();
+  }
+  $("#cd-new").addEventListener("click", function(){ codeForm() });
+  $("#cd-form").addEventListener("click", async function(e){
+    if (e.target.id === "cf-cancel") { this.hidden = true; this.innerHTML = ""; return; }
+    if (e.target.id !== "cf-save") return;
+    var b = e.target, f = this, was = codeById(f.dataset.original);
+    b.disabled = true;
+    try {
+      await api({a:"codeSave", original:f.dataset.original, code:$("#cf-code").value, kind:$("#cf-kind").value, value:$("#cf-value").value,
+        expires:$("#cf-exp").value, max:$("#cf-max").value, note:$("#cf-note").value, active: was ? was.active : true});
+      f.hidden = true; f.innerHTML = ""; toast("Code saved."); load(true);
+    } catch(x){ toast(x.message, null, true); b.disabled = false; }
+  });
+  $("#cd-list").addEventListener("click", async function(e){
+    var t = e.target.closest("button"); if (!t) return;
+    var c = codeById(t.dataset.cdsend || t.dataset.cdcopy || t.dataset.cdedit || t.dataset.cdtoggle || t.dataset.cddel); if (!c) return;
+    if (t.dataset.cdedit) return codeForm(c);
+    if (t.dataset.cdsend) return openSend(c);
+    if (t.dataset.cdcopy) {
+      var link = location.origin + "/?code=" + encodeURIComponent(c.code) + "#register";
+      try { await navigator.clipboard.writeText(link); toast("Link copied: it opens the form with " + c.code + " filled in."); } catch(x){ toast(link) }
+      return;
+    }
+    t.disabled = true;
+    try {
+      if (t.dataset.cdtoggle) { await api({a:"codeSave", original:c.code, code:c.code, kind:c.kind, value:c.value, expires:c.expires, max:c.max, note:c.note, active:!c.active}); toast(c.active ? c.code + " switched off." : c.code + " switched on."); }
+      if (t.dataset.cddel) { await api({a:"codeDelete", code:c.code}); toast(c.code + " deleted."); }
+      load(true);
+    } catch(x){ toast(x.message, null, true); t.disabled = false; }
+  });
+  var sending = null;
+  function openSend(c){
+    sending = c; $("#cd-err").hidden = true; $("#cd-emails").value = "";
+    $("#cd-title").textContent = "Send " + c.code; $("#cd-sub").textContent = c.label + (c.expires ? ", until " + shortDay(c.expires) : "");
+    var ps = state.practices.slice().sort(function(a,b){ return a.name.localeCompare(b.name) });
+    $("#cd-pick").innerHTML = ps.length ? ps.map(function(p){
+      var has = p.discountCode === c.code;
+      return '<label><input type="checkbox" value="'+esc(p.id)+'"'+(has?" disabled":"")+'> '+esc(p.name)+'<span>'+(has ? "already has it" : esc(p.ref) + " · " + money(p.total) + (p.discountCode ? " · has " + esc(p.discountCode) : ""))+'</span></label>';
+    }).join("") : '<p class="muted" style="padding:6px 8px">No registrations yet.</p>';
+    var d = $("#cd-dlg"); try { d.showModal(); } catch(x){ d.setAttribute("open",""); }
+  }
+  $("#cd-close").addEventListener("click", function(){ $("#cd-dlg").close() });
+  $("#cd-dlg").addEventListener("click", function(e){ if (e.target === e.currentTarget) e.currentTarget.close(); var t = e.target.closest("[data-pv]"); if (t) preview(t.dataset.pv); });
+  $("#cd-send").addEventListener("click", async function(){
+    var b = this, ids = $$("#cd-pick input:checked").map(function(i){ return i.value });
+    var emails = $("#cd-emails").value.split(/[\s,;]+/).map(function(x){ return x.trim() }).filter(Boolean);
+    var bad = emails.filter(function(x){ return !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(x) });
+    if (bad.length) { $("#cd-err").hidden = false; $("#cd-err").textContent = "Check " + (bad.length === 1 ? "this address: " : "these addresses: ") + bad.join(", "); return; }
+    if (!ids.length && !emails.length) { $("#cd-err").hidden = false; $("#cd-err").textContent = "Tick a practice or add an email address."; return; }
+    b.disabled = true; b.textContent = "Sending…"; $("#cd-err").hidden = true;
+    try {
+      var r = await api({a:"codeSend", code:sending.code, practiceIds:ids, emails:emails});
+      var ok = r.results.filter(function(x){ return x.ok }).length, fail = r.results.filter(function(x){ return !x.ok });
+      if (fail.length) { $("#cd-err").hidden = false; $("#cd-err").textContent = ok + " sent. Didn’t go: " + fail.map(function(x){ return x.to + " (" + (x.error || "unknown") + ")" }).join(", "); }
+      else { $("#cd-dlg").close(); toast(ok + (ok === 1 ? " email" : " emails") + " sent with " + sending.code + "."); }
+      load(true);
+    } catch(x){ $("#cd-err").hidden = false; $("#cd-err").textContent = x.message; }
+    b.disabled = false; b.textContent = "Send";
   });
   function emById(id){ return state.emails.concat(state.system||[]).filter(function(e){return e.id===id})[0] }
   async function preview(id, draft){
@@ -1273,12 +1386,12 @@ dialog.pv[open]{animation:rise .32s var(--ease)}
       return ["summit-people.csv", rows];
     },
     registrations: function(){
-      var rows = [["Ref","Table","Registered","Practice","Town","Website","Practice type","Ticket","People","Total","Kasper customer","Owner","Owner email","Owner phone","Invoice email",
+      var rows = [["Ref","Table","Registered","Practice","Town","Website","Practice type","Ticket","People","Total","Discount code","Discount","Kasper customer","Owner","Owner email","Owner phone","Invoice email",
         "Team member 2","Role 2","Email 2","Team member 3","Role 3","Email 3","Team member 4","Role 4","Email 4",
         "Hotel","Dietary needs","Accessibility","Heard via","Referred by","Team photo","Kasper updates","GAD updates","Partner introductions","Invoice","Welcome call","WinDSO","Report","Notes"]];
       state.practices.slice().sort(function(a,b){return a.num-b.num}).forEach(function(p){
         var o = p.people[0] || {}, m = p.people.slice(1), mm = function(i,k){ return (m[i]||{})[k] || "" };
-        rows.push([p.ref,p.num,day(p.createdAt),p.name,p.town,p.website,p.type,p.ticket,p.count,p.total,yn(p.kasper),o.name||"",o.email||"",p.phone,p.invoiceEmail,
+        rows.push([p.ref,p.num,day(p.createdAt),p.name,p.town,p.website,p.type,p.ticket,p.count,p.total,p.discountCode,p.discount||"",yn(p.kasper),o.name||"",o.email||"",p.phone,p.invoiceEmail,
           mm(0,"name"),mm(0,"role"),mm(0,"email"),mm(1,"name"),mm(1,"role"),mm(1,"email"),mm(2,"name"),mm(2,"role"),mm(2,"email"),
           p.hotel,p.diet,p.access,p.heard,p.refby,yn(p.consents.photo),yn(p.consents.kasper),yn(p.consents.gad),yn(p.consents.intros),p.invoice,p.call,p.windso,p.reportStatus,p.notes]);
       });

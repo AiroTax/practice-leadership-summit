@@ -80,6 +80,8 @@ export const REGISTRATION = {
       id: "confirm", title: "Confirm",
       intro: "Check your table, choose what we may send you, and claim it. We invoice after you register; no card today.",
       questions: [
+        { k: "code", type: "text", label: "Discount code", hint: "optional", max: 30, w: "half", auto: "off",
+          why: "If the summit team sent you a code, it comes off your ticket price.", feeds: ["ops"] },
         { k: "consents", type: "consents", label: "Your choices",
           why: "Photo use, updates and partner introductions only with your permission.", feeds: ["ops"] },
       ],

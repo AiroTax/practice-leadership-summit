@@ -48,6 +48,10 @@ create table if not exists practices (
   updated_at      timestamptz not null default now()
 );
 
+-- Discount codes (added Nov 2026; safe to run again on an existing database).
+alter table practices add column if not exists discount_code text;
+alter table practices add column if not exists discount integer;
+
 create table if not exists prework (
   id          uuid primary key default gen_random_uuid(),
   number      integer not null references practices(number) on delete cascade,

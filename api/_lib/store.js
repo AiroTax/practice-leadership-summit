@@ -19,6 +19,7 @@ import { PREWORK, allQuestions } from "./questions.js";
 import { priceFor, peopleFor } from "./pricing.js";
 import { db as sspDb, kv, sspPublic } from "./ssp.js";
 import { sealReport, openReport, reportSlot } from "./report-crypto.js";
+import { amountOff } from "./discount.js";
 
 const QUESTIONS = allQuestions(PREWORK);
 
@@ -36,6 +37,8 @@ const SAVE_FAIL = "We couldn't save that just now. Please try again in a minute.
 export const EDITABLE = {
   invoice: ["To send", "Sent", "Paid"], call: ["Not booked", "Booked", "Done"], windso: ["None", "Eligible", "Offered", "Claimed"],
   reportStatus: ["Draft", "Ready", "Sent"], day30: "bool", notes: "text", reportNote: "text", checkedIn: "bools",
+  // set together when the team applies a discount code to a registration (console → codes)
+  discountCode: "code", discount: "int", price: "int",
 };
 
 export function newKey() {
@@ -70,7 +73,11 @@ function fromRow(r) {
   return {
     id: r.id, number: r.number, reference: r.reference, createdAt: r.created_at, name: r.name || "", town: r.town || "",
     website: r.website || "", type: r.type || "", ticket: r.ticket || "", extra: r.extra || 0,
-    people: r.people || peopleFor(r.ticket, r.extra), price: r.price || priceFor(r.ticket, r.extra, !!r.kasper), kasper: !!r.kasper,
+    people: r.people || peopleFor(r.ticket, r.extra),
+    // The ticket price at the time they registered (early-bird or not), before any discount.
+    basePrice: priceFor(r.ticket, r.extra, !!r.kasper, Date.parse(r.created_at) || Date.now()),
+    discountCode: r.discount_code || "", discount: r.discount || 0, priceSet: r.price != null && r.price !== "",
+    price: r.price != null && r.price !== "" ? r.price : Math.max(0, priceFor(r.ticket, r.extra, !!r.kasper, Date.parse(r.created_at) || Date.now()) - (r.discount || 0)), kasper: !!r.kasper,
     owner: { name: r.owner_name || "", email: r.owner_email || "", phone: r.owner_phone || "" },
     invoiceEmail: r.invoice_email || "", members: Array.isArray(r.members) ? r.members : [],
     heard: r.heard || "", referredBy: r.referred_by || "", diet: r.diet || "", access: r.access || "", hotel: r.hotel || "",
@@ -88,10 +95,10 @@ function toRow(p) {
     owner_name: p.owner.name, owner_email: p.owner.email, owner_phone: p.owner.phone || null, invoice_email: p.invoiceEmail || null,
     members: p.members || [], heard: p.heard || null, referred_by: p.referredBy || null, diet: p.diet || null, access: p.access || null,
     hotel: p.hotel || null, consent_photo: !!p.consents.photo, consent_kasper: !!p.consents.kasper, consent_gad: !!p.consents.gad,
-    consent_intros: !!p.consents.intros, terms_at: new Date().toISOString(), windso: p.ticket === "Team of 3" || p.ticket === "Team of 4 or more" ? "Eligible" : "None",
+    consent_intros: !!p.consents.intros, discount_code: p.discountCode || null, discount: p.discount || null, terms_at: new Date().toISOString(), windso: p.ticket === "Team of 3" || p.ticket === "Team of 4 or more" ? "Eligible" : "None",
   };
 }
-const PATCH_COL = { invoice: "invoice", call: "call", windso: "windso", day30: "day30", notes: "notes", reportNote: "report_note",
+const PATCH_COL = { discountCode: "discount_code", discount: "discount", price: "price", invoice: "invoice", call: "call", windso: "windso", day30: "day30", notes: "notes", reportNote: "report_note",
   reportStatus: "report_status", reportKey: "report_key", checkedIn: "checked_in", reportSentAt: "report_sent_at" };
 const pwFromRow = (r) => r && ({ number: r.number, createdAt: r.created_at, email: r.email || "", answeredBy: r.answered_by || "", answers: r.answers || {} });
 
@@ -279,7 +286,7 @@ const byNewest = (a, b) => String(b.created_at).localeCompare(String(a.created_a
 // Fields a signed-out registration may send (ssp.json → practices.public_insert).
 const PUBLIC_PRACTICE = ["number", "reference", "name", "town", "website", "type", "ticket", "extra", "kasper", "owner_name", "owner_email",
   "owner_phone", "invoice_email", "members", "heard", "referred_by", "diet", "access", "hotel", "consent_photo", "consent_kasper",
-  "consent_gad", "consent_intros", "terms_at"];
+  "consent_gad", "consent_intros", "terms_at", "discount_code", "discount"];
 const noBlank = (o) => { Object.keys(o).forEach((k) => { if (o[k] === "" || o[k] == null) delete o[k]; }); return o; };
 // Registration numbers can't come from a database sequence on a signed-out form, so the
 // browser picks one at random; the console flags the (very unlikely) clash.
@@ -297,6 +304,21 @@ export async function publishReport(p, pw) {
   } else await kv.set(await reportSlot(p.reportKey), null);
 }
 
+// Signed-out registrations work out their own discount in the browser, so the console and the
+// sweep re-check each one against the team's codes: an unknown code earns nothing and is flagged.
+async function sspCheckDiscounts(list) {
+  if (sspPublic() || !list.some((p) => p.discountCode)) return list;
+  const rows = await sspDb.list("journey").catch(() => []);
+  const row = rows.find((r) => r.data && r.data.key === "codes"), codes = (row && row.data.vars && row.data.vars.codes) || {};
+  return list.map((p) => {
+    if (!p.discountCode) return p;
+    const c = codes[p.discountCode], fixed = p.priceSet;
+    const off = c ? amountOff(c, p.basePrice) : 0;
+    if (fixed) return p;
+    return { ...p, discount: off, price: p.basePrice - off, discountIssue: c ? (off !== p.discount ? "adjusted" : "") : "unknown code" };
+  });
+}
+
 const SSP = {
   async createPractice(p) {
     const number = pickNumber(), row = toRow(p);
@@ -307,10 +329,10 @@ const SSP = {
     else await sspDb.create("practices", { ...data, created_at: new Date().toISOString() });
     return fromRow({ ...data, id: "", created_at: new Date().toISOString() });
   },
-  async getPractice(id) { return fromRow(sspRow(await sspPracticeRec(id))); },
+  async getPractice(id) { const p = fromRow(sspRow(await sspPracticeRec(id))); return p && (await sspCheckDiscounts([p]))[0]; },
   async findPracticeByNumber(n) { return (await this.listPractices()).find((p) => p.number === Number(n)) || null; },
   async findPracticeByReportKey(k) { return (await this.listPractices()).find((p) => p.reportKey === k) || null; },
-  async listPractices() { return (await sspPractices()).map(fromRow); },
+  async listPractices() { return sspCheckDiscounts((await sspPractices()).map(fromRow)); },
   async countPractices() { const s = await kv.get("stats").catch(() => null); return (s && s.claimed) || 0; },
   async updatePractice(id, patch) {
     const rec = await sspPracticeRec(id); if (!rec) throw err("Not found", 404);
@@ -359,7 +381,7 @@ const impl = () => ({ ssp: SSP, supabase: SUPA, airtable: AT, mock: MOCK })[back
 // Takes a cleaned registration and saves it; price and head count are worked out here.
 export async function createPractice(p) {
   p.people = peopleFor(p.ticket, p.extra);
-  p.price = priceFor(p.ticket, p.extra, p.kasper);
+  p.price = Math.max(0, priceFor(p.ticket, p.extra, p.kasper) - (p.discount || 0));
   return impl().createPractice(p);
 }
 export const getPractice = (id) => impl().getPractice(id);
@@ -383,6 +405,8 @@ export async function updatePractice(id, patch, current) {
     else if (rule === "bool") clean[k] = !!v;
     else if (rule === "text") clean[k] = String(v ?? "").slice(0, 4000);
     else if (rule === "bools" && Array.isArray(v)) clean[k] = [0, 1, 2, 3].map((i) => !!v[i]);
+    else if (rule === "int" && Number.isFinite(Number(v))) clean[k] = Math.max(0, Math.round(Number(v)));
+    else if (rule === "code") clean[k] = String(v ?? "").toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 30);
   }
   if (clean.reportStatus && clean.reportStatus !== "Draft") {
     const cur = current || (await getPractice(id));

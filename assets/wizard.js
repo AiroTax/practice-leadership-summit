@@ -280,6 +280,38 @@
     if (s === 4) $('[data-q="members"] .hint', w.form).textContent = "up to three here; send extra names to " + INBOX;
     else $('[data-q="members"] .hint', w.form).textContent = "names now, emails for CE certificates";
   }
+  // Discount codes: checked live as the code is typed (the server re-checks on submit).
+  function withCode(w, p) {
+    var c = w.code;
+    if (!c || !c.ok) return p;
+    var off = c.kind === "percent" ? Math.round(p.total * Math.min(100, c.value) / 100) : Math.min(p.total, Math.round(c.value));
+    var q = {}; for (var k in p) q[k] = p[k];
+    q.full = p.total; q.off = off; q.total = p.total - off; return q;
+  }
+  var CODE_WHY = { unknown: "We don’t recognise that code. Check it against your email.", expired: "That code has expired.", off: "That code isn’t active any more.", "used up": "That code has been used up.", unavailable: "We couldn’t check the code just now; we’ll check it when you claim your table." };
+  function codeState(w) {
+    var el = $(".codestate", w.form), c = w.code, raw = w.val("code");
+    if (!el) return;
+    el.className = "codestate " + (c && c.ok ? "rbonus" : "fine");
+    el.textContent = !raw ? "" : !c || c.code !== raw.toUpperCase().replace(/[^A-Z0-9_-]/g, "") ? "Checking…" : c.ok ? "Code " + c.code + " applied: " + c.label + "." : (CODE_WHY[c.reason] || CODE_WHY.unknown);
+  }
+  var codeTimer = null;
+  function checkCode(w) {
+    clearTimeout(codeTimer);
+    var raw = (w.val("code") || "").toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+    if (!raw) { w.code = null; codeState(w); drawTable(w); return; }
+    codeState(w);
+    codeTimer = setTimeout(function () {
+      fetch("/api/code?c=" + encodeURIComponent(raw), { cache: "no-store" }).then(function (r) { return r.json(); })
+        .catch(function () { return { ok: false, code: raw, reason: "unavailable" }; })
+        .then(function (j) {
+          if ((w.val("code") || "").toUpperCase().replace(/[^A-Z0-9_-]/g, "") !== raw) return; // typed on since
+          j.code = j.code || raw; w.code = j; codeState(w); drawTable(w);
+          if (w.def.steps[w.i].id === "confirm") recap(w);
+        });
+    }, 350);
+  }
+
   function drawTable(w) {
     var n = seatCount(w), named = [w.val("ownerName")].concat(members(w).map(function (m) { return m.name; }));
     var shown = Math.min(n, 8), box = $(".tcard svg", w.d);
@@ -299,7 +331,7 @@
     var name = w.val("practice");
     $(".tname", w.d).textContent = name || "Your practice";
     $(".tname", w.d).classList.toggle("empty", !name);
-    var p = window.PLS_PRICE(n, w.val("kasper") === true), tk = TICKETS[+w.val("seats") || 3];
+    var p = withCode(w, window.PLS_PRICE(n, w.val("kasper") === true)), tk = TICKETS[+w.val("seats") || 3];
     $(".tticket", w.d).textContent = tk + " · " + n + (n === 1 ? " person" : " people");
     var tp = $(".tprice", w.d), was = tp.textContent; tp.textContent = money(p.total);
     if (was && was !== tp.textContent) { tp.classList.remove("bump"); void tp.offsetWidth; tp.classList.add("bump"); }
@@ -312,15 +344,27 @@
     var people = [esc(w.val("ownerName")) + " <span>owner</span>"].concat(ms.map(function (m) { return esc(m.name) + " <span>" + esc(m.role.toLowerCase()) + "</span>"; }));
     $(".recap", w.form).innerHTML = '<div class="rtop"><div><b>' + esc(w.val("practice")) + "</b><span>" + esc(w.val("town")) + " · " + esc(w.val("type")) + '</span></div><div class="rprice">' + money(p.total) + "<span>" + esc(TICKETS[+w.val("seats") || 3]) + " · " + n + " people</span></div></div>" +
       '<ul class="rpeople">' + people.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>" +
-      (p.bonus ? '<p class="rbonus">' + esc(p.bonus) + "</p>" : "") + '<p class="fine">We invoice ' + esc(w.val("invoiceEmail") || w.val("ownerEmail")) + " within two business days.</p>";
+      (p.bonus ? '<p class="rbonus">' + esc(p.bonus) + "</p>" : "") +
+      (p.off ? '<p class="rbonus">Code ' + esc(w.code.code) + ": " + money(p.off) + " off (was " + money(p.full) + ")</p>" : "") + '<p class="fine">We invoice ' + esc(w.val("invoiceEmail") || w.val("ownerEmail")) + " within two business days.</p>";
   }
 
   var reg = null, pre = null;
   function setupRegister() {
     reg = new Wizard($("#dlg-register"), Q.REGISTRATION, {
       url: "/api/register", submitLabel: "Claim our table", showWhy: false, doneTitle: "Table held",
-      setup: function (w) { $('[name="seats"][value="3"]', w.form).checked = true; syncMembers(w); drawTable(w); },
-      onChange: function (w, e) { if (e.target && (e.target.name === "seats" || e.target.name === "extra")) syncMembers(w); drawTable(w); },
+      setup: function (w) {
+        $('[name="seats"][value="3"]', w.form).checked = true; syncMembers(w);
+        var q = $('[data-q="code"]', w.form), st = document.createElement("p"); st.className = "codestate fine"; st.setAttribute("aria-live", "polite"); q.appendChild(st);
+        // A link in a summit email carries the code: /?code=SUMMIT20#register
+        var given = (new URLSearchParams(location.search).get("code") || "").toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 30);
+        if (given) { $('[name="code"]', w.form).value = given; checkCode(w); }
+        drawTable(w);
+      },
+      onChange: function (w, e) {
+        if (e.target && (e.target.name === "seats" || e.target.name === "extra")) syncMembers(w);
+        if (e.target && e.target.name === "code") return checkCode(w);
+        drawTable(w);
+      },
       onStep: function (w, n) { if (w.def.steps[n].id === "confirm") recap(w); },
       check: function (w, stepId) {
         var m = [];
@@ -341,12 +385,15 @@
           invoiceEmail: w.val("invoiceEmail"), hotel: w.val("hotel"), diet: w.val("diet"), access: w.val("access"),
           heard: w.val("heard") || "Other", referredBy: w.val("referredBy"),
           photo: w.val("photo"), kasperUpdates: w.val("kasperUpdates"), gadUpdates: w.val("gadUpdates"), partnerIntros: w.val("partnerIntros"),
-          terms: w.val("terms"), hp: w.val("pls_hp")
+          terms: w.val("terms"), code: w.val("code"), hp: w.val("pls_hp")
         };
       },
       done: function (w, j, body) {
         $("#reg-ref").textContent = j.reference || ("#" + j.number);
         $("#reg-email").textContent = body.ownerEmail;
+        var rc = $("#reg-code");
+        rc.hidden = !j.discountCode;
+        if (j.discountCode) rc.textContent = "Code " + j.discountCode + " applied: " + money(j.discount) + " off. Your total is " + money(j.price) + ".";
         w.lastReg = { number: j.number, practice: body.practice, email: body.ownerEmail };
         w.finish();
         if (window.PLS_ON_REGISTERED) window.PLS_ON_REGISTERED();
@@ -406,7 +453,7 @@
     open: function (name, o) {
       if (name === "register") {
         if (!reg) setupRegister();
-        if (o && o.fresh !== false && $(".wiz-main", reg.d).classList.contains("finished")) reg.reset();
+        if (o && o.fresh !== false && $(".wiz-main", reg.d).classList.contains("finished")) { reg.reset(); reg.code = null; codeState(reg); drawTable(reg); }
         if (o && o.team && reg.i === 0) {
           $$('[name="seats"]', reg.form).forEach(function (r) { r.checked = +r.value === o.team; });
           $("#w-extra", reg.form).value = o.extra || 1;

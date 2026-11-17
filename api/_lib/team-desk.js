@@ -5,6 +5,8 @@ import { str } from "./airtable.js";
 import { backend, listPractices, listPrework, getPractice, getPrework, updatePractice, saveJourneyState, emailLog } from "./store.js";
 import { JOURNEY, AUDIENCES, GLOBAL_VARS, renderJourney, inAudience, nextDate } from "./journey.js";
 import { sspOn, sspFetch } from "./ssp.js";
+import { getCodes, saveCodes, cleanCode, usesByCode, usable, describe, amountOff, norm } from "./codes.js";
+import { sendCodeEmail } from "./notify.js";
 import { journeyState, sweep, sendReport, sendNow, broadcast, runJourney, buildTeamNotice, buildPreworkThanks, buildSignIn } from "./notify.js";
 import { sendEmail, emailReady, getOutbox, sender, mailTemplateHtml, INBOX } from "./email.js";
 import { reviewsFor, reviewsReady, draftFromPasted } from "./reviews.js";
@@ -87,6 +89,45 @@ export async function consoleRequest(method, b, me) {
       }
       case "broadcast": return [200, { ok: true, results: await broadcast(str(b.id, 10)) }];
       case "dryRun": return [200, { ok: true, results: await runJourney({ dry: true, now: b.date ? Date.parse(b.date + "T15:00:00Z") : Date.now() }) }];
+      case "codeSave": {
+        const codes = await getCodes(), c = cleanCode(b), was = norm(b.original);
+        if (was && was !== c.code) {
+          if ((await usesByCode())[was]) throw fail("This code has been used already, so its name can’t change. Switch it off and make a new one.");
+          delete codes[was];
+        } else if (!was && codes[c.code]) throw fail("There’s already a code called " + c.code + ".");
+        codes[c.code] = c; await saveCodes(codes, me);
+        return [200, { ok: true, code: c }];
+      }
+      case "codeDelete": {
+        const codes = await getCodes(), code = norm(b.code);
+        if ((await usesByCode())[code]) throw fail("This code has been used, so it stays on record. Switch it off instead.");
+        delete codes[code]; await saveCodes(codes, me); return [200, { ok: true }];
+      }
+      case "codeSend": {
+        const codes = await getCodes(), c = codes[norm(b.code)];
+        if (!c) throw fail("That code wasn’t found.", 404);
+        const practiceIds = (Array.isArray(b.practiceIds) ? b.practiceIds : []).slice(0, 200);
+        const emails = [...new Set((Array.isArray(b.emails) ? b.emails : []).map((e) => String(e).trim().toLowerCase()).filter((e) => isEmailAddr(e)))].slice(0, 200);
+        if (!practiceIds.length && !emails.length) throw fail("Pick at least one practice or add an email address.");
+        const st = await journeyState();
+        if (practiceIds.length && (st.codeapp || {}).status !== "approved") throw fail("Approve “Discount applied” in the Emails tab first.", 409);
+        if (emails.length && (st.codeinv || {}).status !== "approved") throw fail("Approve “Discount code invitation” in the Emails tab first.", 409);
+        if (emails.length && usable(c, (await usesByCode())[c.code] || 0) !== "ok") throw fail("This code is " + usable(c, (await usesByCode())[c.code] || 0) + ", so new registrations can’t use it.");
+        const out = [];
+        for (const id of practiceIds) {
+          let p = await getPractice(str(String(id), 80)); if (!p) { out.push({ to: id, ok: false, error: "not found" }); continue; }
+          const off = amountOff(c, p.basePrice || p.price);
+          p = await updatePractice(p.id, { discountCode: c.code, discount: off, price: Math.max(0, (p.basePrice || p.price) - off) }, p);
+          const r = await sendCodeEmail("codeapp", c, p, [p.invoiceEmail || p.owner.email].filter(Boolean)).catch((e) => ({ ok: false, error: e.message }));
+          out.push({ to: p.name, ok: r.ok, error: r.error });
+        }
+        for (const e of emails) {
+          const r = await sendCodeEmail("codeinv", c, { name: "", owner: { name: "", email: e }, members: [], number: "", people: 0 }, [e]).catch((x) => ({ ok: false, error: x.message }));
+          out.push({ to: e, ok: r.ok, error: r.error });
+        }
+        await saveCodes(codes, me).catch(() => {}); // refresh the public lookup's use counts
+        return [200, { ok: true, results: out }];
+      }
       case "sweep": return [200, { ok: true, ...(await sweep({ retry: !!b.retry })) }];
       // SSP: switch the platform mailer on for this site, with our template and reply-to.
       case "mailSetup": {
@@ -136,8 +177,12 @@ async function mailStatus() {
   catch (e) { return { known: false, reason: e.status === 403 ? "not_admin" : e.message }; }
 }
 
+const isEmailAddr = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 async function data(me) {
-  const [practices, pre, st, log, mail] = await Promise.all([listPractices(), listPrework(), journeyState(), emailLog(400), mailStatus()]);
+  const [practices, pre, st, log, mail, codeMap] = await Promise.all([listPractices(), listPrework(), journeyState(), emailLog(400), mailStatus(), getCodes().catch(() => ({}))]);
+  const uses = await usesByCode(practices);
+  const codes = Object.values(codeMap).sort((a, b) => a.code.localeCompare(b.code)).map((c) => ({ ...c, label: describe(c), uses: uses[c.code] || 0, state: usable(c, uses[c.code] || 0),
+    saved: practices.filter((p) => p.discountCode === c.code).reduce((a, p) => a + (p.discount || 0), 0) }));
   const sentBy = {}; log.filter((l) => l.status === "sent").forEach((l) => { sentBy[l.email_id] = (sentBy[l.email_id] || 0) + 1; });
   const journey = JOURNEY.map((d) => {
     const s = st[d.id] || {};
@@ -147,7 +192,7 @@ async function data(me) {
       reach: practices.filter((p) => inAudience(d.audience, p, pre[p.number])).length, sent: sentBy[d.id] || 0, updatedBy: s.updated_by || "", updatedAt: s.updated_at || "" };
   });
   return {
-    ok: true, me, backend: backend(), ssp: sspOn(), mail,
+    ok: true, me, backend: backend(), ssp: sspOn(), mail, codes,
     // On SSP pre-work is saved by the number the office typed, so show any that match no registration,
     // and any registration numbers picked twice.
     unmatched: Object.values(pre).filter((pw) => !practices.some((p) => p.number === pw.number)).map((pw) => ({ number: pw.number, email: pw.email, at: pw.createdAt })),

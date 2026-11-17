@@ -29,7 +29,7 @@ Table **{{table_no}}** at the Practice Leadership Summit is now held for {{pract
 ~ When: Sat Jan 9 – Sun Jan 10, 2027 · 8:00 to 5:00 both days
 ~ Where: North Jersey · free parking · the exact venue follows by email
 ~ Your team: {{team_names}}
-~ Ticket: {{ticket}} · {{price}}
+~ Ticket: {{ticket}} · {{price}}{{price_note}}
 ~ CE: up to 12 AGD PACE hours
 
 **What happens next**
@@ -55,7 +55,7 @@ Thank you for registering {{practice}} for the Practice Leadership Summit. Here 
 
 ~ Reference: {{ref}}
 ~ Ticket: {{ticket}}
-~ Amount due: **{{price}}**
+~ Amount due: **{{price}}**{{price_note}}
 ~ Due: {{payment_due}}
 
 **How to pay**
@@ -208,6 +208,42 @@ Open it together, then book your Day-90 review. We’ll look at the plan you sig
 Thank you for being part of the first Practice Leadership Summit. Alumni get first seats in 2028.
 
 Kasper and Global Academy of Dentistry` },
+
+  { id: "codeinv", name: "Discount code invitation", when: "Sent from the Discount codes card to people you choose, before they register", schedule: { type: "code" }, audience: "chosen",
+    eyebrow: "An invitation", title: "A table, with {{discount_text}}",
+    subject: "{{discount_text}} your table at the Practice Leadership Summit",
+    preheader: "Use code {{discount_code}} when you register.",
+    footer: "You’re receiving this because the summit team invited your practice.",
+    body: `Hi {{first_name}},
+
+We’d love to have your practice at the Practice Leadership Summit: two working days, Jan 9–10, 2027 in North Jersey, where owners and their teams leave with one plan for 2027 and up to 12 AGD PACE CE hours.
+
+Here is a code for **{{discount_text}}** your table.
+
+~ Your code: **{{discount_code}}**
+~ Valid until: {{code_expires}}
+
+[[Claim your table with the code|{{code_link}}]]
+
+The button fills the code in for you. You can also type it on the last step of the registration form. Questions? Reply to this email.
+
+${SIGN}` },
+
+  { id: "codeapp", name: "Discount applied", when: "Sent from the Discount codes card when you give a registered practice a code", schedule: { type: "code" }, audience: "chosen", cc: false,
+    eyebrow: "Good news", title: "A discount on your table",
+    subject: "{{discount_text}} your summit table, {{practice}}",
+    preheader: "Your new total is {{price}}.",
+    body: `Hi {{first_name}},
+
+Thank you for registering {{practice}}. We’ve applied the code **{{discount_code}}** to your registration: **{{discount_text}}** your table.
+
+~ Reference: {{ref}}
+~ Ticket: {{ticket}}
+~ New total: **{{price}}**
+
+If you’ve already paid, we’ll refund the difference. If your invoice is still on its way, it will show the new total. Questions? Reply to this email.
+
+${SIGN}` },
 ];
 
 export const AUDIENCES = {
@@ -217,12 +253,14 @@ export const AUDIENCES = {
   all: "Every registered practice",
   unpaid: "Practices that haven’t paid",
   attended: "Practices that checked in",
+  chosen: "People you choose",
 };
 export function inAudience(audience, p, pw) {
   if (audience === "prework_missing") return !pw;
   if (audience === "prework_in") return !!pw;
   if (audience === "attended") return (p.checkedIn || []).some(Boolean);
   if (audience === "unpaid") return p.invoice !== "Paid";
+  if (audience === "chosen") return false;
   return true;
 }
 
@@ -241,6 +279,7 @@ export function practiceVars(p, pw) {
   return {
     first_name: firstName(p.owner.name), practice: p.name, table_no: String(p.number), ref: p.reference || "#" + p.number,
     ticket: p.ticket, price: money(p.price),
+    price_note: p.discount ? ` (after the ${p.discountCode} discount of ${money(p.discount)})` : "",
     team_names: names.join(", ") + (extra ? ` and ${extra} more` : ""),
     site_link: SITE, inbox: INBOX, prework_link: `${SITE}/?n=${p.number}#prework`,
     report_link: p.reportKey ? `${SITE}/report?k=${p.reportKey}` : "",
@@ -254,21 +293,25 @@ export const SAMPLE_VARS = {
   venue_name: "The Grand Hotel", venue_address: "123 Main Street, Clifton, NJ", weather_decision: "going ahead as planned",
   survey_link: SITE + "/#feedback", review_link: SITE + "/#day90", report_link: SITE + "/report?k=sample-report-link",
   call_time: "you asked for Dec 14–18, mornings", first_name: "Dr. Patel", practice: "Riverside Family Dental", table_no: "7", ref: "PLS-007",
-  ticket: "Team of 3", price: "$3,400", team_names: "Dr. Maya Patel, Jordan Lee, Sam Ortiz", site_link: SITE, inbox: INBOX, prework_link: SITE + "/?n=7#prework",
+  ticket: "Team of 3", price: "$3,400", discount_code: "SUMMIT20", discount_text: "$300 off", code_expires: "Dec 4, 2026",
+  code_link: SITE + "/?code=SUMMIT20#register", team_names: "Dr. Maya Patel, Jordan Lee, Sam Ortiz", site_link: SITE, inbox: INBOX, prework_link: SITE + "/?n=7#prework",
 };
 
 // `opts.sample`: fill anything still blank with SAMPLE_VARS (previews and tests only, never real sends).
+// Placeholders that may legitimately be blank (they add a phrase only when it applies).
+const OPTIONAL = new Set(["price_note"]);
 export function renderJourney(def, p, pw, state = {}, opts = {}) {
-  const vars = { ...(state.vars || {}), ...(p ? practiceVars(p, pw) : {}) };
+  const vars = { ...(state.vars || {}), ...(p ? practiceVars(p, pw) : {}), ...(opts.vars || {}) };
   const missing = new Set();
   const fill = (s) => String(s || "").replace(/\{\{\s*([a-z_]+)\s*\}\}/g, (m, k) => {
     const v = vars[k];
+    if ((v == null || v === "") && OPTIONAL.has(k)) return "";
     if (v == null || v === "") { missing.add(k); return opts.sample && SAMPLE_VARS[k] ? SAMPLE_VARS[k] : m; }
     return String(v);
   });
   const subject = fill(state.subject || def.subject), body = fill(state.body || def.body);
   const html = layout({ title: fill(def.title), eyebrow: def.eyebrow, preheader: fill(def.preheader), body: markup(body),
-    footerNote: p ? `You’re receiving this because ${p.name} registered for the summit.` : "" });
+    footerNote: def.footer || (p && p.name ? `You’re receiving this because ${p.name} registered for the summit.` : "") });
   return { subject, html, text: plain(body), missing: [...missing] };
 }
 
