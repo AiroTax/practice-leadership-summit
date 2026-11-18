@@ -76,7 +76,7 @@
           '<div><label for="w-oemail">Email</label><input type="email" id="w-oemail" name="ownerEmail" autocomplete="email" maxlength="120"></div>' +
           '<div><label for="w-ophone">Phone <span class="hint">optional</span></label><input type="tel" id="w-ophone" name="ownerPhone" autocomplete="tel" maxlength="40"></div></div></fieldset>';
       case "members":
-        return '<fieldset class="q" data-q="members"><legend class="qlabel">' + esc(q.label) + ' <span class="hint">names now, emails for CE certificates</span></legend><div class="members"></div></fieldset>';
+        return '<fieldset class="q" data-q="members"><legend class="qlabel">' + esc(q.label) + ' <span class="hint">names now, emails optional</span></legend><div class="members"></div></fieldset>';
       case "consents":
         return '<div class="q" data-q="consents"><div class="recap" aria-live="polite"></div>' +
           '<div class="consents"><p class="qlabel">You’re happy for…</p>' +
@@ -84,7 +84,7 @@
           '<label class="check"><input type="checkbox" name="kasperUpdates"> <span>Kasper to send you updates</span></label>' +
           '<label class="check"><input type="checkbox" name="gadUpdates"> <span>Global Academy of Dentistry to send you updates</span></label>' +
           '<label class="check"><input type="checkbox" name="partnerIntros"> <span>introductions to summit partners whose solutions match your plan</span></label></div>' +
-          '<label class="check terms"><input type="checkbox" name="terms"> <span>We accept the terms: full refund to Dec 4, 50% to Dec 18, then a credit. Name changes are free. If snow makes travel unsafe we move to Jan 23–24 or refund in full.</span></label></div>';
+          '<label class="check terms"><input type="checkbox" name="terms"> <span>We confirm this registration and will pay the invoice for it.</span></label></div>';
     }
     return "";
   }
@@ -278,7 +278,7 @@
     $('[data-q="members"]', w.form).hidden = want === 0;
     $(".extra", w.form).hidden = s !== 4;
     if (s === 4) $('[data-q="members"] .hint', w.form).textContent = "up to three here; send extra names to " + INBOX;
-    else $('[data-q="members"] .hint', w.form).textContent = "names now, emails for CE certificates";
+    else $('[data-q="members"] .hint', w.form).textContent = "names now, emails optional";
   }
   // Discount codes: checked live as the code is typed (the server re-checks on submit).
   function withCode(w, p) {

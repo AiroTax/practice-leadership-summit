@@ -44,7 +44,7 @@ export const REGISTRATION = {
     },
     {
       id: "team", title: "Who’s coming",
-      intro: "The owner plus the people who will run the plan with you. Each person gets a badge and a CE certificate by email.",
+      intro: "The owner plus the people who will run the plan with you. Each person gets a badge.",
       questions: [
         { k: "seats", type: "seats", label: "How many people?", req: true,
           why: "Sets your ticket and price.", feeds: ["ops"] },
@@ -53,7 +53,7 @@ export const REGISTRATION = {
         { k: "owner", type: "owner", label: "Practice owner", req: true,
           why: "Confirmations, the invoice and the welcome call go to the owner.", feeds: ["ops"] },
         { k: "members", type: "members", label: "The rest of your team",
-          why: "Names and roles set badges and who sits where in role play; emails receive CE certificates.", feeds: ["team", "ops"] },
+          why: "Names and roles set badges and who sits where in role play; emails are optional.", feeds: ["team", "ops"] },
         { k: "invoiceEmail", f: "fldiolIO15zYFo9kN", type: "email", label: "Send the invoice to", hint: "only if not the owner", max: 120,
           why: "So the invoice reaches whoever pays it.", feeds: ["ops"] },
       ],
@@ -62,7 +62,7 @@ export const REGISTRATION = {
       id: "care", title: "Looking after you",
       intro: "So the weekend runs smoothly for everyone at your table.",
       questions: [
-        { k: "hotel", f: "fld69foj3pc9Yo3H3", type: "choice", label: "Do you need hotel rooms?", hint: "for teams driving 45 minutes or more",
+        { k: "hotel", f: "fld69foj3pc9Yo3H3", type: "choice", label: "Do you need hotel rooms?",
           opts: ["No room needed", "Friday night", "Saturday night", "Friday and Saturday"],
           why: "We size the hotel room block.", feeds: ["ops"] },
         { k: "diet", f: "fldr4DH7Al9mLhW4G", type: "text", label: "Dietary needs", hint: "halal, kosher, vegetarian, gluten-free, allergies", max: 200,

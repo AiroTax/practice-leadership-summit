@@ -67,7 +67,7 @@ window.PLS_Q = {
    {
     "id": "team",
     "title": "Who’s coming",
-    "intro": "The owner plus the people who will run the plan with you. Each person gets a badge and a CE certificate by email.",
+    "intro": "The owner plus the people who will run the plan with you. Each person gets a badge.",
     "questions": [
      {
       "k": "seats",
@@ -103,7 +103,7 @@ window.PLS_Q = {
       "k": "members",
       "type": "members",
       "label": "The rest of your team",
-      "why": "Names and roles set badges and who sits where in role play; emails receive CE certificates.",
+      "why": "Names and roles set badges and who sits where in role play; emails are optional.",
       "feeds": [
        "team",
        "ops"
@@ -131,7 +131,6 @@ window.PLS_Q = {
       "k": "hotel",
       "type": "choice",
       "label": "Do you need hotel rooms?",
-      "hint": "for teams driving 45 minutes or more",
       "opts": [
        "No room needed",
        "Friday night",

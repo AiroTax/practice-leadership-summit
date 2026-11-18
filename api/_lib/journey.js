@@ -8,7 +8,7 @@ import { layout, markup, plain, SITE, INBOX } from "./email.js";
 export const GLOBAL_VARS = {
   venue_name: "Venue name, e.g. The Grand Hotel",
   venue_address: "Venue street address",
-  weather_decision: "e.g. going ahead as planned / moving to Jan 23–24",
+  weather_decision: "e.g. going ahead as planned",
   survey_link: "Link to the feedback survey",
   review_link: "Link to book the Day-90 review",
   payment_due: "When payment is due, e.g. within 14 days, by Dec 4",
@@ -27,7 +27,7 @@ export const JOURNEY = [
 Table **{{table_no}}** at the Practice Leadership Summit is now held for {{practice}}. Your reference is **{{ref}}**.
 
 ~ When: Sat Jan 9 – Sun Jan 10, 2027 · 8:00 to 5:00 both days
-~ Where: North Jersey · free parking · the exact venue follows by email
+~ Where: North Jersey · the exact venue follows by email
 ~ Your team: {{team_names}}
 ~ Ticket: {{ticket}} · {{price}}{{price_note}}
 ~ CE: up to 12 AGD PACE hours
@@ -64,8 +64,6 @@ Thank you for registering {{practice}} for the Practice Leadership Summit. Here 
 
 Please quote your reference **{{ref}}** with your payment. Your table stays held while payment is on its way. Need a formal invoice for your accountant, or a different arrangement? Reply to this email.
 
-Terms: full refund to Dec 4, 50% to Dec 18, then a credit for a future event. Name changes are free.
-
 ${SIGN}` },
 
   { id: "e02", name: "Pre-work nudge", when: "7 days after registering, if pre-work isn’t in (until Dec 11)", schedule: { type: "after", days: 7, until: "2026-12-11" }, audience: "prework_missing",
@@ -80,7 +78,7 @@ Rough numbers are fine: team size, new patients a month, payer mix and your top 
 
 [[Complete your pre-work|{{prework_link}}]]
 
-Your registration number is **{{table_no}}**. Practices that send it early get the most useful Snapshot and the first choice of welcome-call times.
+Your registration number is **{{table_no}}**.
 
 The summit team` },
 
@@ -138,15 +136,13 @@ Happy holidays from the Kasper and Global Academy of Dentistry team. See you on 
 
 Five days to go. Here’s everything {{practice}} needs:
 
-~ Where: {{venue_name}}, {{venue_address}} · free parking
+~ Where: {{venue_name}}, {{venue_address}}
 ~ When: Doors and breakfast 8:00 both days. Sessions 9:00 to 5:00. Saturday reception 5:30 to 7:00.
-~ Your table: {{table_no}}, already set with your Snapshot and Plan Book
+~ Your table: {{table_no}}
 ~ Who’s coming: {{team_names}}
-~ Bring: a laptop or tablet for your practice numbers. Nothing else.
-~ CE: up to 12 AGD PACE hours, certificates on Sunday
-~ Dress: business casual
+~ CE: up to 12 AGD PACE hours, CE codes given at the close on Sunday
 
-Weather: if a storm makes travel unsafe, we decide by Thursday Jan 7 and move to Jan 23–24. You’ll hear from us by 6 pm that day.
+Weather: if a storm makes travel unsafe, we’ll email you with what happens next.
 
 See you Saturday,
 The summit team` },
@@ -159,7 +155,7 @@ The summit team` },
 
 We’ve been watching the forecast for Jan 9–10. Our decision: **{{weather_decision}}**.
 
-If we’ve moved to Jan 23–24, your table, team and everything you’ve prepared moves with you. Prefer a full refund instead? Reply to this email by Jan 14.
+Questions? Reply to this email.
 
 The summit team` },
 
@@ -175,13 +171,13 @@ One ask: tell us how the weekend went. It takes two minutes.
 
 [[Share your feedback|{{survey_link}}]]
 
-We’ll confirm your Day-30 call this week. If you’d like support turning the plan into results, reply "90 days" and we’ll send details of the follow-up program.
+We’ll confirm your Day-30 call this week.
 
 ${SIGN}` },
 
   { id: "e09", name: "Day 30 check-in", when: "Feb 9, practices that checked in", schedule: { type: "date", date: "2027-02-09" }, audience: "attended",
     eyebrow: "Day 30", title: "Three questions before your Day-30 call",
-    subject: "Day 30: three questions before your coach call",
+    subject: "Day 30: three questions before your Day-30 call",
     preheader: "Five minutes with your team before the call.",
     body: `Hi {{first_name}},
 
@@ -205,7 +201,7 @@ Open it together, then book your Day-90 review. We’ll look at the plan you sig
 
 [[Book your Day-90 review|{{review_link}}]]
 
-Thank you for being part of the first Practice Leadership Summit. Alumni get first seats in 2028.
+Thank you for being part of the first Practice Leadership Summit.
 
 Kasper and Global Academy of Dentistry` },
 
@@ -241,7 +237,7 @@ Thank you for registering {{practice}}. We’ve applied the code **{{discount_co
 ~ Ticket: {{ticket}}
 ~ New total: **{{price}}**
 
-If you’ve already paid, we’ll refund the difference. If your invoice is still on its way, it will show the new total. Questions? Reply to this email.
+If your invoice is still on its way, it will show the new total. Questions about payment? Reply to this email.
 
 ${SIGN}` },
 ];

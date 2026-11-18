@@ -38,7 +38,7 @@
     var html = "", n = 0;
     for (var r = 0; r < 5; r++) for (var c = 0; c < 7; c++) {
       n++;
-      var cx = 55 + c * 98, cy = 48 + r * 84, taken = n <= claimed, coach = (c === 2 || c === 5) && r % 2 === 0, num = (n < 10 ? "0" : "") + n;
+      var cx = 55 + c * 98, cy = 48 + r * 84, taken = n <= claimed, coach = false, num = (n < 10 ? "0" : "") + n;
       html += '<g class="tbl' + (taken ? " taken" : "") + '" data-n="' + num + '" tabindex="' + (taken ? -1 : 0) + '" role="button" aria-label="Table ' + num + (taken ? ", claimed" : ", open. Claim it") + '">';
       for (var s2 = 0; s2 < 4; s2++) {
         var a = (s2 * 90 - 45) * Math.PI / 180;
@@ -81,16 +81,16 @@
   /* ---------- the weekend: one screen, the Plan Book turns to the chosen session's page ---------- */
   var SESS = [
     ["Opening keynote, then an honest baseline. Your team scores itself on patients, team, technology, finances and market, against its own pre-work.", "Keynote speaker and facilitators. 1.5 CE hours."],
-    ["Who you serve, what you’re known for and why patients choose you. You write the position your practice will own, then test it on the next table.", "Facilitators. 1.5 CE hours."],
-    ["Four areas of focus carry your positioning: operate with excellence, patient experience, technology and innovation, and staff development. Your team picks what to change in each.", "Facilitators. 1.5 CE hours."],
+    ["Who you serve, what you’re known for and why patients choose you. Your practice writes the position it will own in its market.", "Facilitators. 1.5 CE hours."],
+    ["Four areas of focus carry your positioning: operate with excellence, patient experience, technology and innovation, and staff development.", "Facilitators. 1.5 CE hours."],
     ["Adaptive leadership for practice leaders: tell technical problems from adaptive ones, read how your team reacts to change, and practise the conversations that move people.", "Omar Awad, Harvard Kennedy School negotiation faculty. 1.5 CE hours."],
     ["Second keynote, then each practice measures the distance between today and its positioning, area by area, and names the real problems in the way.", "Keynote speaker and facilitators. 1.5 CE hours."],
-    ["Priorities set with the whole team: impact against effort, dependencies and sequence. Expert clinics on technology, patient engagement, payments and insurance.", "Facilitators and expert tables. 1.5 CE hours."],
+    ["Priorities set with the whole team: impact against effort, dependencies and sequence. Expert tables on technology, patient engagement, payments and insurance.", "Facilitators and expert tables. 1.5 CE hours."],
     ["What the plan takes over six months: people to hire or develop, skills to learn, technology and capital, and what to build, buy or partner for.", "Facilitators and expert tables. 1.5 CE hours."],
-    ["Your team turns the weekend into one signed plan with owners, milestones and measures. Accountability partners are assigned and your Day-30 call is booked before you leave.", "Facilitators. 1.5 CE hours."]
+    ["Your team turns the weekend into one signed plan with owners, milestones and measures. Each practice pairs with another to check in at 30, 60 and 90 days.", "Facilitators. 1.5 CE hours."]
   ];
   var DAYNOTE = {
-    1: "Breakfast from 8:00. Lunch at 12:30, with practices mixed by type. Reception at 5:30 with every practice’s positioning poster on the wall.",
+    1: "Breakfast from 8:00. Lunch at 12:30, with practices mixed by type. Reception at 5:30.",
     2: "Breakfast from 8:00. Lunch at 12:30, mixed by practice type. We close at 5:00 with your plan signed."
   };
   var book = $(".book"), cur = -1;
